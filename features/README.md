@@ -14,9 +14,19 @@ No application code may be written unless it maps to a requirement in one of the
 
 ## Feature catalog
 
-| ID | File | Branch | Depends on |
-|----|------|--------|------------|
-| — | *Add `feature-1-….md` before implementation* | `feature/1-…` | — |
+| ID | Feature | File | Branch | Depends on | Author |
+|----|---------|------|--------|------------|--------|
+| 1 | User Authentication & Authorization | *not yet written* | `feature/1-user-authentication` | — | Milton |
+| 2 | Semester Management | *not yet written* | `feature/2-semester-management` | 1 | Landry |
+| 3 | Course Management | *not yet written* | `feature/3-course-management` | 1 | Landry |
+| 4 | Faculty Management | *not yet written* | `feature/4-faculty-management` | 1 | Morgan |
+| 5 | Section Management | *not yet written* | `feature/5-section-management` | 2, 3, 4 | Morgan |
+| 6 | Enrollment Management | *not yet written* | `feature/6-enrollment-management` | 5 | Milton |
+| 7 | Student Course Listing | *not yet written* | `feature/7-student-course-listing` | 6 | Landry |
+| 8 | Section Student Listing | *not yet written* | `feature/8-section-student-listing` | 6 | Morgan |
+| 9 | Student Management | *not yet written* | `feature/9-student-management` | 1 | Landry |
+
+When you write a spec, replace *not yet written* with a link to your `feature-N-short-name.md` in the same PR.
 
 New features: follow [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, **FR-00N**, **SC-00N**, **Key Entities**, Gherkin, **Agent implementation request**, **Definition of Done**.
 
