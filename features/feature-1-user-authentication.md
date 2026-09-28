@@ -479,83 +479,83 @@ role = admin
 
 #### Scenario: User registers successfully
 
-- **Given** I am not registered
-- **When** I provide a valid first name, last name, email, university ID, username, password, and matching confirm password
-- **And** I submit the registration form
-- **Then** a student account is created
-- **And** the user's role is `student`
-- **And** I am authenticated
-- **And** I receive a valid session token
-- **And** a protected request using my token succeeds
+* **Given** I am not registered
+* **When** I provide a valid first name, last name, email, university ID, username, password, and matching confirm password
+* **And** I submit the registration form
+* **Then** a student account is created
+* **And** the user's role is `student`
+* **And** I am authenticated
+* **And** I receive a valid session token
+* **And** a protected request using my token succeeds
 
 #### Scenario: User registers without a required field
 
-- **Given** I am on the registration page
-- **When** I leave a required field empty
-- **And** I submit the registration form
-- **Then** the API returns `400`
-- **And** the response contains the required-field message
-- **And** no user account is created
+* **Given** I am on the registration page
+* **When** I leave a required field empty
+* **And** I submit the registration form
+* **Then** the API returns `400`
+* **And** the response contains the required-field message
+* **And** no user account is created
 
 #### Scenario: User submits whitespace-only required information
 
-- **Given** I am on the registration page
-- **When** I provide only whitespace for a required field
-- **And** I submit the registration form
-- **Then** the API returns `400`
-- **And** the response contains the required-field message
-- **And** no user account is created
+* **Given** I am on the registration page
+* **When** I provide only whitespace for a required field
+* **And** I submit the registration form
+* **Then** the API returns `400`
+* **And** the response contains the required-field message
+* **And** no user account is created
 
 #### Scenario: User submits an invalid email
 
-- **Given** I am on the registration page
-- **When** I enter an invalid email address
-- **And** I submit the registration form
-- **Then** the API returns `400`
-- **And** the response is `{ "message": "Enter a valid email address." }`
-- **And** no user account is created
+* **Given** I am on the registration page
+* **When** I enter an invalid email address
+* **And** I submit the registration form
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Enter a valid email address." }`
+* **And** no user account is created
 
 #### Scenario: User submits a password shorter than 8 characters
 
-- **Given** I am on the registration page
-- **When** I enter a password with fewer than 8 characters
-- **And** I submit the registration form
-- **Then** the API returns `400`
-- **And** the response is `{ "message": "Password must be at least 8 characters." }`
-- **And** no user account is created
+* **Given** I am on the registration page
+* **When** I enter a password with fewer than 8 characters
+* **And** I submit the registration form
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Password must be at least 8 characters." }`
+* **And** no user account is created
 
 #### Scenario: User submits mismatched passwords
 
-- **Given** I am on the registration page
-- **When** the password and confirm password do not match
-- **And** I submit the registration form
-- **Then** the API returns `400`
-- **And** the response is `{ "message": "Passwords do not match." }`
-- **And** no user account is created
+* **Given** I am on the registration page
+* **When** the password and confirm password do not match
+* **And** I submit the registration form
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Passwords do not match." }`
+* **And** no user account is created
 
 #### Scenario: User registers with an existing username
 
-- **Given** a user with username `jdoe` already exists
-- **When** I submit registration using `jdoe`
-- **Then** the API returns `400`
-- **And** the response is `{ "message": "Username is already taken." }`
-- **And** no new user account is created
+* **Given** a user with username `jdoe` already exists
+* **When** I submit registration using `jdoe`
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Username is already taken." }`
+* **And** no new user account is created
 
 #### Scenario: User registers with an existing email
 
-- **Given** a user with email `jane@example.com` already exists
-- **When** I submit registration using `jane@example.com`
-- **Then** the API returns `400`
-- **And** the response is `{ "message": "Email is already registered." }`
-- **And** no new user account is created
+* **Given** a user with email `jane@example.com` already exists
+* **When** I submit registration using `jane@example.com`
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Email is already registered." }`
+* **And** no new user account is created
 
 #### Scenario: User registers with an existing university ID
 
-- **Given** a user with university ID `123456` already exists
-- **When** I submit registration using `123456`
-- **Then** the API returns `400`
-- **And** the response is `{ "message": "University ID is already registered." }`
-- **And** no new user account is created
+* **Given** a user with university ID `123456` already exists
+* **When** I submit registration using `123456`
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "University ID is already registered." }`
+* **And** no new user account is created
 
 ---
 
@@ -563,36 +563,36 @@ role = admin
 
 #### Scenario: User logs in successfully
 
-- **Given** I have a registered user
-- **When** I submit the correct username and password
-- **Then** the API returns `200`
-- **And** I am authenticated
-- **And** the system identifies my user type
-- **And** I receive a valid session token
-- **And** I am redirected to the Home page
+* **Given** I have a registered user
+* **When** I submit the correct username and password
+* **Then** the API returns `200`
+* **And** I am authenticated
+* **And** the system identifies my user type
+* **And** I receive a valid session token
+* **And** I am redirected to the Home page
 
 #### Scenario: User cannot log in with incorrect information
 
-- **Given** I have a registered user
-- **When** I submit an incorrect username or password
-- **Then** the API returns `401`
-- **And** the response is `{ "message": "Invalid username or password." }`
-- **And** I am not authenticated
+* **Given** I have a registered user
+* **When** I submit an incorrect username or password
+* **Then** the API returns `401`
+* **And** the response is `{ "message": "Invalid username or password." }`
+* **And** I am not authenticated
 
 #### Scenario: User logs in using a different username capitalization
 
-- **Given** a user exists with username `jdoe`
-- **When** I log in using `JDoe`
-- **And** I provide the correct password
-- **Then** I am authenticated as that user
+* **Given** a user exists with username `jdoe`
+* **When** I log in using `JDoe`
+* **And** I provide the correct password
+* **Then** I am authenticated as that user
 
 #### Scenario: Login reuses an existing valid session
 
-- **Given** I have logged in and my session has not expired or been revoked
-- **When** I log in again with the correct username and password
-- **Then** the API returns `200`
-- **And** the response contains the same session token as my existing session
-- **And** no additional session is created for me
+* **Given** I have logged in and my session has not expired or been revoked
+* **When** I log in again with the correct username and password
+* **Then** the API returns `200`
+* **And** the response contains the same session token as my existing session
+* **And** no additional session is created for me
 
 ---
 
@@ -600,26 +600,26 @@ role = admin
 
 #### Scenario: Session survives a page refresh
 
-- **Given** I am authenticated with a valid session
-- **When** I refresh the application
-- **Then** I remain authenticated
-- **And** I can access protected functionality
+* **Given** I am authenticated with a valid session
+* **When** I refresh the application
+* **Then** I remain authenticated
+* **And** I can access protected functionality
 
 #### Scenario: Expired session is rejected
 
-- **Given** my session has expired
-- **When** I send a request to a protected endpoint
-- **Then** the API returns `401`
-- **And** I am no longer authenticated
-- **And** I am sent to the Login page
+* **Given** my session has expired
+* **When** I send a request to a protected endpoint
+* **Then** the API returns `401`
+* **And** I am no longer authenticated
+* **And** I am sent to the Login page
 
 #### Scenario: Invalid session is rejected
 
-- **Given** I have an invalid session token
-- **When** I send a request to a protected endpoint
-- **Then** the API returns `401`
-- **And** I am no longer authenticated
-- **And** I am sent to the Login page
+* **Given** I have an invalid session token
+* **When** I send a request to a protected endpoint
+* **Then** the API returns `401`
+* **And** I am no longer authenticated
+* **And** I am sent to the Login page
 
 ---
 
@@ -627,22 +627,22 @@ role = admin
 
 #### Scenario: User logs out successfully
 
-- **Given** I am authenticated
-- **And** I am on a protected page
-- **When** I click **Sign out** in the MenuBar
-- **Then** the API returns `200`
-- **And** the response is `{ "message": "Signed out successfully." }`
-- **And** the server invalidates my current session
-- **And** I am no longer authenticated
-- **And** I am sent to the Login page
+* **Given** I am authenticated
+* **And** I am on a protected page
+* **When** I click **Sign out** in the MenuBar
+* **Then** the API returns `200`
+* **And** the response is `{ "message": "Signed out successfully." }`
+* **And** the server invalidates my current session
+* **And** I am no longer authenticated
+* **And** I am sent to the Login page
 
 #### Scenario: Request using an old token after logout is rejected
 
-- **Given** I have logged in and received a valid session token
-- **And** I have logged out
-- **When** I send a protected request using my old token
-- **Then** the API returns `401`
-- **And** the old token cannot be used to access the protected endpoint
+* **Given** I have logged in and received a valid session token
+* **And** I have logged out
+* **When** I send a protected request using my old token
+* **Then** the API returns `401`
+* **And** the old token cannot be used to access the protected endpoint
 
 ---
 
@@ -650,17 +650,17 @@ role = admin
 
 #### Scenario: Admin logs in
 
-- **Given** the seeded admin account exists
-- **When** I log in using the admin's correct username and password
-- **Then** the system identifies my role as `admin`
-- **And** I am redirected to the Home page
+* **Given** the seeded admin account exists
+* **When** I log in using the admin's correct username and password
+* **Then** the system identifies my role as `admin`
+* **And** I am redirected to the Home page
 
 #### Scenario: Student logs in
 
-- **Given** I have a student account
-- **When** I log in using the student's correct username and password
-- **Then** the system identifies my role as `student`
-- **And** I am redirected to the Home page
+* **Given** I have a student account
+* **When** I log in using the student's correct username and password
+* **Then** the system identifies my role as `student`
+* **And** I am redirected to the Home page
 
 ---
 
@@ -668,23 +668,23 @@ role = admin
 
 #### Scenario: Admin accesses an admin-only endpoint
 
-- **Given** I am signed in as an admin
-- **When** I send a request to an admin-only endpoint using my token
-- **Then** the request succeeds
+* **Given** I am signed in as an admin
+* **When** I send a request to an admin-only endpoint using my token
+* **Then** the request succeeds
 
 #### Scenario: Student cannot access an admin-only endpoint
 
-- **Given** I am signed in as a student
-- **When** I send a request to an admin-only endpoint using my token
-- **Then** the API returns `403`
-- **And** the response is `{ "message": "Admin role required." }`
+* **Given** I am signed in as a student
+* **When** I send a request to an admin-only endpoint using my token
+* **Then** the API returns `403`
+* **And** the response is `{ "message": "Admin role required." }`
 
 #### Scenario: Unauthenticated user cannot access a protected endpoint
 
-- **Given** I am not logged in
-- **When** I send a request to a protected endpoint
-- **Then** the API returns `401`
-- **And** I am sent to the Login page
+* **Given** I am not logged in
+* **When** I send a request to a protected endpoint
+* **Then** the API returns `401`
+* **And** I am sent to the Login page
 
 ---
 
@@ -692,18 +692,18 @@ role = admin
 
 #### Scenario: Seed creates the first admin
 
-- **Given** all required `ADMIN_*` environment variables are present
-- **When** I run `npm run seed`
-- **Then** an admin user is created
-- **And** the user's role is `admin`
-- **And** the admin has values for all required User fields
+* **Given** all required `ADMIN_*` environment variables are present
+* **When** I run `npm run seed`
+* **Then** an admin user is created
+* **And** the user's role is `admin`
+* **And** the admin has values for all required User fields
 
 #### Scenario: Seed fails when an admin environment variable is missing
 
-- **Given** one or more required `ADMIN_*` environment variables are missing
-- **When** I run `npm run seed`
-- **Then** the seed process fails
-- **And** an admin user is not created using default or hardcoded credentials
+* **Given** one or more required `ADMIN_*` environment variables are missing
+* **When** I run `npm run seed`
+* **Then** the seed process fails
+* **And** an admin user is not created using default or hardcoded credentials
 
 ---
 
