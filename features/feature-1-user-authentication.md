@@ -122,6 +122,9 @@
 - **FR-034**: Duplicate `userName`, `email`, or `universityId` MUST return `400` with a `{ "message": "..." }` response and MUST NOT create a user.
 - **FR-035**: Invalid login information MUST return `401` with `{ "message": "Invalid username or password." }`.
 - **FR-036**: Invalid login information MUST NOT create an authenticated session.
+- **FR-037**: Login MUST reuse the user's existing non-expired, non-revoked session instead of creating a new one.
+- **FR-038**: Registration and login success responses MUST return the same fields with the same names.
+- **FR-039**: Feature 1 MUST provide a reusable admin-only authorization check that returns `403` with `{ "message": "Admin role required." }` for non-admin users. Feature 1 MUST NOT add a product admin-only endpoint; later features apply this check to their admin routes.
 
 ---
 
@@ -286,7 +289,24 @@ All registration validation errors MUST return `400` with:
 
 **Success:** `200 OK`
 
-Successful login returns the authenticated user's information, role, and session token.
+Successful login returns the same response shape as registration (FR-038):
+
+```json
+{
+  "userId": 1,
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane@example.com",
+  "universityId": "123456",
+  "userName": "jdoe",
+  "role": "student",
+  "token": "<jwt>"
+}
+```
+
+If the user already has a non-expired, non-revoked session, login returns that session's token instead of creating a new session (FR-037).
+
+**Response field names:** registration and login responses use the User field names from the project data model (`userName`, `firstName`, `lastName`). This intentionally differs from the example payload in `.cursor/rules/auth-patterns.mdc` (`username`, `fName`, `lName`); the frontend stores this response as the `user` object for both flows.
 
 **Invalid login:**
 
@@ -331,6 +351,13 @@ Admin-only authorization failure:
   "message": "Admin role required."
 }
 ```
+
+### Admin-only Authorization Check
+
+Feature 1 does not add a product admin-only endpoint (FR-039). In this specification, **admin-only endpoint** means any route protected by the admin-only authorization check.
+
+- Feature 1 provides the check; later features (Semester, Course, Faculty, Section, Student Management) apply it to their admin routes.
+- Feature 1's US-1.6 scenarios verify the check using a **test-only route** defined inside `backend/tests/authenticate.test.js`. That route exists only in the test file and MUST NOT be added to the application's routes.
 
 ---
 
@@ -401,10 +428,11 @@ The MenuBar MUST:
 |---|---|---|
 | `id` | Primary key | Auto-generated |
 | `token` | String | Required |
+| `email` | String | Required; the email of the session's user |
 | `expirationDate` | Date | Required |
 | `userId` | Foreign key | Required, references `users.id` |
 
-A session MUST expire 24 hours after creation.
+A session MUST expire 24 hours after creation. Session fields follow `.cursor/rules/auth-patterns.mdc`, including reuse of a non-expired session on login (FR-037).
 
 ---
 
@@ -429,9 +457,9 @@ ADMIN_USERNAME=
 ADMIN_PASSWORD=
 ```
 
-These variables MUST be documented in `.env.example` with blank values.
+These variables MUST be documented in `backend/.env.example` with blank values.
 
-The same variables MUST be provided in `.env.test` for tests that require the seeded admin.
+The same variables MUST be present in `backend/.env.test.example` with non-secret test values. CI creates `backend/.env.test` by copying `backend/.env.test.example` (`.github/workflows/test.yml`), so tests that require the seeded admin depend on these values being in the example file. Developers' local `backend/.env.test` MUST contain them too.
 
 The seed process MUST fail when any required `ADMIN_*` variable is missing.
 
@@ -557,6 +585,14 @@ role = admin
 - **When** I log in using `JDoe`
 - **And** I provide the correct password
 - **Then** I am authenticated as that user
+
+#### Scenario: Login reuses an existing valid session
+
+- **Given** I have logged in and my session has not expired or been revoked
+- **When** I log in again with the correct username and password
+- **Then** the API returns `200`
+- **And** the response contains the same session token as my existing session
+- **And** no additional session is created for me
 
 ---
 
@@ -689,6 +725,7 @@ Each scenario MUST map to at least one automated test.
 | US-1.2 | User logs in successfully | `backend/tests/auth.test.js`, `frontend/tests/Login.test.js` | `User logs in successfully` |
 | US-1.2 | User cannot log in with incorrect information | `backend/tests/auth.test.js`, `frontend/tests/Login.test.js` | `User cannot log in with incorrect information` |
 | US-1.2 | User logs in using a different username capitalization | `backend/tests/auth.test.js` | `User logs in using a different username capitalization` |
+| US-1.2 | Login reuses an existing valid session | `backend/tests/auth.test.js` | `Login reuses an existing valid session` |
 | US-1.3 | Session survives a page refresh | `backend/tests/authenticate.test.js`, `frontend/tests/router.test.js` | `Session survives a page refresh` |
 | US-1.3 | Expired session is rejected | `backend/tests/authenticate.test.js`, `frontend/tests/router.test.js` | `Expired session is rejected` |
 | US-1.3 | Invalid session is rejected | `backend/tests/authenticate.test.js`, `frontend/tests/router.test.js` | `Invalid session is rejected` |
@@ -732,6 +769,12 @@ Map every acceptance scenario in the Test Coverage Map to at least one automated
 
 Use the exact test file paths listed in the Test Coverage Map.
 
+Test the admin-only authorization check with a test-only route defined inside backend/tests/authenticate.test.js. Do not add a product admin-only route.
+
+Registration and login must return the same response fields, named as in this specification (userName, firstName, lastName).
+
+Put the ADMIN_* variables with non-secret test values in backend/.env.test.example so CI can run the seed tests.
+
 Do not add features, behavior, API rules, database rules, validation rules, or UI behavior that are not defined in this specification.
 
 Before finishing:
@@ -758,6 +801,8 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] Users can log in with `userName` and `password`.
 - [ ] Usernames are stored lowercase.
 - [ ] Username login is case-insensitive.
+- [ ] Login reuses an existing non-expired, non-revoked session.
+- [ ] Registration and login return the same response fields.
 - [ ] Sessions use JWT plus a server-side session.
 - [ ] Sessions last 24 hours.
 - [ ] Sessions survive a page refresh while valid.
@@ -769,13 +814,14 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] Admin credentials come from environment variables.
 - [ ] Required admin seed fields are provided through environment variables.
 - [ ] Missing admin seed variables cause the seed to fail.
-- [ ] `.env.example` contains the required `ADMIN_*` variables with blank values.
-- [ ] `.env.test` contains the required `ADMIN_*` variables for admin tests.
+- [ ] `backend/.env.example` contains the required `ADMIN_*` variables with blank values.
+- [ ] `backend/.env.test.example` contains the required `ADMIN_*` variables with non-secret test values.
 - [ ] `email`, `universityId`, and `userName` are unique.
 - [ ] `userName` is stored lowercase.
 - [ ] `universityId` has no additional format requirement.
 - [ ] Registration validation rules and error responses are implemented.
 - [ ] Login failure returns `401` with the required message.
+- [ ] The admin-only authorization check exists and no product admin-only route was added in this feature.
 - [ ] Admin users can access admin-only endpoints.
 - [ ] Students receive `403` when accessing admin-only endpoints.
 - [ ] Unauthenticated users receive `401` when accessing protected endpoints.
