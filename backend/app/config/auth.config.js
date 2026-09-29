@@ -1,5 +1,5 @@
 const authConfig = {
-  secret: process.env.AUTH_SECRET || "todo-speckit-dev-secret",
+  secret: process.env.AUTH_SECRET,
 };
 
 export default authConfig;
