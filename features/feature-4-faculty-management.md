@@ -2,7 +2,7 @@
 
 **Feature ID:** 4  
 **Branch pattern:** `feature/4-faculty-management`  
-**Status:** Draft  
+**Status:** Ready  
 **Created:** 2026-09-29  
 **Input:** Allow admins to manage the faculty members who teach in the Courses Management System. A faculty member has a first name, last name, and department.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication.md)
@@ -98,6 +98,7 @@
 ## Assumptions
 
 - Feature 1 authentication and the admin-only authorization check are on `dev`.
+- The project slide calls the department field `dept`. This specification uses `department`.
 - Only admins manage faculty members.
 - A faculty member is a record managed by an admin, not a user who logs in.
 - Feature 1 defines only the `admin` and `student` roles; this feature does not add a `faculty` role.
@@ -105,6 +106,7 @@
 - A department is stored as text on the faculty member; departments are not managed separately.
 - Deleting a faculty member is permanent.
 - What happens when a faculty member assigned to a section is deleted is defined by [Feature 5](feature-5-section-management.md), which introduces sections.
+- Because every faculty endpoint is admin-only, students cannot read faculty members. Features that show a section's instructor ([Feature 5](feature-5-section-management.md), [Feature 6](feature-6-enrollment-management.md), [Feature 7](feature-7-student-course-listing.md)) MUST include the instructor's name in the section data they return and MUST NOT call `/course-t6/faculty` for it.
 
 ---
 
@@ -567,9 +569,9 @@ Each scenario MUST map to at least one automated test.
 | US-4.4 | Admin deletes a faculty member that does not exist | `backend/tests/faculty.test.js` | `Admin deletes a faculty member that does not exist` |
 | US-4.5 | Student cannot manage faculty members | `backend/tests/faculty.test.js` | `Student cannot manage faculty members` |
 | US-4.5 | Unauthenticated user cannot manage faculty members | `backend/tests/faculty.test.js` | `Unauthenticated user cannot manage faculty members` |
-| US-4.5 | Student cannot open the Faculty page | `frontend/tests/router.test.js` | `Student cannot open the Faculty page` |
-| US-4.5 | Unauthenticated user cannot open the Faculty page | `frontend/tests/router.test.js` | `Unauthenticated user cannot open the Faculty page` |
-| US-4.5 | Faculty link is shown only to admins | `frontend/tests/MenuBar.test.js` | `Faculty link is shown only to admins` |
+| US-4.5 | Student cannot open the Faculty page | `frontend/tests/Faculty.test.js` | `Student cannot open the Faculty page` |
+| US-4.5 | Unauthenticated user cannot open the Faculty page | `frontend/tests/Faculty.test.js` | `Unauthenticated user cannot open the Faculty page` |
+| US-4.5 | Faculty link is shown only to admins | `frontend/tests/Faculty.test.js` | `Faculty link is shown only to admins` |
 
 ---
 
@@ -599,6 +601,8 @@ A faculty member is not a user account. Do not add a faculty role and do not cha
 
 The table name must be faculty. Sort the faculty list by lastName, then firstName.
 
+Use the field name department. Do not use the slide name dept.
+
 Use the exact error messages defined in this specification.
 
 Map every acceptance scenario in the Test Coverage Map to at least one automated test.
@@ -625,6 +629,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] Admins can add a faculty member with a first name, last name, and department.
 - [ ] `firstName`, `lastName`, and `department` are required and reject empty and whitespace-only values.
 - [ ] Duplicate faculty names and departments are allowed.
+- [ ] The database field is `department`, not `dept`.
 - [ ] Admins can view all faculty members sorted by last name, then first name.
 - [ ] Admins can view a single faculty member.
 - [ ] Admins can edit a faculty member.
