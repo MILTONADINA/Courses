@@ -13,7 +13,7 @@
 
 ### US-4.1: Add a faculty member
 
-**As an** admin  
+**As the** admin  
 **I want to** add a faculty member  
 **So that** the faculty member is available when sections are scheduled
 
@@ -23,7 +23,7 @@
 
 ### US-4.2: View faculty members
 
-**As an** admin  
+**As the** admin  
 **I want to** view the faculty members in the system  
 **So that** I can see who is available to teach
 
@@ -33,7 +33,7 @@
 
 ### US-4.3: Edit a faculty member
 
-**As an** admin  
+**As the** admin  
 **I want to** edit a faculty member's information  
 **So that** faculty records stay accurate
 
@@ -43,7 +43,7 @@
 
 ### US-4.4: Delete a faculty member
 
-**As an** admin  
+**As the** admin  
 **I want to** delete a faculty member  
 **So that** faculty who no longer teach are removed from the system
 
