@@ -351,16 +351,16 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-When it is time to code this, use this prompt:
+Application code for this feature is written by hand. The course does not allow AI to write the application code. The notes below are a checklist for the person coding the feature.
 
 ```text
-Implement Feature 7 from @features/feature-7-student-course-listing.md on branch feature/7-student-course-listing.
+Write Feature 7 by hand on branch feature/7-student-course-listing, using this spec.
 
-Only implement what is defined in this specification.
+Only build what this specification defines.
 
 Follow the project's existing architecture, API conventions, security rules, coding conventions, and feature framework.
 
-Follow the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
+Follow the layer order in features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
 
 Feature dependencies:
 - Feature 1 provides authenticate.
@@ -401,7 +401,7 @@ Before finishing:
 2. Confirm every acceptance scenario is covered by an automated test.
 3. Confirm all tests pass.
 4. Update the reference documentation listed below to match the shipped code.
-5. Complete the Definition of Done and the merge checklist in @features/framework.md.
+5. Complete the Definition of Done and the merge checklist in features/framework.md.
 
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
