@@ -111,7 +111,10 @@ Every story is P1: each one must ship for the assignment's Section Management (C
 - **FR-030**: A rejected semester, course, or faculty member delete MUST NOT delete any record.
 - **FR-031**: The Sections page MUST be available only to authenticated admins.
 - **FR-032**: The MenuBar MUST show a **Sections** link to admins only.
-- **FR-033**: When a section request fails without an API message, the Sections page MUST show `Request failed.`
+- **FR-033**: When a section request fails without an API message, the Sections page or the Add / Edit Section dialog MUST show `Request failed.`
+- **FR-034**: The Add / Edit Section dialog MUST check every field before submitting, using the same messages as the API.
+- **FR-035**: The Add / Edit Section dialog MUST NOT send a save request when a field fails that check.
+- **FR-036**: When a save request fails, the Add / Edit Section dialog MUST stay open and show the error message returned by the API.
 
 ---
 
@@ -144,7 +147,9 @@ Every story is P1: each one must ship for the assignment's Section Management (C
 - Section id that is not a number on `PUT` or `DELETE` → `400`.
 - `semesterId` query parameter that is not a number → `400`.
 - No sections exist → the list returns an empty array and the Sections page shows an empty-state message.
-- A section request fails without an API message → the Sections page shows `Request failed.`
+- Admin enters an empty, whitespace-only, or badly formatted field in the Add / Edit Section dialog → the dialog shows the field's message and sends no request.
+- A save request fails → the dialog stays open and shows the API error message.
+- A section request fails without an API message → the Sections page or dialog shows `Request failed.`
 - Admin deletes a semester, course, or faculty member that a section uses → `400`, nothing is deleted.
 - Authenticated student sends an add, edit, or delete section request → `403`.
 - Unauthenticated section request → `401`.
@@ -392,7 +397,8 @@ The dialog MUST:
 - Provide **Start time** and **End time** time fields.
 - Pre-fill the fields with the section's current values when editing.
 - Validate that every field is filled in, that text fields are not whitespace-only, and that times use the `HH:MM` format before submitting, using the same messages as the API.
-- Display API validation errors.
+- Not send a save request when a field fails validation.
+- Stay open and show the API error message when a save fails, or `Request failed.` when the API gives no message.
 - Provide **Save** and **Cancel** buttons.
 - Close and refresh the section list after a successful save.
 - Close without saving when **Cancel** is selected.
@@ -449,29 +455,25 @@ The MenuBar MUST:
 #### Scenario: Admin adds a section successfully
 
 * **Given** I am signed in as an admin
-* **And** a semester, a course, and a faculty member exist
-* **When** I provide a section number, the semester, the course, the faculty member, days of the week, a start time, and an end time
-* **And** I submit the Add Section form
+* **And** semester `2`, course `3`, and faculty member `4` exist
+* **When** I send `POST /course-t6/sections` with `sectionNumber` `01`, `semesterId` `2`, `courseId` `3`, `facultyId` `4`, `daysOfWeek` `MWF`, `startTime` `09:00`, and `endTime` `09:50`
 * **Then** the API returns `201`
 * **And** the response contains the new section with its semester name, course number and name, and instructor name
-* **And** the section appears in the section list
 
 #### Scenario: Admin adds a section without a required field
 
 * **Given** I am signed in as an admin
-* **When** I leave a required section field empty
-* **And** I submit the Add Section form
+* **When** I send `POST /course-t6/sections` without `sectionNumber` and every other field valid
 * **Then** the API returns `400`
-* **And** the response contains the required-field message
+* **And** the response is `{ "message": "Section number is required." }`
 * **And** no section is created
 
-#### Scenario: Admin submits whitespace-only section information
+#### Scenario: Admin adds a section with a whitespace-only section number
 
 * **Given** I am signed in as an admin
-* **When** I provide only whitespace for the section number or days of the week
-* **And** I submit the Add Section form
+* **When** I send `POST /course-t6/sections` with `sectionNumber` set to only spaces and every other field valid
 * **Then** the API returns `400`
-* **And** the response contains the required-field message
+* **And** the response is `{ "message": "Section number is required." }`
 * **And** no section is created
 
 #### Scenario: Admin adds a section with a semester id that is not a number
@@ -528,11 +530,57 @@ The MenuBar MUST:
 #### Scenario: Admin adds a section with a time that is not in HH:MM format
 
 * **Given** I am signed in as an admin
-* **When** I provide the start time `9am`
-* **And** I submit the Add Section form
+* **When** I send `POST /course-t6/sections` with `startTime` set to `9am` and every other field valid
 * **Then** the API returns `400`
 * **And** the response is `{ "message": "Start time must be in HH:MM format." }`
 * **And** no section is created
+
+#### Scenario: Admin adds a section from the Sections page
+
+* **Given** I am signed in as an admin on the Sections page
+* **When** I select **Add Section**
+* **And** I fill in every field with valid values
+* **And** I select **Save**
+* **Then** the dialog closes
+* **And** the new section appears in the section list
+
+#### Scenario: Section form blocks submit when a required field is empty
+
+* **Given** I am signed in as an admin with the Add Section dialog open
+* **When** I select **Save** without a section number
+* **Then** I see `Section number is required.`
+* **And** no save request is sent
+
+#### Scenario: Section form blocks submit when a field is only whitespace
+
+* **Given** I am signed in as an admin with the Add Section dialog open
+* **When** I enter only spaces for the days of week and valid values for every other field
+* **And** I select **Save**
+* **Then** I see `Days of week is required.`
+* **And** no save request is sent
+
+#### Scenario: Section form blocks submit when a time is not in HH:MM format
+
+* **Given** I am signed in as an admin with the Add Section dialog open
+* **When** I enter the start time `9am` and valid values for every other field
+* **And** I select **Save**
+* **Then** I see `Start time must be in HH:MM format.`
+* **And** no save request is sent
+
+#### Scenario: Section form shows the API error when a save fails
+
+* **Given** I am signed in as an admin with a valid Add Section form
+* **And** the save request will fail with an error message
+* **When** I select **Save**
+* **Then** the dialog shows the error message returned by the API
+* **And** the dialog stays open
+
+#### Scenario: Section form shows a fallback error when a save fails without a message
+
+* **Given** I am signed in as an admin with a valid Add Section form
+* **And** the save request will fail without an error message
+* **When** I select **Save**
+* **Then** the dialog shows `Request failed.`
 
 ---
 
@@ -599,22 +647,19 @@ The MenuBar MUST:
 #### Scenario: Admin edits a section successfully
 
 * **Given** I am signed in as an admin
-* **And** a section exists
-* **When** I change the section's information
-* **And** I submit the Edit Section form
+* **And** section `1` exists
+* **When** I send `PUT /course-t6/sections/1` with `sectionNumber` `02`, `daysOfWeek` `TR`, `startTime` `13:00`, `endTime` `14:15`, and its current semester, course, and faculty member
 * **Then** the API returns `200`
 * **And** the response contains the updated values
-* **And** the section list shows the updated values
 
 #### Scenario: Admin edits a section without a required field
 
 * **Given** I am signed in as an admin
-* **And** a section exists
-* **When** I clear a required section field
-* **And** I submit the Edit Section form
+* **And** section `1` exists
+* **When** I send `PUT /course-t6/sections/1` without `daysOfWeek` and every other field valid
 * **Then** the API returns `400`
-* **And** the response contains the required-field message
-* **And** the section is not changed
+* **And** the response is `{ "message": "Days of week is required." }`
+* **And** section `1` is not changed
 
 #### Scenario: Admin edits a section that does not exist
 
@@ -630,6 +675,29 @@ The MenuBar MUST:
 * **When** I send `PUT /course-t6/sections/abc` with valid section information
 * **Then** the API returns `400`
 * **And** the response is `{ "message": "Section id must be a number." }`
+
+#### Scenario: Edit Section dialog shows the section's current values
+
+* **Given** I am signed in as an admin on the Sections page
+* **And** a section with section number `01` and days of week `MWF` is listed
+* **When** I select **Edit** for that section
+* **Then** the dialog shows section number `01` and days of week `MWF`
+
+#### Scenario: Admin edits a section from the Sections page
+
+* **Given** I am signed in as an admin with the Edit Section dialog open for a section
+* **When** I change the days of week to `TR`
+* **And** I select **Save**
+* **Then** the dialog closes
+* **And** the section list shows `TR` for that section
+
+#### Scenario: Edit Section form blocks submit when a required field is cleared
+
+* **Given** I am signed in as an admin with the Edit Section dialog open
+* **When** I clear the section number
+* **And** I select **Save**
+* **Then** I see `Section number is required.`
+* **And** no save request is sent
 
 ---
 
@@ -742,16 +810,22 @@ Each scenario MUST map to at least one automated test.
 
 | Story | Scenario | Test File | Test Name |
 |---|---|---|---|
-| US-5.1 | Admin adds a section successfully | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin adds a section successfully` |
-| US-5.1 | Admin adds a section without a required field | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin adds a section without a required field` |
-| US-5.1 | Admin submits whitespace-only section information | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin submits whitespace-only section information` |
+| US-5.1 | Admin adds a section successfully | `backend/tests/section.test.js` | `Admin adds a section successfully` |
+| US-5.1 | Admin adds a section without a required field | `backend/tests/section.test.js` | `Admin adds a section without a required field` |
+| US-5.1 | Admin adds a section with a whitespace-only section number | `backend/tests/section.test.js` | `Admin adds a section with a whitespace-only section number` |
 | US-5.1 | Admin adds a section with a semester id that is not a number | `backend/tests/section.test.js` | `Admin adds a section with a semester id that is not a number` |
 | US-5.1 | Admin adds a section with a course id that is not a number | `backend/tests/section.test.js` | `Admin adds a section with a course id that is not a number` |
 | US-5.1 | Admin adds a section with a faculty member id that is not a number | `backend/tests/section.test.js` | `Admin adds a section with a faculty member id that is not a number` |
 | US-5.1 | Admin adds a section for a semester that does not exist | `backend/tests/section.test.js` | `Admin adds a section for a semester that does not exist` |
 | US-5.1 | Admin adds a section for a course that does not exist | `backend/tests/section.test.js` | `Admin adds a section for a course that does not exist` |
 | US-5.1 | Admin adds a section for a faculty member that does not exist | `backend/tests/section.test.js` | `Admin adds a section for a faculty member that does not exist` |
-| US-5.1 | Admin adds a section with a time that is not in HH:MM format | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin adds a section with a time that is not in HH:MM format` |
+| US-5.1 | Admin adds a section with a time that is not in HH:MM format | `backend/tests/section.test.js` | `Admin adds a section with a time that is not in HH:MM format` |
+| US-5.1 | Admin adds a section from the Sections page | `frontend/tests/Sections.test.js` | `Admin adds a section from the Sections page` |
+| US-5.1 | Section form blocks submit when a required field is empty | `frontend/tests/Sections.test.js` | `Section form blocks submit when a required field is empty` |
+| US-5.1 | Section form blocks submit when a field is only whitespace | `frontend/tests/Sections.test.js` | `Section form blocks submit when a field is only whitespace` |
+| US-5.1 | Section form blocks submit when a time is not in HH:MM format | `frontend/tests/Sections.test.js` | `Section form blocks submit when a time is not in HH:MM format` |
+| US-5.1 | Section form shows the API error when a save fails | `frontend/tests/Sections.test.js` | `Section form shows the API error when a save fails` |
+| US-5.1 | Section form shows a fallback error when a save fails without a message | `frontend/tests/Sections.test.js` | `Section form shows a fallback error when a save fails without a message` |
 | US-5.2 | Admin views the section list | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin views the section list` |
 | US-5.2 | Admin views the section list when no sections exist | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin views the section list when no sections exist` |
 | US-5.2 | Sections page shows a loading state while sections load | `frontend/tests/Sections.test.js` | `Sections page shows a loading state while sections load` |
@@ -759,10 +833,13 @@ Each scenario MUST map to at least one automated test.
 | US-5.2 | Sections page shows a fallback error when the API gives no message | `frontend/tests/Sections.test.js` | `Sections page shows a fallback error when the API gives no message` |
 | US-5.2 | Student views the sections of a semester | `backend/tests/section.test.js` | `Student views the sections of a semester` |
 | US-5.2 | User filters sections by a semester id that is not a number | `backend/tests/section.test.js` | `User filters sections by a semester id that is not a number` |
-| US-5.3 | Admin edits a section successfully | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin edits a section successfully` |
-| US-5.3 | Admin edits a section without a required field | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin edits a section without a required field` |
+| US-5.3 | Admin edits a section successfully | `backend/tests/section.test.js` | `Admin edits a section successfully` |
+| US-5.3 | Admin edits a section without a required field | `backend/tests/section.test.js` | `Admin edits a section without a required field` |
 | US-5.3 | Admin edits a section that does not exist | `backend/tests/section.test.js` | `Admin edits a section that does not exist` |
 | US-5.3 | Admin edits a section with an id that is not a number | `backend/tests/section.test.js` | `Admin edits a section with an id that is not a number` |
+| US-5.3 | Edit Section dialog shows the section's current values | `frontend/tests/Sections.test.js` | `Edit Section dialog shows the section's current values` |
+| US-5.3 | Admin edits a section from the Sections page | `frontend/tests/Sections.test.js` | `Admin edits a section from the Sections page` |
+| US-5.3 | Edit Section form blocks submit when a required field is cleared | `frontend/tests/Sections.test.js` | `Edit Section form blocks submit when a required field is cleared` |
 | US-5.4 | Admin deletes a section successfully | `backend/tests/section.test.js`, `frontend/tests/Sections.test.js` | `Admin deletes a section successfully` |
 | US-5.4 | Admin deletes a section that does not exist | `backend/tests/section.test.js` | `Admin deletes a section that does not exist` |
 | US-5.4 | Admin deletes a section with an id that is not a number | `backend/tests/section.test.js` | `Admin deletes a section with an id that is not a number` |
@@ -775,59 +852,51 @@ Each scenario MUST map to at least one automated test.
 | US-5.6 | Admin cannot delete a semester that has sections | `backend/tests/section.test.js` | `Admin cannot delete a semester that has sections` |
 | US-5.6 | Admin cannot delete a course that has sections | `backend/tests/section.test.js` | `Admin cannot delete a course that has sections` |
 | US-5.6 | Admin cannot delete a faculty member who has sections | `backend/tests/section.test.js` | `Admin cannot delete a faculty member who has sections` |
+
 ---
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+The course requires the application code to be written by hand ("create code (by hand) and test"). AI is used only to build the automated tests ("Building automated tests (with AI)").
+
+### Hand implementation (developer)
+
+The developer writes the models, routes, frontend services, views, and router for this feature by hand, in the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router), and implements only what this specification defines:
+
+- Section routes: `GET /course-t6/sections`, `POST /course-t6/sections`, `PUT /course-t6/sections/:id`, `DELETE /course-t6/sections/:id`.
+- Every section route uses `authenticate` from `backend/app/authorization/authorization.js`; `POST`, `PUT`, and `DELETE` also use `requireAdmin`.
+- `GET /course-t6/sections` accepts an optional `semesterId` query parameter.
+- Every section response includes `semester { id, semesterName }`, `course { id, courseNumber, courseName }`, and `faculty { id, firstName, lastName }`.
+- The list is sorted by the semester's `startDate`, then the course's `courseNumber`, then `sectionNumber`.
+- The field is named `facultyId`. `startTime` and `endTime` are stored as times and returned as `HH:MM`.
+- `semesterId`, `courseId`, and `facultyId` use `ON DELETE RESTRICT`, and the semester, course, and faculty delete endpoints return `400` with this specification's messages when sections reference them.
+- The Sections page route is `/sections` with route name `sections`.
+- The Add / Edit Section dialog checks every field before submitting and sends no request when a check fails.
+- Pages and dialogs show the API error message, or `Request failed.` when the API gives no message.
+- Error messages match this specification exactly.
+
+### Test prompt (AI)
+
+Use this prompt at the backend tests and frontend tests steps:
 
 ```text
-Implement Feature 5 from @features/feature-5-section-management.md on branch feature/5-section-management.
+Write the automated tests for Feature 5 from @features/feature-5-section-management.md on branch feature/5-section-management.
 
-Only implement what is defined in this specification.
+Do not write or change application code in backend/app or frontend/src. The developer writes the application code by hand.
 
-Follow the structure, architecture, API conventions, coding conventions, and best practices already established in the project.
+Write one test for every row in the Test Coverage Map, in the listed test file, using the listed test name.
 
-Follow the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
+Test only the behavior defined in this specification, using its exact status codes and error messages.
 
-Section routes must be:
-GET /course-t6/sections
-POST /course-t6/sections
-PUT /course-t6/sections/:id
-DELETE /course-t6/sections/:id
-
-Protect every section route with the Feature 1 authenticate check from backend/app/authorization/authorization.js. Also protect POST, PUT, and DELETE with requireAdmin.
-
-GET /course-t6/sections accepts an optional semesterId query parameter.
-
-Every section response must include semester { id, semesterName }, course { id, courseNumber, courseName }, and faculty { id, firstName, lastName }.
-
-Sort the section list by the semester's startDate, then the course's courseNumber, then sectionNumber.
-
-Use the field name facultyId. Store startTime and endTime as times and return them in HH:MM format.
-
-Use ON DELETE RESTRICT on the semesterId, courseId, and facultyId foreign keys. Update the semester, course, and faculty delete endpoints to return 400 with the messages in this specification when sections reference them.
-
-The Sections page route must be /sections with route name sections.
-Show the API error message when a section request fails, or "Request failed." when the API gives no message.
-
-Use the exact error messages defined in this specification.
-
-Map every acceptance scenario in the Test Coverage Map to at least one automated test.
-
-Use the exact test file paths listed in the Test Coverage Map.
-
-Do not add features, behavior, API rules, database rules, validation rules, or UI behavior that are not defined in this specification.
+API scenarios send requests directly to the API. Section form scenarios check that invalid input shows the field's message and sends no request.
 
 Before finishing:
 1. Run npm test from the project root (runs backend and frontend tests).
 2. Confirm every acceptance scenario is covered by an automated test.
-3. Confirm all tests pass.
-4. Update the reference documentation listed below to match the shipped code.
-5. Complete the Definition of Done and the merge checklist in @features/framework.md.
-
-Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
+3. List any test that fails because the application code does not match this specification. Do not change application code to make a test pass.
 ```
+
+After all tests pass, the developer updates the reference documentation listed below and completes the Definition of Done and the merge checklist in @features/framework.md.
 
 **Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
@@ -854,9 +923,10 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] The Sections page route is `/sections` with route name `sections`.
 - [ ] The Sections page shows loading and empty states.
 - [ ] The Sections page shows the API error message when a request fails, or `Request failed.` when the API gives no message.
+- [ ] The Add / Edit Section dialog blocks invalid input without sending a request, and stays open with the API error message when a save fails.
 - [ ] The Sections page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
 - [ ] The MenuBar shows the **Sections** link to admins only.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**-**FR-033** satisfied).
+- [ ] Backend and frontend are implemented by hand per this spec (**FR-001**-**FR-036** satisfied); only the automated tests are built with AI.
 - [ ] **Success Criteria (SC-001**-**SC-012)** are met.
 - [ ] Test Coverage Map is complete.
 - [ ] Every acceptance scenario has an automated test.
