@@ -5,7 +5,7 @@
 **Status:** Ready  
 **Created:** 2026-09-30  
 **Input:** Allow student users to enroll themselves in sections for a selected semester, change their enrollments to another section, and drop their own enrollments.  
-**Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication.md), [Feature 2 — Semester Management](feature-2-semester-management.md), [Feature 5 — Section Management](feature-5-section-management.md)
+**Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 2 — Semester Management](feature-2-semester-management.md), [Feature 5 — Section Management](feature-5-section-management.md)
 
 ---
 
@@ -1039,11 +1039,11 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 
 ## Out of Scope
 
-- Creating, editing, or deleting courses → [Feature 3](feature-3-course-management.md)
+- Creating, editing, or deleting courses → Feature 3
 - Faculty management → [Feature 4](feature-4-faculty-management.md)
-- Creating, editing, or deleting sections → [Feature 5](feature-5-section-management.md)
-- Separate **My Enrolled Sections** page → [Feature 7](feature-7-student-course-listing.md)
-- Admin section roster → [Feature 8](feature-8-section-student-listing.md)
+- Creating, editing, or deleting sections → Feature 5
+- Separate **My Enrolled Sections** page → Feature 7
+- Admin section roster → Feature 8
 - Restricting enrollment by semester start or end dates
 - Admin enrolling students
 - Admin removing students from enrollments
