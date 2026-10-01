@@ -5,6 +5,7 @@
 import request from "supertest";
 import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
+import os from "os";
 import path from "path";
 import app from "../server.js";
 import db from "../app/models/index.js";
@@ -199,7 +200,8 @@ describe("Feature 1 — User Authentication & Authorization", () => {
     });
 
     it("Seed fails when an admin environment variable is missing", async () => {
-      const environment = { ...process.env, DOTENV_CONFIG_PATH: path.join(backendDir, ".env.test") };
+      // The child inherits the already-loaded test env. Loading .env.test again would restore ADMIN_PASSWORD.
+      const environment = { ...process.env, DOTENV_CONFIG_PATH: os.devNull };
       delete environment.ADMIN_PASSWORD;
       const result = spawnSync("npm", ["run", "seed"], { cwd: backendDir, env: environment, encoding: "utf8" });
       expect(result.status).not.toBe(0);
