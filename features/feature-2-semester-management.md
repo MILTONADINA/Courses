@@ -254,6 +254,7 @@ The page MUST:
 - Provide **Save** and **Cancel** in the dialog.
 - Show a loading state on **Save** while the request runs.
 - Show the updated list after a successful save or delete.
+- Close the dialog after a successful save.
 - Display the API `message` when a request fails.
 - Show `Semesters could not be loaded.` when the list fails without an API message, `Semester could not be saved.` when a save fails without an API message, and `Semester could not be deleted.` when a delete fails without an API message.
 - Close the dialog without saving when **Cancel** is selected.
@@ -333,9 +334,10 @@ The column name is `semesterName`.
 
 * **Given** I am signed in as an admin on the Semesters page
 * **When** I click **Add semester**
-* **And** I enter semester name `Fall 2026`, start date `2026-08-17`, and end date `2026-12-11`
-* **And** I click **Save**
 * **Then** the dialog title is **Add semester**
+* **When** I enter semester name `Fall 2026`, start date `2026-08-17`, and end date `2026-12-11`
+* **And** I click **Save**
+* **Then** the dialog closes
 * **And** the list shows `Fall 2026`
 
 #### Scenario: Semester form blocks submit when a required field is empty
@@ -351,6 +353,20 @@ The column name is `semesterName`.
 * **And** the save request will not finish right away
 * **When** I click **Save**
 * **Then** the **Save** button shows a loading state
+
+#### Scenario: Semesters page shows the API error when a save fails
+
+* **Given** I am signed in as an admin with a valid semester form
+* **And** the save request will fail with an error message
+* **When** I click **Save**
+* **Then** I see the error message returned by the API
+
+#### Scenario: Semesters page shows a fallback error when a save fails without a message
+
+* **Given** I am signed in as an admin with a valid semester form
+* **And** the save request will fail without an error message
+* **When** I click **Save**
+* **Then** I see `Semester could not be saved.`
 
 ---
 
@@ -380,6 +396,14 @@ The column name is `semesterName`.
 * **And** no semesters exist
 * **When** I open the Semesters page
 * **Then** I see `No semesters found.`
+
+#### Scenario: Signed-in user views an empty semester list
+
+* **Given** I am signed in
+* **And** no semesters exist
+* **When** I request the semester list
+* **Then** the API returns `200`
+* **And** the response is an empty list
 
 #### Scenario: Semesters page shows the API error when the list fails
 
@@ -455,8 +479,9 @@ The column name is `semesterName`.
 * **Given** I am signed in as an admin on the Semesters page
 * **And** a semester named `Fall 2026` is listed
 * **When** I click **Edit** for that semester
-* **And** I change the name to `Spring 2027` and click **Save**
 * **Then** the dialog title is **Edit semester**
+* **When** I change the name to `Spring 2027` and click **Save**
+* **Then** the dialog closes
 * **And** the list shows `Spring 2027`
 
 ---
@@ -499,6 +524,24 @@ The column name is `semesterName`.
 * **And** a semester named `Fall 2026` is listed
 * **When** I click **Delete** for that semester
 * **Then** the list no longer shows `Fall 2026`
+
+#### Scenario: Semesters page shows the API error when a delete fails
+
+* **Given** I am signed in as an admin on the Semesters page
+* **And** a semester is listed
+* **And** the delete request will fail with an error message
+* **When** I click **Delete** for that semester
+* **Then** I see the error message returned by the API
+* **And** the semester is still listed
+
+#### Scenario: Semesters page shows a fallback error when a delete fails without a message
+
+* **Given** I am signed in as an admin on the Semesters page
+* **And** a semester is listed
+* **And** the delete request will fail without an error message
+* **When** I click **Delete** for that semester
+* **Then** I see `Semester could not be deleted.`
+* **And** the semester is still listed
 
 ---
 
@@ -566,9 +609,12 @@ Each scenario MUST map to at least one automated test.
 | US-2.1 | Admin creates a semester from the Semesters page | `frontend/tests/Semesters.test.js` | `Admin creates a semester from the Semesters page` |
 | US-2.1 | Semester form blocks submit when a required field is empty | `frontend/tests/Semesters.test.js` | `Semester form blocks submit when a required field is empty` |
 | US-2.1 | Save shows a loading state while saving | `frontend/tests/Semesters.test.js` | `Save shows a loading state while saving` |
+| US-2.1 | Semesters page shows the API error when a save fails | `frontend/tests/Semesters.test.js` | `Semesters page shows the API error when a save fails` |
+| US-2.1 | Semesters page shows a fallback error when a save fails without a message | `frontend/tests/Semesters.test.js` | `Semesters page shows a fallback error when a save fails without a message` |
 | US-2.2 | Signed-in user views the semester list | `backend/tests/semester.test.js` | `Signed-in user views the semester list` |
 | US-2.2 | Semesters page shows a loading state | `frontend/tests/Semesters.test.js` | `Semesters page shows a loading state` |
 | US-2.2 | Semesters page shows a message when no semesters exist | `frontend/tests/Semesters.test.js` | `Semesters page shows a message when no semesters exist` |
+| US-2.2 | Signed-in user views an empty semester list | `backend/tests/semester.test.js` | `Signed-in user views an empty semester list` |
 | US-2.2 | Semesters page shows the API error when the list fails | `frontend/tests/Semesters.test.js` | `Semesters page shows the API error when the list fails` |
 | US-2.2 | Semesters page shows a fallback error when the API gives no message | `frontend/tests/Semesters.test.js` | `Semesters page shows a fallback error when the API gives no message` |
 | US-2.2 | Student can view semesters | `backend/tests/semester.test.js` | `Student can view semesters` |
@@ -584,6 +630,8 @@ Each scenario MUST map to at least one automated test.
 | US-2.4 | Admin deletes a semester that does not exist | `backend/tests/semester.test.js` | `Admin deletes a semester that does not exist` |
 | US-2.4 | Admin deletes a semester using a non-numeric id | `backend/tests/semester.test.js` | `Admin deletes a semester using a non-numeric id` |
 | US-2.4 | Admin deletes a semester from the Semesters page | `frontend/tests/Semesters.test.js` | `Admin deletes a semester from the Semesters page` |
+| US-2.4 | Semesters page shows the API error when a delete fails | `frontend/tests/Semesters.test.js` | `Semesters page shows the API error when a delete fails` |
+| US-2.4 | Semesters page shows a fallback error when a delete fails without a message | `frontend/tests/Semesters.test.js` | `Semesters page shows a fallback error when a delete fails without a message` |
 | US-2.5 | Student cannot create a semester | `backend/tests/semester.test.js` | `Student cannot create a semester` |
 | US-2.5 | Student cannot update a semester | `backend/tests/semester.test.js` | `Student cannot update a semester` |
 | US-2.5 | Student cannot delete a semester | `backend/tests/semester.test.js` | `Student cannot delete a semester` |
@@ -635,6 +683,7 @@ Show a loading state while the list loads.
 Show "No semesters found." when the list is empty.
 Show Add semester, Edit, and Delete only to an admin.
 The form is a dialog titled Add semester or Edit semester, with Save and Cancel.
+The dialog closes after a successful save.
 Save shows a loading state while the request runs.
 Check required fields before submit and do not send the request when one is empty.
 After a successful save or delete, show the updated list.
@@ -678,7 +727,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] A non-numeric id on update or delete returns `Semester id must be a number.`
 - [ ] An unknown id on update or delete returns `Semester with id=<id> not found.`
 - [ ] The Semesters page shows **Add semester**, **Edit**, and **Delete** only to an admin.
-- [ ] The semester dialog is titled **Add semester** or **Edit semester** and has **Save** and **Cancel**.
+- [ ] The semester dialog is titled **Add semester** or **Edit semester**, has **Save** and **Cancel**, and closes after a successful save.
 - [ ] **Save** shows a loading state while the request runs.
 - [ ] The form blocks submit when a required field is empty.
 - [ ] The list updates after a successful save or delete.
@@ -703,8 +752,8 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 ## Out of Scope
 
 - Course records → Feature 3
-- Faculty records → Feature 4
+- Faculty records → [Feature 4](feature-4-faculty-management.md)
 - Sections → Feature 5
-- A student choosing a semester and enrolling → Feature 6
+- A student choosing a semester and enrolling → [Feature 6](feature-6-enrollment-management.md)
 - Student course listing → Feature 7
 - Adding or editing student accounts → Feature 9
