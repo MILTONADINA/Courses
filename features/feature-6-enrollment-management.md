@@ -11,6 +11,8 @@
 
 ## User Stories
 
+Every story is P1: each one must ship for the assignment's enrollment management feature.
+
 ### US-6.1: View sections available for enrollment
 
 **As a** student  
@@ -137,6 +139,7 @@
 - **FR-038**: Each section the student is enrolled in MUST show a **Change section** action on the Enroll page.
 - **FR-039**: When no other section is available, the Change section dialog MUST show `No other sections available.`
 - **FR-040**: After a successful change, the original section MUST show **Enroll** and the new section MUST show **Drop**.
+- **FR-041**: When a request on the Enroll page or in the Change section dialog fails without an API message, it MUST show `Request failed.`
 
 ---
 
@@ -172,6 +175,7 @@
 - No semesters exist → Enroll page shows `No semesters available.`
 - Selected semester has no sections → Enroll page shows `No sections for this semester.`
 - Any Enroll page API request fails → Enroll page shows the API error message.
+- A request fails without an API message → the page or dialog shows `Request failed.`
 - Section with enrollments is deleted → its enrollments are deleted.
 - Student with enrollments is deleted → their enrollments are deleted.
 - Change with a missing or non-numeric `sectionId` → `400`.
@@ -393,6 +397,7 @@ The page MUST:
 - Show **Change section** for each section the student is enrolled in.
 - After a successful enroll, show **Drop** for that section; after a successful drop, show **Enroll**.
 - Display the API error message when loading semesters, sections, or enrollments fails, or when enrolling or dropping fails.
+- Show `Request failed.` when a request fails without an API message.
 
 ### Change Section Dialog
 
@@ -402,7 +407,7 @@ The dialog MUST:
 - Provide a **New section** select listing the other sections of the selected semester that the student is not enrolled in.
 - Show `No other sections available.` when there are none.
 - Validate that a new section is chosen before submitting, using the API message `Section id is required.`
-- Display API errors.
+- Display API errors, or `Request failed.` when the API gives no message.
 - Show a loading state on **Save** while the request runs.
 - Provide **Save** and **Cancel** buttons.
 - Close after a successful save; the original section then shows **Enroll** and the new section shows **Drop**.
@@ -498,6 +503,13 @@ The MenuBar MUST:
 * **And** the semesters request will fail with an error message
 * **When** I open the Enroll page
 * **Then** the page shows the error message returned by the API
+
+#### Scenario: Enroll page shows a fallback error when the API gives no message
+
+* **Given** I am signed in as a student
+* **And** the semesters request will fail without an error message
+* **When** I open the Enroll page
+* **Then** the page shows `Request failed.`
 
 ---
 
@@ -846,6 +858,13 @@ The MenuBar MUST:
 * **Then** the dialog shows the error message returned by the API
 * **And** my original section still shows a **Drop** action
 
+#### Scenario: Change section dialog shows a fallback error when the API gives no message
+
+* **Given** I am signed in as a student with the Change section dialog open
+* **And** the change request will fail without an error message
+* **When** I choose another section and click **Save**
+* **Then** the dialog shows `Request failed.`
+
 ---
 
 ## Test Coverage Map
@@ -860,6 +879,7 @@ Each scenario MUST map to at least one automated test.
 | US-6.1 | Enroll page shows a message when the semester has no sections | `frontend/tests/Enroll.test.js` | `Enroll page shows a message when the semester has no sections` |
 | US-6.1 | Enroll page shows the API error when sections fail to load | `frontend/tests/Enroll.test.js` | `Enroll page shows the API error when sections fail to load` |
 | US-6.1 | Enroll page shows the API error when semesters fail to load | `frontend/tests/Enroll.test.js` | `Enroll page shows the API error when semesters fail to load` |
+| US-6.1 | Enroll page shows a fallback error when the API gives no message | `frontend/tests/Enroll.test.js` | `Enroll page shows a fallback error when the API gives no message` |
 | US-6.2 | Student enrolls in a section successfully | `backend/tests/enrollment.test.js` | `Student enrolls in a section successfully` |
 | US-6.2 | Section shows Drop after the student enrolls | `frontend/tests/Enroll.test.js` | `Section shows Drop after the student enrolls` |
 | US-6.2 | Supplied student ID does not override authenticated student | `backend/tests/enrollment.test.js` | `Supplied student ID does not override authenticated student` |
@@ -900,6 +920,7 @@ Each scenario MUST map to at least one automated test.
 | US-6.8 | Change section dialog shows a message when no other sections are available | `frontend/tests/Enroll.test.js` | `Change section dialog shows a message when no other sections are available` |
 | US-6.8 | Change section dialog requires a new section | `frontend/tests/Enroll.test.js` | `Change section dialog requires a new section` |
 | US-6.8 | Change section dialog shows the API error when the change fails | `frontend/tests/Enroll.test.js` | `Change section dialog shows the API error when the change fails` |
+| US-6.8 | Change section dialog shows a fallback error when the API gives no message | `frontend/tests/Enroll.test.js` | `Change section dialog shows a fallback error when the API gives no message` |
 
 ---
 
@@ -955,7 +976,7 @@ List sections in the order returned by Feature 5.
 After enrolling, show Drop for that section; after dropping, show Enroll.
 Show Change section for each enrolled section. The Change section dialog lists the other sections of the selected semester the student is not enrolled in, shows "No other sections available." when there are none, and has Save and Cancel.
 After a successful change, the original section shows Enroll and the new section shows Drop.
-Show the API error message when any request on the Enroll page fails.
+Show the API error message when any request on the Enroll page fails, or "Request failed." when the API gives no message.
 
 Deleting a section must delete its enrollments, and deleting a student must delete their enrollments.
 Use ON DELETE CASCADE on the sectionId and studentId foreign keys.
@@ -978,7 +999,7 @@ Before finishing:
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
 
-**Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`
+**Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
 ---
 
@@ -1001,7 +1022,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] The Enroll page shows `No sections for this semester.` when the selected semester has no sections.
 - [ ] Sections are listed in the order returned by Feature 5.
 - [ ] After enrolling, the section shows Drop; after dropping, it shows Enroll.
-- [ ] The Enroll page shows the API error message when any of its requests fail.
+- [ ] The Enroll page shows the API error message when any of its requests fail, or `Request failed.` when the API gives no message.
 - [ ] Students can drop their own enrollments.
 - [ ] Students cannot drop another student's enrollment.
 - [ ] Students can change one of their own enrollments to another section.
@@ -1024,7 +1045,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] The Enrollment model and its associations are registered in `backend/app/models/index.js`.
 - [ ] Deleting a section deletes its enrollments.
 - [ ] Deleting a student deletes their enrollments.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-040** satisfied).
+- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-041** satisfied).
 - [ ] **Success Criteria (SC-001**–**SC-020)** are met.
 - [ ] Test Coverage Map is complete.
 - [ ] Every acceptance scenario has an automated test.
@@ -1032,6 +1053,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] `features/reference/api.md` is updated.
 - [ ] `features/reference/data-model.md` is updated.
 - [ ] `features/reference/behavior.md` is updated.
+- [ ] `features/reference/README.md` lists Feature 6 in its provenance table.
 - [ ] `features/README.md` links Feature 6 to `feature-6-enrollment-management.md`.
 - [ ] Nothing outside this specification is implemented.
 
