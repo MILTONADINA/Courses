@@ -115,7 +115,8 @@ controller.login = async (req, res) => {
 
 controller.logout = async (req, res) => {
   try {
-    await req.session.destroy();
+    // Clear the token so the session can no longer authenticate (security.mdc).
+    await req.session.update({ token: "" });
     return res.status(200).send({ message: "Signed out successfully." });
   } catch (error) {
     logger.error(`Logout failed: ${error.message}`);

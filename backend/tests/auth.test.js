@@ -160,7 +160,8 @@ describe("Feature 1 — User Authentication & Authorization", () => {
         .set("Authorization", `Bearer ${signedIn.body.token}`);
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: "Signed out successfully." });
-      expect(await db.session.count()).toBe(0);
+      expect(await db.session.findOne({ where: { token: signedIn.body.token } })).toBeNull();
+      expect((await db.session.findOne({ where: { userId: signedIn.body.userId } })).token).toBe("");
     });
   });
 
