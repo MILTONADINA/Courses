@@ -4,63 +4,63 @@
 **Branch pattern:** `feature/9-student-management`  
 **Status:** Ready  
 **Created:** 2026-10-01  
-**Input:** Admins add, view, update, and delete student accounts.  
+**Input:** Let an admin add a student, look students up, fix their info, and remove a student who should not have an account anymore.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md)
 
 ---
 
 ## User Stories
 
-Every story is P1: each one must ship for the assignment's student management feature.
+Every story is P1. The project write-up says the admin can add students and that users maintain students, so add, list, edit, delete, and the admin-only check all have to ship together.
 
 ### US-9.1: Add a student
 
 **As a** signed-in admin  
 **I want to** add a student account  
-**So that** a student who does not register themselves can still sign in
+**So that** that student can log in even if they never used the register page
 
 **Priority:** P1  
-**Independent test:** Submit a valid student as an admin and receive the created student  
+**Independent test:** Sign in as an admin, add Jane Doe with a password, and check that the new account comes back as a student  
 **Acceptance scenarios:** see ### US-9.1 under Acceptance Criteria
 
 ### US-9.2: View students
 
 **As a** signed-in admin  
 **I want to** see the list of students  
-**So that** I can find the student account I need to change
+**So that** I can find the account I need to change
 
 **Priority:** P1  
-**Independent test:** Create a student, then open the student list and confirm it is there  
+**Independent test:** Add a student, open the list, and check that the student is there and the admin account is not  
 **Acceptance scenarios:** see ### US-9.2 under Acceptance Criteria
 
 ### US-9.3: Update a student
 
 **As a** signed-in admin  
 **I want to** change a student's name, email, university ID, or username  
-**So that** the student account shows the correct information
+**So that** the account matches the right person
 
 **Priority:** P1  
-**Independent test:** Update a student as an admin and confirm the response has the new values  
+**Independent test:** Sign in as an admin, change a student's name and email, and check that those new values are saved and the old password still works  
 **Acceptance scenarios:** see ### US-9.3 under Acceptance Criteria
 
 ### US-9.4: Delete a student
 
 **As a** signed-in admin  
 **I want to** delete a student account  
-**So that** a student who should no longer have access is removed
+**So that** someone who should not be in the system cannot sign in
 
 **Priority:** P1  
-**Independent test:** Delete a student as an admin and confirm the list no longer includes that student  
+**Independent test:** Delete a student as an admin, then check that the list no longer has them and that their old password no longer signs in  
 **Acceptance scenarios:** see ### US-9.4 under Acceptance Criteria
 
 ### US-9.5: Restrict student management to admins
 
 **As the** application  
 **I want to** allow only admins to add, view, update, or delete students  
-**So that** students cannot change other student accounts
+**So that** a student cannot change someone else's account
 
 **Priority:** P1  
-**Independent test:** Call each student endpoint as a student and as a signed-out user, and open `/students` as each  
+**Independent test:** Try the student routes as a student and while signed out, and also open the Students page as each of them  
 **Acceptance scenarios:** see ### US-9.5 under Acceptance Criteria
 
 ---
@@ -111,13 +111,16 @@ Every story is P1: each one must ship for the assignment's student management fe
 
 ## Assumptions
 
-- Feature 1 authentication is available, including `authenticate` and `requireAdmin`.
-- Student accounts use the existing `users` table. This feature does not add a second student table.
-- A student can still register themselves through Feature 1. This feature is how an admin adds a student.
-- `universityId` has no format rule.
-- `userName` and `email` stay unique because Feature 1 already requires that.
-- This feature does not change a student's password. Password reset is outside Feature 1 and outside this feature.
-- Deleting a student removes that user. Removing that student's enrollments belongs to Feature 6.
+- Feature 1 is already on `dev`, so I can use `authenticate` and `requireAdmin`.
+- A student is a user with role `student`. I am using the `users` table from Feature 1 and not adding a second table or new columns.
+- The write-up says students add themselves, and it also says the admin can add students. Register stays in Feature 1. This page is only the admin adding them.
+- Feature 1 does not give `universityId` a format, so I am not making one up here.
+- Username and email are already unique in Feature 1. I am keeping those same messages: `Username is already taken.` and `Email is already registered.`
+- If the create body sends `"role": "admin"`, ignore it and save `student`. This page should not be a way to make another admin.
+- Edit does not ask for a password and does not change one. Feature 1 left password reset out, and I am not adding it here. Add still needs a password so the new student can sign in.
+- Usernames are stored lowercase, same as Feature 1. `JDoe` comes back as `jdoe`.
+- There is no get-one route. Edit uses the student already sitting in the list.
+- Delete removes that user. Feature 6 already says it cleans up that student's enrollments, so I am not doing that in this feature.
 
 ---
 
@@ -161,13 +164,13 @@ Every story is P1: each one must ship for the assignment's student management fe
 
 ## Data Ownership & Isolation
 
-Student accounts are shared records. They are not owned by the admin who created them.
+Any admin can work with any student. The student does not "belong" to the admin who added them.
 
-- Create, list, update, and delete MUST require an authenticated user whose role is `admin`.
-- The client MUST NOT be trusted for the role. The server MUST set `role` to `student`.
-- A student MUST NOT gain admin access by changing the page or the request body.
-- The Students page and the **Students** menu link MUST be shown only to an admin.
-- Responses MUST NOT include `password`.
+- Only a signed-in admin can create, list, update, or delete.
+- Do not trust a role sent from the page. The server sets `role` to `student`.
+- Hiding the Students link is not enough. The API still has to reject a student.
+- The Students page and the **Students** menu link are for admins only.
+- Do not send `password` back in any response.
 
 ---
 
@@ -175,7 +178,7 @@ Student accounts are shared records. They are not owned by the admin who created
 
 ### Student
 
-A user whose role is `student`. The account stores the same fields Feature 1 uses for a user. This feature lets an admin maintain those student accounts.
+A student is a normal user whose role is `student`. Same fields as registration: first name, last name, email, university ID, username, and password. This feature is how an admin keeps those accounts up to date.
 
 ---
 
@@ -278,7 +281,7 @@ Update accepts this body. It does not accept a new password.
 **Route name:** `students`  
 **View:** `frontend/src/views/Students.vue`
 
-The page MUST be available to signed-in admins. A signed-out user is sent to the Login page. A signed-in student is sent to the Home page.
+This page is for a signed-in admin. If nobody is signed in, send them to Login. If a student opens it, send them Home.
 
 The page MUST:
 
@@ -299,7 +302,7 @@ The page MUST:
 
 ### MenuBar
 
-The MenuBar MUST show **Students** to an admin and link it to `/students`. The MenuBar MUST NOT show **Students** to a student.
+Show **Students** in the menu only for an admin, and point it at `/students`. A student should not see that link.
 
 ---
 
@@ -307,7 +310,7 @@ The MenuBar MUST show **Students** to an admin and link it to `/students`. The M
 
 ### `users` table
 
-This feature uses the `users` table from Feature 1. It does not add columns.
+Same `users` table as Feature 1. No new columns.
 
 | Field | Type/Requirement | Rules |
 |---|---|---|
@@ -753,7 +756,7 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+When it is time to code this, use this prompt:
 
 ```text
 Implement Feature 9 from @features/feature-9-student-management.md on branch feature/9-student-management.
