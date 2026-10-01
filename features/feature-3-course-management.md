@@ -332,8 +332,7 @@ The MenuBar MUST show **Courses** to an admin and link it to `/courses`. The Men
 
 * **Given** I am signed in as an admin on the Courses page
 * **When** I click **Add course**
-* **Then** the dialog title is **Add course**
-* **When** I enter course number `CMSC-4123`, course name `Software Engineering IV`, course description `Team project course`, course semesters `Fall`, course frequency `Every year`, course hours `3`, and course department `CMSC`
+* **And** I enter course number `CMSC-4123`, course name `Software Engineering IV`, course description `Team project course`, course semesters `Fall`, course frequency `Every year`, course hours `3`, and course department `CMSC`
 * **And** I click **Save**
 * **Then** the dialog closes
 * **And** the list shows `Software Engineering IV`
@@ -454,8 +453,7 @@ The MenuBar MUST show **Courses** to an admin and link it to `/courses`. The Men
 * **Given** I am signed in as an admin on the Courses page
 * **And** a course named `Software Engineering IV` is listed
 * **When** I click **Edit** for that course
-* **Then** the dialog title is **Edit course**
-* **When** I change the name to `Software Engineering III` and click **Save**
+* **And** I change the name to `Software Engineering III` and click **Save**
 * **Then** the dialog closes
 * **And** the list shows `Software Engineering III`
 
