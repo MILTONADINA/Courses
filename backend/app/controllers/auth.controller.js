@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
-import { UniqueConstraintError } from "sequelize";
 import db from "../models/index.js";
 import authConfig from "../config/auth.config.js";
 import logger from "../config/logger.js";
@@ -10,16 +9,15 @@ const required = [
   ["firstName", "First name"], ["lastName", "Last name"],
   ["email", "Email"], ["universityId", "University ID"],
   ["userName", "Username"], ["password", "Password"],
-  ["confirmPassword", "Confirm password"],
 ];
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const sessionLifetimeMs = 24 * 60 * 60 * 1000;
 
-function responseFor(user, token) {
+const isBlank = (value) => typeof value !== "string" || !value.trim();
+
+function loginResponse(user, token) {
   return {
     userId: user.id, firstName: user.firstName, lastName: user.lastName,
-    email: user.email, universityId: user.universityId,
-    userName: user.userName, role: user.role, token,
+    email: user.email, userName: user.userName, role: user.role, token,
   };
 }
 
@@ -48,7 +46,6 @@ async function getOrCreateSession(user) {
 const duplicateMessages = {
   userName: "Username is already taken.",
   email: "Email is already registered.",
-  universityId: "University ID is already registered.",
 };
 
 const controller = {};
@@ -56,57 +53,50 @@ const controller = {};
 controller.register = async (req, res) => {
   const data = req.body || {};
   for (const [field, label] of required) {
-    if (typeof data[field] !== "string" || !data[field].trim()) {
+    if (isBlank(data[field])) {
       return res.status(400).send({ message: `${label} is required.` });
     }
-  }
-  if (!emailPattern.test(data.email.trim())) {
-    return res.status(400).send({ message: "Enter a valid email address." });
   }
   if (data.password.length < 8) {
     return res.status(400).send({ message: "Password must be at least 8 characters." });
   }
-  if (data.password !== data.confirmPassword) {
-    return res.status(400).send({ message: "Passwords do not match." });
-  }
 
   const values = {
-    firstName: data.firstName.trim(), lastName: data.lastName.trim(),
-    email: data.email.trim(), universityId: data.universityId.trim(),
+    firstName: data.firstName, lastName: data.lastName,
+    email: data.email, universityId: data.universityId,
     userName: data.userName.trim().toLowerCase(), role: "student",
   };
 
   try {
-    for (const field of ["userName", "email", "universityId"]) {
+    for (const field of ["userName", "email"]) {
       if (await db.user.findOne({ where: { [field]: values[field] } })) {
         return res.status(400).send({ message: duplicateMessages[field] });
       }
     }
-    const password = await bcrypt.hash(data.password, 10);
-    const user = await db.user.create({ ...values, password });
-    const token = await getOrCreateSession(user);
-    return res.status(201).send(responseFor(user, token));
+    const user = await db.user.create({ ...values, password: await bcrypt.hash(data.password, 10) });
+    return res.status(201).send({
+      id: user.id, firstName: user.firstName, lastName: user.lastName,
+      email: user.email, universityId: user.universityId,
+      userName: user.userName, role: user.role,
+    });
   } catch (error) {
-    if (error instanceof UniqueConstraintError) {
-      const field = error.errors.find((entry) => duplicateMessages[entry.path])?.path;
-      return res.status(400).send({ message: duplicateMessages[field] || "Registration information is already in use." });
-    }
     logger.error(`Registration failed: ${error.message}`);
     return res.status(500).send({ message: "Registration failed." });
   }
 };
 
 controller.login = async (req, res) => {
-  const userName = typeof req.body?.userName === "string" ? req.body.userName.trim().toLowerCase() : "";
-  const password = req.body?.password;
-  const invalid = { message: "Invalid username or password." };
-  if (!userName || typeof password !== "string") return res.status(401).send(invalid);
+  const { userName, password } = req.body || {};
+  if (isBlank(userName)) return res.status(400).send({ message: "Username is required." });
+  if (isBlank(password)) return res.status(400).send({ message: "Password is required." });
 
   try {
-    const user = await db.user.unscoped().findOne({ where: { userName } });
-    if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).send(invalid);
+    const user = await db.user.unscoped().findOne({ where: { userName: userName.trim().toLowerCase() } });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).send({ message: "Invalid username or password." });
+    }
     const token = await getOrCreateSession(user);
-    return res.status(200).send(responseFor(user, token));
+    return res.status(200).send(loginResponse(user, token));
   } catch (error) {
     logger.error(`Login failed: ${error.message}`);
     return res.status(500).send({ message: "Login failed." });
