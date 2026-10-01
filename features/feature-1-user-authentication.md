@@ -2,7 +2,7 @@
 
 **Feature ID:** 1  
 **Branch pattern:** `feature/1-user-authentication`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-09-28  
 **Input:** Allow users to register and log in to the Courses Management System. The system has admin users and student users.
 
@@ -365,27 +365,40 @@ Feature 1 does not add a product admin-only endpoint (FR-039). In this specifica
 
 ### Register Page
 
+**Route:** `/register`  
+**Route name:** `register`
+
 The Register page MUST:
 
 - Provide fields for `firstName`, `lastName`, `email`, `universityId`, `userName`, `password`, and `confirmPassword`.
 - NOT provide a role selector.
-- Validate registration information.
+- Validate registration information with the same rules and messages as the API.
 - Display validation errors.
+- Show a loading state on the **Register** button while the request runs.
 - Submit the registration request.
 - Store/use the returned session after successful registration.
 - Redirect the newly authenticated user to the **Home page**.
+- Link to the Login page with **Sign in**.
 
 ### Login Page
+
+**Route:** `/login`  
+**Route name:** `login`
 
 The Login page MUST:
 
 - Provide `userName` and `password`.
 - Allow the user to submit login information.
 - Display an error when login fails.
+- Show a loading state on the **Sign in** button while the request runs.
 - Store/use the returned session after successful login.
 - Redirect the authenticated user to the **Home page**.
+- Link to the Register page with **Create an account**.
 
 ### Home Page
+
+**Route:** `/`  
+**Route name:** `home`
 
 The Home page is the authenticated landing page.
 
@@ -396,6 +409,7 @@ After successful registration or login, the user MUST be redirected to the Home 
 The MenuBar MUST:
 
 - Be visible to authenticated users.
+- Be hidden on the Login and Register pages.
 - Display **Sign out** for authenticated users.
 - Allow the authenticated user to sign out.
 - NOT display **Sign out** when there is no authenticated session.
@@ -432,11 +446,15 @@ The MenuBar MUST:
 | `expirationDate` | Date | Required |
 | `userId` | Foreign key | Required, references `users.id` |
 
-A session MUST expire 24 hours after creation. Session fields follow `.cursor/rules/auth-patterns.mdc`, including reuse of a non-expired session on login (FR-037).
+A session MUST expire 24 hours after creation. Session fields follow `.cursor/rules/auth-patterns.mdc`, including reuse of a non-expired session on login (FR-037). Logout clears the session's `token` so it can no longer authenticate (FR-021).
 
----
+### Associations
 
-## Admin Seed Requirements
+- A user has many sessions.
+- A session belongs to one user through `userId`.
+- Both models and their associations MUST be registered in `backend/app/models/index.js`.
+
+### Admin Seed Requirements
 
 The first admin account MUST be created through the database seed process.
 
@@ -746,11 +764,13 @@ Each scenario MUST map to at least one automated test.
 Use the following prompt when asking the implementation agent to implement this feature:
 
 ```text
-Implement Feature 1 from @features/feature-1-user-authentication.md.
+Implement Feature 1 from @features/feature-1-user-authentication.md on branch feature/1-user-authentication.
 
 Only implement what is defined in this specification.
 
 Follow the structure, architecture, API conventions, coding conventions, and best practices already established in the project.
+
+Follow the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
 
 Authentication routes must be:
 POST /course-t6/register
@@ -794,46 +814,49 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 
 ## Definition of Done
 
-- [ ] Users can register.
-- [ ] Registration creates students only.
-- [ ] Registration has no role selector.
-- [ ] Successful registration immediately authenticates the new student.
-- [ ] Users can log in with `userName` and `password`.
-- [ ] Usernames are stored lowercase.
-- [ ] Username login is case-insensitive.
-- [ ] Login reuses an existing non-expired, non-revoked session.
-- [ ] Registration and login return the same response fields.
-- [ ] Sessions use JWT plus a server-side session.
-- [ ] Sessions last 24 hours.
-- [ ] Sessions survive a page refresh while valid.
-- [ ] Expired, invalid, and revoked sessions return `401`.
-- [ ] Logout invalidates the session and returns `200` with the required message.
-- [ ] The Logout button is available in the MenuBar.
-- [ ] Admin and student roles exist.
-- [ ] The first admin is created through `npm run seed`.
-- [ ] Admin credentials come from environment variables.
-- [ ] Required admin seed fields are provided through environment variables.
-- [ ] Missing admin seed variables cause the seed to fail.
-- [ ] `backend/.env.example` contains the required `ADMIN_*` variables with blank values.
-- [ ] `backend/.env.test.example` contains the required `ADMIN_*` variables with non-secret test values.
-- [ ] `email`, `universityId`, and `userName` are unique.
-- [ ] `userName` is stored lowercase.
-- [ ] `universityId` has no additional format requirement.
-- [ ] Registration validation rules and error responses are implemented.
-- [ ] Login failure returns `401` with the required message.
-- [ ] The admin-only authorization check exists and no product admin-only route was added in this feature.
-- [ ] Admin users can access admin-only endpoints.
-- [ ] Students receive `403` when accessing admin-only endpoints.
-- [ ] Unauthenticated users receive `401` when accessing protected endpoints.
-- [ ] Unauthenticated users are sent to the Login page.
-- [ ] Successful registration and login redirect to the Home page.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass.
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/data-model.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/README.md` links Feature 1 to `feature-1-user-authentication.md`.
-- [ ] Nothing outside this specification is implemented.
+- [x] Users can register.
+- [x] Registration creates students only.
+- [x] Registration has no role selector.
+- [x] Successful registration immediately authenticates the new student.
+- [x] Users can log in with `userName` and `password`.
+- [x] Usernames are stored lowercase.
+- [x] Username login is case-insensitive.
+- [x] Login reuses an existing non-expired, non-revoked session.
+- [x] Registration and login return the same response fields.
+- [x] Sessions use JWT plus a server-side session.
+- [x] Sessions last 24 hours.
+- [x] Sessions survive a page refresh while valid.
+- [x] Expired, invalid, and revoked sessions return `401`.
+- [x] Logout invalidates the session and returns `200` with the required message.
+- [x] The Logout button is available in the MenuBar.
+- [x] Admin and student roles exist.
+- [x] The first admin is created through `npm run seed`.
+- [x] Admin credentials come from environment variables.
+- [x] Required admin seed fields are provided through environment variables.
+- [x] Missing admin seed variables cause the seed to fail.
+- [x] `backend/.env.example` contains the required `ADMIN_*` variables with blank values.
+- [x] `backend/.env.test.example` contains the required `ADMIN_*` variables with non-secret test values.
+- [x] `email`, `universityId`, and `userName` are unique.
+- [x] `userName` is stored lowercase.
+- [x] `universityId` has no additional format requirement.
+- [x] Registration validation rules and error responses are implemented.
+- [x] Login failure returns `401` with the required message.
+- [x] The admin-only authorization check exists and no product admin-only route was added in this feature.
+- [x] Admin users can access admin-only endpoints.
+- [x] Students receive `403` when accessing admin-only endpoints.
+- [x] Unauthenticated users receive `401` when accessing protected endpoints.
+- [x] Unauthenticated users are sent to the Login page.
+- [x] Successful registration and login redirect to the Home page.
+- [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-039** satisfied).
+- [x] **Success Criteria (SC-001**–**SC-014)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/data-model.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/README.md` links Feature 1 to `feature-1-user-authentication.md`.
+- [x] Nothing outside this specification is implemented.
 
 ---
 

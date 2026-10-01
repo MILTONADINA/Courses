@@ -4,8 +4,6 @@
 <template>
   <v-container class="py-10">
     <h1 class="text-h4 mb-2">Courses</h1>
-    <p class="text-body-1">
-      Starter shell — add <code>features/feature-1-….md</code>, then implement with Cursor.
-    </p>
+    <p class="text-body-1">Welcome to the Courses Management System.</p>
   </v-container>
 </template>
