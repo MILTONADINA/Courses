@@ -599,6 +599,15 @@ Same `users` table as Feature 1. No new columns.
 * **Then** the API returns `400`
 * **And** the response is `{ "message": "Student id must be a number." }`
 
+#### Scenario: Admin deletes an admin account through the student route
+
+* **Given** I am signed in as an admin
+* **And** another admin account exists
+* **When** I delete that admin account through the student route
+* **Then** the API returns `404`
+* **And** the response is `{ "message": "Student with id=<id> not found." }`
+* **And** that admin account is unchanged
+
 #### Scenario: Admin deletes a student from the Students page
 
 * **Given** I am signed in as an admin on the Students page
@@ -738,6 +747,7 @@ Each scenario MUST map to at least one automated test.
 | US-9.4 | Deleted student can no longer sign in | `backend/tests/student.test.js` | `Deleted student can no longer sign in` |
 | US-9.4 | Admin deletes a student that does not exist | `backend/tests/student.test.js` | `Admin deletes a student that does not exist` |
 | US-9.4 | Admin deletes a student using a non-numeric id | `backend/tests/student.test.js` | `Admin deletes a student using a non-numeric id` |
+| US-9.4 | Admin deletes an admin account through the student route | `backend/tests/student.test.js` | `Admin deletes an admin account through the student route` |
 | US-9.4 | Admin deletes a student from the Students page | `frontend/tests/Students.test.js` | `Admin deletes a student from the Students page` |
 | US-9.4 | Students page shows the API error when a delete fails | `frontend/tests/Students.test.js` | `Students page shows the API error when a delete fails` |
 | US-9.4 | Students page shows a fallback error when a delete fails without a message | `frontend/tests/Students.test.js` | `Students page shows a fallback error when a delete fails without a message` |
@@ -756,16 +766,16 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-When it is time to code this, use this prompt:
+Application code for this feature is written by hand. The course does not allow AI to write the application code. The notes below are a checklist for the person coding the feature.
 
 ```text
-Implement Feature 9 from @features/feature-9-student-management.md on branch feature/9-student-management.
+Write Feature 9 by hand on branch feature/9-student-management, using this spec.
 
-Only implement what is defined in this specification.
+Only build what this specification defines.
 
 Follow the project's existing architecture, API conventions, security rules, coding conventions, and feature framework.
 
-Follow the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
+Follow the layer order in features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
 
 Feature dependencies:
 - Feature 1 provides the users table, authenticate, requireAdmin, password hashing, and the username and email rules.
@@ -815,7 +825,7 @@ Before finishing:
 2. Confirm every acceptance scenario is covered by an automated test.
 3. Confirm all tests pass.
 4. Update the reference documentation listed below to match the shipped code.
-5. Complete the Definition of Done and the merge checklist in @features/framework.md.
+5. Complete the Definition of Done and the merge checklist in features/framework.md.
 
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
