@@ -26,5 +26,5 @@ async function signOut() {
     <v-app-bar-title>Courses</v-app-bar-title>
     <v-btn data-testid="sign-out" variant="text" @click="signOut">Sign out</v-btn>
   </v-app-bar>
-  <v-alert v-if="error" type="error">{{ error }}</v-alert>
+  <v-alert v-if="error" type="error" density="compact">{{ error }}</v-alert>
 </template>
