@@ -399,59 +399,34 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+Application code for this feature is written by hand ("create code (by hand) and test"). AI may be used only to build the automated tests ("Building automated tests (with AI)"). The checklist below is for the person coding the feature.
 
-```text
-Implement Feature 8 from @features/feature-8-section-student-listing.md on branch feature/8-section-student-listing.
+### Handwritten application code
 
-Only implement what is defined in this specification.
+Write these by hand on branch `feature/8-section-student-listing`, in the layer order in `features/framework.md` (models → routes → backend tests → frontend services → views → frontend tests → router). Build only what this specification defines.
 
-Follow the project's existing architecture, API conventions, security rules, coding conventions, and feature framework.
+- [ ] Route `GET /course-t6/sections/:id/students`, protected by `authenticate` and `requireAdmin` from `backend/app/authorization/authorization.js`.
+- [ ] The response has the section's `id`, `sectionNumber`, `courseNumber`, `courseName`, and `semesterName`, and a `students` array.
+- [ ] Each student has `id`, `firstName`, `lastName`, `universityId`, and `email`, and never `password`.
+- [ ] Only students enrolled in that section are returned, sorted by `lastName`, then `firstName`.
+- [ ] A section with no enrollments returns `200` with `students: []`.
+- [ ] Error messages match this specification exactly.
+- [ ] No create, update, or delete route, and no table, columns, or associations are added.
+- [ ] The Section students page route is `/sections/:id/students` with route name `section-students`; signed-out users are sent to Login and students to Home.
+- [ ] Each row of the Sections page has a **Students** action that opens `/sections/:id/students`.
+- [ ] The page shows the heading `<courseNumber> <courseName> — Section <sectionNumber> (<semesterName>)` and Last name, First name, University ID, and Email columns in the order returned by the API.
+- [ ] The page shows a loading state, `No students enrolled.` when the list is empty, the API message when the request fails, and `Request failed.` when the API gives no message.
+- [ ] The page has no actions that add, remove, or change enrollments, and no MenuBar link is added.
 
-Follow the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
+### Automated tests (AI allowed)
 
-Feature dependencies:
-- Feature 1 provides the users table, authenticate, and requireAdmin.
-- Feature 5 provides sections, each section's course and semester, and the Sections page.
-- Feature 6 provides the enrollments table that links sections to students.
+AI may write only the automated tests. It MUST NOT write or change application code in `backend/app` or `frontend/src`.
 
-The only route is:
-GET /course-t6/sections/:id/students
+- [ ] Every row in the Test Coverage Map has a test in the listed file with the listed test name.
+- [ ] `npm test` passes from the project root.
+- [ ] A test that fails because the application code does not match this specification is fixed in the handwritten code, not by changing the test.
 
-Protect it with authenticate and requireAdmin from backend/app/authorization/authorization.js.
-Return the section's id, sectionNumber, courseNumber, courseName, and semesterName, and a students array.
-Each student has id, firstName, lastName, universityId, and email. Never return password.
-Return only students enrolled in that section, sorted by lastName, then firstName.
-A section with no enrollments returns 200 with students [].
-Do not add create, update, or delete routes.
-Do not add a table, columns, or associations.
-Use the exact error messages defined in this specification.
-
-The Section students page route is /sections/:id/students with route name section-students.
-Signed-out users are sent to Login.
-Students are sent to Home.
-Add a Students action to each row of the Sections page that opens /sections/:id/students.
-Show the heading "<courseNumber> <courseName> — Section <sectionNumber> (<semesterName>)".
-Show Last name, First name, University ID, and Email columns in the order returned by the API.
-Show a loading state while the list loads.
-Show "No students enrolled." when the list is empty.
-Show the API message when the request fails, or "Request failed." when the API gives no message.
-Do not add actions that add, remove, or change enrollments.
-Do not add a MenuBar link.
-
-Map every acceptance scenario in the Test Coverage Map to at least one automated test.
-
-Use the exact test file paths and test names listed in the Test Coverage Map.
-
-Before finishing:
-1. Run npm test from the project root (runs backend and frontend tests).
-2. Confirm every acceptance scenario is covered by an automated test.
-3. Confirm all tests pass.
-4. Update the reference documentation listed below to match the shipped code.
-5. Complete the Definition of Done and the merge checklist in @features/framework.md.
-
-Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
-```
+When the code and tests are done, update the reference documentation listed below and complete the Definition of Done and the merge checklist in `features/framework.md`.
 
 **Reference updates for this feature:** `features/reference/api.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
