@@ -1,8 +1,28 @@
 <script setup>
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import MenuBar from "./components/MenuBar.vue";
+import Utils from "./config/utils.js";
+
+const route = useRoute();
+const user = ref(Utils.getStore("user"));
+const showMenu = computed(() => route.meta.requiresAuth && !!user.value?.token);
+
+// Refresh the layout when auth state changes (frontend-services.mdc: cross-component events).
+const refreshUser = () => { user.value = Utils.getStore("user"); };
+onMounted(() => {
+  window.addEventListener("user-logged-in", refreshUser);
+  window.addEventListener("user-logged-out", refreshUser);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("user-logged-in", refreshUser);
+  window.removeEventListener("user-logged-out", refreshUser);
+});
 </script>
 
 <template>
   <v-app>
+    <MenuBar v-if="showMenu" />
     <v-main>
       <router-view />
     </v-main>

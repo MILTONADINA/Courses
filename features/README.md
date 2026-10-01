@@ -16,12 +16,12 @@ No application code may be written unless it maps to a requirement in one of the
 
 | ID | Feature | File | Branch | Depends on | Author |
 |----|---------|------|--------|------------|--------|
-| 1 | User Authentication & Authorization | [feature-1-user-authentication.md](./feature-1-user-authentication.md) | `feature/1-user-authentication` | — | Milton |
+| 1 | User Authentication & Authorization | [feature-1-user-authentication-authorization.md](./feature-1-user-authentication-authorization.md) | `feature/1-user-authentication-authorization` | — | Milton |
 | 2 | Semester Management | [feature-2-semester-management.md](./feature-2-semester-management.md) | `feature/2-semester-management` | 1 | Landry |
 | 3 | Course Management | *not yet written* | `feature/3-course-management` | 1 | Landry |
-| 4 | Faculty Management | *not yet written* | `feature/4-faculty-management` | 1 | Morgan |
+| 4 | Faculty Management | [feature-4-faculty-management.md](./feature-4-faculty-management.md) | `feature/4-faculty-management` | 1 | Morgan |
 | 5 | Section Management | *not yet written* | `feature/5-section-management` | 2, 3, 4 | Morgan |
-| 6 | Enrollment Management | *not yet written* | `feature/6-enrollment-management` | 5 | Milton |
+| 6 | Enrollment Management | [feature-6-enrollment-management.md](./feature-6-enrollment-management.md) | `feature/6-enrollment-management` | 1, 2, 5 | Milton |
 | 7 | Student Course Listing | *not yet written* | `feature/7-student-course-listing` | 6 | Landry |
 | 8 | Section Student Listing | *not yet written* | `feature/8-section-student-listing` | 6 | Morgan |
 | 9 | Student Management | *not yet written* | `feature/9-student-management` | 1 | Landry |
