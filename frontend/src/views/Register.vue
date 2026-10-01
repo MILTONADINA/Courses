@@ -2,13 +2,11 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AuthServices from "../services/authServices.js";
-import Utils from "../config/utils.js";
-import { isValidEmail } from "../config/validation.js";
 
 const router = useRouter();
 const form = reactive({
   firstName: "", lastName: "", email: "", universityId: "",
-  userName: "", password: "", confirmPassword: "",
+  userName: "", password: "",
 });
 const error = ref("");
 const loading = ref(false);
@@ -18,14 +16,13 @@ const required = (label) => (v) => !!v?.trim() || `${label} is required.`;
 const rules = {
   firstName: [required("First name")],
   lastName: [required("Last name")],
-  email: [required("Email"), (v) => isValidEmail(v) || "Enter a valid email address."],
+  email: [required("Email")],
   universityId: [required("University ID")],
   userName: [required("Username")],
   password: [required("Password"), (v) => v.length >= 8 || "Password must be at least 8 characters."],
-  confirmPassword: [required("Confirm password"), (v) => v === form.password || "Passwords do not match."],
 };
 
-// Check every required field before the format rules, in the same order as the API.
+// Check every required field before the password length rule, in the same order as the API.
 function validate() {
   const entries = Object.entries(rules);
   const ordered = [
@@ -44,9 +41,8 @@ async function submit() {
   if (error.value) return;
   loading.value = true;
   try {
-    const response = await AuthServices.registerUser({ ...form });
-    Utils.setStore("user", response.data);
-    await router.push({ name: "home" });
+    await AuthServices.registerUser({ ...form });
+    await router.push({ name: "login" });
   } catch (reason) {
     error.value = reason.response?.data?.message || "Registration failed.";
   } finally {
@@ -69,7 +65,6 @@ async function submit() {
             <v-text-field v-model="form.universityId" label="University ID" :rules="rules.universityId" density="comfortable" rounded="lg" data-testid="universityId" />
             <v-text-field v-model="form.userName" label="Username" :rules="rules.userName" density="comfortable" rounded="lg" data-testid="userName" />
             <v-text-field v-model="form.password" label="Password" type="password" :rules="rules.password" density="comfortable" rounded="lg" data-testid="password" />
-            <v-text-field v-model="form.confirmPassword" label="Confirm password" type="password" :rules="rules.confirmPassword" density="comfortable" rounded="lg" data-testid="confirmPassword" />
             <v-btn type="submit" color="primary" variant="elevated" class="oc-cta" :loading="loading">Register</v-btn>
           </form>
           <router-link :to="{ name: 'login' }" class="d-inline-block mt-4">Sign in</router-link>

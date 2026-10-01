@@ -13,17 +13,17 @@ async function signOut() {
   try {
     await AuthServices.logoutUser();
     Utils.removeItem("user");
+    window.dispatchEvent(new CustomEvent("user-logged-out"));
     user.value = null;
     await router.push({ name: "login" });
   } catch (reason) {
-    error.value = reason.response?.data?.message || "Sign out failed.";
+    error.value = reason.response?.data?.message || "Logout failed.";
   }
 }
 </script>
 
 <template>
   <v-app-bar v-if="user" color="primary">
-    <v-app-bar-title>Courses</v-app-bar-title>
     <v-btn data-testid="sign-out" variant="text" @click="signOut">Sign out</v-btn>
   </v-app-bar>
   <v-alert v-if="error" type="error" density="compact">{{ error }}</v-alert>
