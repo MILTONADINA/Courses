@@ -100,35 +100,30 @@
 - **FR-011**: `sectionId` MUST be numeric.
 - **FR-012**: A student MUST NOT enroll in a section that does not exist.
 - **FR-013**: A student MUST NOT enroll in the same section more than once.
-- **FR-014**: A student MUST NOT enroll in more than one section of the same course during the same semester.
-- **FR-015**: A successful enrollment MUST create one enrollment row for the authenticated student and selected section.
-- **FR-016**: The system MUST allow a student to retrieve only their own enrollments.
-- **FR-017**: The Enroll page MUST use the student's enrollments to show either **Enroll** or **Drop** for each section.
-- **FR-018**: A student MUST be able to delete only their own enrollment.
-- **FR-019**: Deleting an enrollment MUST remove the enrollment row.
-- **FR-020**: `enrollmentId` in a delete route MUST be numeric.
-- **FR-021**: If an enrollment does not exist or does not belong to the authenticated student, the API MUST return `404`.
-- **FR-022**: The API MUST NOT reveal whether an enrollment belonging to another student exists.
-- **FR-023**: Admin users calling any Feature 6 enrollment route MUST receive `403` with `{ "message": "Student role required." }`.
-- **FR-024**: Requests without a valid authenticated session MUST receive `401` with `{ "message": "Unauthorized." }`.
-- **FR-025**: No enrollment status field is required. The existence of an enrollment row means the student is enrolled.
-- **FR-026**: Dropping an enrollment MUST delete the row rather than changing an enrollment status.
-- **FR-027**: Feature 6 MUST NOT add section capacity or section active/inactive rules.
-- **FR-028**: The MenuBar MUST add an **Enroll** item for authenticated students only.
-- **FR-029**: The **Enroll** MenuBar item MUST NOT be shown to admins.
-- **FR-030**: The Enroll page route MUST be `/enroll` with route name `enroll`.
-- **FR-031**: A signed-out user navigating to `/enroll` MUST be sent to the Login page.
-- **FR-032**: An admin navigating to `/enroll` MUST be sent to the Home page.
-- **FR-033**: When a section is deleted, the system MUST delete all enrollments for that section.
-- **FR-034**: When a student is deleted, the system MUST delete all enrollments for that student.
-- **FR-035**: When the selected semester has no sections, the Enroll page MUST show `No sections for this semester.`
-- **FR-036**: When an API request on the Enroll page fails (loading semesters, sections, or enrollments, enrolling, or dropping), the Enroll page MUST display the error message returned by the API.
-- **FR-037**: Feature 6 MUST NOT restrict enrollment by semester start or end dates.
-- **FR-038**: After a successful enroll, that section MUST show **Drop**; after a successful drop, that section MUST show **Enroll**.
-- **FR-039**: **Drop** MUST remove the enrollment immediately without a confirmation dialog.
-- **FR-040**: Before a semester is selected, the Enroll page MUST show `Select a semester to see its sections.`
-- **FR-041**: When no semesters exist, the Enroll page MUST show `No semesters available.`
-- **FR-042**: The Enroll page MUST list sections ordered by course number, then section number.
+- **FR-014**: A successful enrollment MUST create one enrollment row for the authenticated student and selected section.
+- **FR-015**: The system MUST allow a student to retrieve only their own enrollments.
+- **FR-016**: The Enroll page MUST use the student's enrollments to show either **Enroll** or **Drop** for each section.
+- **FR-017**: A student MUST be able to delete only their own enrollment.
+- **FR-018**: Deleting an enrollment MUST remove the enrollment row.
+- **FR-019**: `enrollmentId` in a delete route MUST be numeric.
+- **FR-020**: If an enrollment does not exist or does not belong to the authenticated student, the API MUST return `404`.
+- **FR-021**: The API MUST NOT reveal whether an enrollment belonging to another student exists.
+- **FR-022**: Admin users calling any Feature 6 enrollment route MUST receive `403` with `{ "message": "Student role required." }`.
+- **FR-023**: Requests without a valid authenticated session MUST receive `401` with `{ "message": "Unauthorized." }`.
+- **FR-024**: No enrollment status field is required. The existence of an enrollment row means the student is enrolled.
+- **FR-025**: Dropping an enrollment MUST delete the row rather than changing an enrollment status.
+- **FR-026**: The MenuBar MUST add an **Enroll** item for authenticated students only.
+- **FR-027**: The **Enroll** MenuBar item MUST NOT be shown to admins.
+- **FR-028**: The Enroll page route MUST be `/enroll` with route name `enroll`.
+- **FR-029**: A signed-out user navigating to `/enroll` MUST be sent to the Login page.
+- **FR-030**: An admin navigating to `/enroll` MUST be sent to the Home page.
+- **FR-031**: When a section is deleted, the system MUST delete all enrollments for that section.
+- **FR-032**: When a student is deleted, the system MUST delete all enrollments for that student.
+- **FR-033**: When the selected semester has no sections, the Enroll page MUST show `No sections for this semester.`
+- **FR-034**: When an API request on the Enroll page fails (loading semesters, sections, or enrollments, enrolling, or dropping), the Enroll page MUST display the error message returned by the API.
+- **FR-035**: After a successful enroll, that section MUST show **Drop**; after a successful drop, that section MUST show **Enroll**.
+- **FR-036**: When no semesters exist, the Enroll page MUST show `No semesters available.`
+- **FR-037**: The Enroll page MUST list sections ordered by course number, then section number.
 
 ---
 
@@ -141,14 +136,9 @@
 - Feature 2 provides `GET /course-t6/semesters` for the semester selector.
 - Feature 5 provides `GET /course-t6/sections?semesterId=<id>` readable by students.
 - Feature 5's section response includes course number and name, section number, meeting days/times, and instructor name.
-- A student may have multiple enrollments in the same semester as long as they are for different courses.
-- A student may not enroll in multiple sections of the same course in the same semester.
-- Sections have no capacity field for this feature.
-- Sections have no active/inactive status for this feature.
 - Enrollment state is represented by the existence or absence of an enrollment row.
 - Feature 6 owns enrollment cleanup when a section is deleted, because Feature 5 is built before the `enrollments` table exists.
 - Feature 6 owns enrollment cleanup when a student is deleted, so Feature 9 does not need to depend on Feature 6.
-- Enrollment is not restricted by semester dates. A student may enroll in any listed semester.
 - An enrollment is never edited. To change sections, the student drops and enrolls again.
 
 ---
@@ -159,7 +149,6 @@
 - Non-numeric `sectionId` → `400`.
 - Section does not exist → `404`.
 - Student is already enrolled in the selected section → `400`.
-- Student is already enrolled in another section of the same course in the same semester → `400`.
 - Client supplies another student's `studentId` → ignored; enrollment is created for the authenticated student.
 - Non-numeric enrollment ID → `400`.
 - Enrollment does not exist → `404`.
@@ -168,11 +157,9 @@
 - Unauthenticated request → `401`.
 - Signed-out user navigates to `/enroll` → Login page.
 - Admin navigates to `/enroll` → Home page.
-- No semester selected yet → Enroll page shows `Select a semester to see its sections.`
 - No semesters exist → Enroll page shows `No semesters available.`
 - Selected semester has no sections → Enroll page shows `No sections for this semester.`
 - Any Enroll page API request fails → Enroll page shows the API error message.
-- Semester has ended or not started yet → enrollment is still allowed.
 - Section with enrollments is deleted → its enrollments are deleted.
 - Student with enrollments is deleted → their enrollments are deleted.
 
@@ -185,20 +172,19 @@
 - **SC-003**: Enrollment uses the authenticated student's identity rather than a student ID supplied by the client.
 - **SC-004**: Supplying another student's `studentId` does not create an enrollment for that student.
 - **SC-005**: A student cannot enroll twice in the same section.
-- **SC-006**: A student cannot enroll in two sections of the same course in the same semester.
-- **SC-007**: A student can retrieve only their own enrollments.
-- **SC-008**: A student can drop one of their own enrollments.
-- **SC-009**: A student cannot delete another student's enrollment.
-- **SC-010**: Admin users cannot use enrollment routes.
-- **SC-011**: Unauthenticated users cannot use enrollment routes.
-- **SC-012**: The Enroll page shows the correct Enroll or Drop action for each section.
-- **SC-013**: Only students can access the `/enroll` page.
-- **SC-014**: Every acceptance scenario has at least one automated test before merge.
-- **SC-015**: All automated tests pass before merge.
-- **SC-016**: Nothing outside this specification is implemented.
-- **SC-017**: Deleting a section or student leaves no enrollments pointing to it.
-- **SC-018**: The Enroll page shows guidance, empty-state, and API error messages.
-- **SC-019**: The Enroll page switches between **Enroll** and **Drop** right after a successful action.
+- **SC-006**: A student can retrieve only their own enrollments.
+- **SC-007**: A student can drop one of their own enrollments.
+- **SC-008**: A student cannot delete another student's enrollment.
+- **SC-009**: Admin users cannot use enrollment routes.
+- **SC-010**: Unauthenticated users cannot use enrollment routes.
+- **SC-011**: The Enroll page shows the correct Enroll or Drop action for each section.
+- **SC-012**: Only students can access the `/enroll` page.
+- **SC-013**: Every acceptance scenario has at least one automated test before merge.
+- **SC-014**: All automated tests pass before merge.
+- **SC-015**: Nothing outside this specification is implemented.
+- **SC-016**: Deleting a section or student leaves no enrollments pointing to it.
+- **SC-017**: The Enroll page shows empty-state and API error messages.
+- **SC-018**: The Enroll page switches between **Enroll** and **Drop** right after a successful action.
 
 ---
 
@@ -315,7 +301,6 @@ The response MUST contain only enrollments belonging to the authenticated studen
 | `sectionId` is not a number | `400` | `Section id must be a number.` |
 | Section does not exist | `404` | `Section with id=<id> not found.` |
 | Already enrolled in the section | `400` | `You are already enrolled in this section.` |
-| Already enrolled in another section of the same course | `400` | `You are already enrolled in a section of this course.` |
 | Enrollment ID is not a number | `400` | `Enrollment id must be a number.` |
 | Enrollment does not exist | `404` | `Enrollment with id=<id> not found.` |
 | Enrollment belongs to another student | `404` | `Enrollment with id=<id> not found.` |
@@ -338,7 +323,6 @@ The page MUST:
 - Load semesters from Feature 2.
 - Show a loading state while semesters, sections, or enrollments load.
 - Allow the student to choose a semester.
-- Show `Select a semester to see its sections.` before a semester is selected.
 - Show `No semesters available.` when no semesters exist.
 - Load sections for the selected semester from Feature 5.
 - Show `No sections for this semester.` when the selected semester has no sections.
@@ -355,7 +339,6 @@ The page MUST:
 - Show **Drop** when the student is enrolled in that section.
 - Allow the student to enroll in a section.
 - Allow the student to drop their own enrollment.
-- Drop immediately, without a confirmation dialog.
 - After a successful enroll, show **Drop** for that section; after a successful drop, show **Enroll**.
 - Display the API error message when loading semesters, sections, or enrollments fails, or when enrolling or dropping fails.
 
@@ -418,14 +401,6 @@ The MenuBar MUST:
 * **And** each section shows its course number and name, section number, meeting days/times, and instructor name
 * **And** the sections are ordered by course number, then section number
 
-#### Scenario: Enroll page asks the student to select a semester
-
-* **Given** I am signed in as a student
-* **And** semesters exist
-* **When** I open the Enroll page
-* **Then** I see `Select a semester to see its sections.`
-* **And** no sections are shown
-
 #### Scenario: Enroll page shows a message when no semesters exist
 
 * **Given** I am signed in as a student
@@ -456,7 +431,6 @@ The MenuBar MUST:
 * **Given** I am signed in as a student
 * **And** the selected section exists
 * **And** I am not already enrolled in that section
-* **And** I am not enrolled in another section of the same course in the same semester
 * **When** I submit `POST /course-t6/enrollments` with the section ID
 * **Then** the API returns `201`
 * **And** an enrollment is created for my authenticated user
@@ -512,21 +486,12 @@ The MenuBar MUST:
 * **And** the response is `{ "message": "You are already enrolled in this section." }`
 * **And** no second enrollment is created
 
-#### Scenario: Student tries to enroll in another section of the same course
-
-* **Given** I am signed in as a student
-* **And** I am already enrolled in one section of a course for the selected semester
-* **When** I try to enroll in another section of that same course in the same semester
-* **Then** the API returns `400`
-* **And** the response is `{ "message": "You are already enrolled in a section of this course." }`
-* **And** no additional enrollment is created
-
 #### Scenario: Enroll page shows the API error when enrolling fails
 
 * **Given** I am signed in as a student on the Enroll page
-* **And** I am already enrolled in one section of a course for the selected semester
-* **When** I click **Enroll** for another section of that same course
-* **Then** the page shows `You are already enrolled in a section of this course.`
+* **And** the enroll request will fail with an error message
+* **When** I click **Enroll** for a displayed section
+* **Then** the page shows the error message returned by the API
 * **And** that section still shows an **Enroll** action
 
 ---
@@ -575,8 +540,7 @@ The MenuBar MUST:
 * **Given** I am signed in as a student on the Enroll page
 * **And** I am enrolled in a displayed section
 * **When** I click **Drop** for that section
-* **Then** no confirmation dialog is shown
-* **And** that section shows an **Enroll** action
+* **Then** that section shows an **Enroll** action
 
 #### Scenario: Student submits a non-numeric enrollment ID
 
@@ -681,7 +645,6 @@ Each scenario MUST map to at least one automated test.
 | Story | Scenario | Test File | Test Name |
 |---|---|---|---|
 | US-6.1 | Student views sections for a selected semester | `frontend/tests/Enroll.test.js` | `Student views sections for a selected semester` |
-| US-6.1 | Enroll page asks the student to select a semester | `frontend/tests/Enroll.test.js` | `Enroll page asks the student to select a semester` |
 | US-6.1 | Enroll page shows a message when no semesters exist | `frontend/tests/Enroll.test.js` | `Enroll page shows a message when no semesters exist` |
 | US-6.1 | Enroll page shows a message when the semester has no sections | `frontend/tests/Enroll.test.js` | `Enroll page shows a message when the semester has no sections` |
 | US-6.1 | Enroll page shows the API error when sections fail to load | `frontend/tests/Enroll.test.js` | `Enroll page shows the API error when sections fail to load` |
@@ -692,7 +655,6 @@ Each scenario MUST map to at least one automated test.
 | US-6.2 | Student submits a non-numeric section ID | `backend/tests/enrollment.test.js` | `Student submits a non-numeric section ID` |
 | US-6.2 | Student enrolls in a section that does not exist | `backend/tests/enrollment.test.js` | `Student enrolls in a section that does not exist` |
 | US-6.2 | Student tries to enroll in the same section twice | `backend/tests/enrollment.test.js` | `Student tries to enroll in the same section twice` |
-| US-6.2 | Student tries to enroll in another section of the same course | `backend/tests/enrollment.test.js` | `Student tries to enroll in another section of the same course` |
 | US-6.2 | Enroll page shows the API error when enrolling fails | `frontend/tests/Enroll.test.js` | `Enroll page shows the API error when enrolling fails` |
 | US-6.3 | Student retrieves their own enrollments | `backend/tests/enrollment.test.js` | `Student retrieves their own enrollments` |
 | US-6.3 | Enroll page shows Enroll for a section I am not enrolled in | `frontend/tests/Enroll.test.js` | `Enroll page shows Enroll for a section I am not enrolled in` |
@@ -758,14 +720,11 @@ The Enroll page route must be /enroll with route name enroll.
 Signed-out users are sent to Login.
 Admins are sent to Home.
 Show a loading state while semesters, sections, or enrollments load.
-Show "Select a semester to see its sections." before a semester is selected.
 Show "No semesters available." when no semesters exist.
 Show "No sections for this semester." when the selected semester has no sections.
 List sections ordered by course number, then section number.
 After enrolling, show Drop for that section; after dropping, show Enroll.
-Drop immediately, without a confirmation dialog.
 Show the API error message when any request on the Enroll page fails.
-Do not restrict enrollment by semester dates.
 
 Deleting a section must delete its enrollments, and deleting a student must delete their enrollments.
 Use ON DELETE CASCADE on the sectionId and studentId foreign keys.
@@ -802,20 +761,16 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] Non-numeric `sectionId` returns `400` with the required message.
 - [ ] Missing section returns `404` with the required message.
 - [ ] Students cannot enroll twice in the same section.
-- [ ] Students cannot enroll in multiple sections of the same course in the same semester.
 - [ ] Students can retrieve only their own enrollments.
 - [ ] POST enrollment returns the created enrollment including `id` and `sectionId`.
 - [ ] GET enrollments returns enrollment records including `id` and `sectionId`.
 - [ ] The Enroll page correctly displays Enroll or Drop for each section.
 - [ ] The Enroll page shows a loading state while semesters, sections, or enrollments load.
-- [ ] The Enroll page shows `Select a semester to see its sections.` before a semester is selected.
 - [ ] The Enroll page shows `No semesters available.` when no semesters exist.
 - [ ] The Enroll page shows `No sections for this semester.` when the selected semester has no sections.
 - [ ] Sections are listed by course number, then section number.
 - [ ] After enrolling, the section shows Drop; after dropping, it shows Enroll.
-- [ ] Drop happens without a confirmation dialog.
 - [ ] The Enroll page shows the API error message when any of its requests fail.
-- [ ] Enrollment is not restricted by semester dates.
 - [ ] Students can drop their own enrollments.
 - [ ] Students cannot drop another student's enrollment.
 - [ ] Missing or foreign enrollments return `404`.
@@ -833,9 +788,8 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] Deleting a section deletes its enrollments.
 - [ ] Deleting a student deletes their enrollments.
 - [ ] No enrollment status field is added.
-- [ ] No capacity or active/inactive section logic is added.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-042** satisfied).
-- [ ] **Success Criteria (SC-001**–**SC-019)** are met.
+- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-037** satisfied).
+- [ ] **Success Criteria (SC-001**–**SC-018)** are met.
 - [ ] Test Coverage Map is complete.
 - [ ] Every acceptance scenario has an automated test.
 - [ ] All tests pass (`npm test`).
