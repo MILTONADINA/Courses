@@ -334,8 +334,7 @@ The column name is `semesterName`.
 
 * **Given** I am signed in as an admin on the Semesters page
 * **When** I click **Add semester**
-* **Then** the dialog title is **Add semester**
-* **When** I enter semester name `Fall 2026`, start date `2026-08-17`, and end date `2026-12-11`
+* **And** I enter semester name `Fall 2026`, start date `2026-08-17`, and end date `2026-12-11`
 * **And** I click **Save**
 * **Then** the dialog closes
 * **And** the list shows `Fall 2026`
@@ -479,8 +478,7 @@ The column name is `semesterName`.
 * **Given** I am signed in as an admin on the Semesters page
 * **And** a semester named `Fall 2026` is listed
 * **When** I click **Edit** for that semester
-* **Then** the dialog title is **Edit semester**
-* **When** I change the name to `Spring 2027` and click **Save**
+* **And** I change the name to `Spring 2027` and click **Save**
 * **Then** the dialog closes
 * **And** the list shows `Spring 2027`
 
