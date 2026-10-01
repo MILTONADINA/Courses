@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { pathToFileURL } from "url";
-import db from "../app/models/index.js";
+import db from "../models/index.js";
 
 const adminFields = [
   "ADMIN_FIRST_NAME", "ADMIN_LAST_NAME", "ADMIN_EMAIL",
@@ -8,16 +8,17 @@ const adminFields = [
 ];
 
 export function adminValues(environment = process.env) {
+  // backend/.env.example ships these blank, so an empty value counts as missing.
   for (const name of adminFields) {
-    if (typeof environment[name] !== "string" || !environment[name].trim()) {
+    if (!environment[name]) {
       throw new Error(`${name} is required for the admin seed.`);
     }
   }
   return {
-    firstName: environment.ADMIN_FIRST_NAME.trim(),
-    lastName: environment.ADMIN_LAST_NAME.trim(),
-    email: environment.ADMIN_EMAIL.trim(),
-    universityId: environment.ADMIN_UNIVERSITY_ID.trim(),
+    firstName: environment.ADMIN_FIRST_NAME,
+    lastName: environment.ADMIN_LAST_NAME,
+    email: environment.ADMIN_EMAIL,
+    universityId: environment.ADMIN_UNIVERSITY_ID,
     userName: environment.ADMIN_USERNAME.trim().toLowerCase(),
     password: environment.ADMIN_PASSWORD,
     role: "admin",
@@ -27,8 +28,6 @@ export function adminValues(environment = process.env) {
 export async function seedAdmin(environment = process.env) {
   const values = adminValues(environment);
   await db.sequelize.sync();
-  const existing = await db.user.findOne({ where: { userName: values.userName } });
-  if (existing) return existing;
   return db.user.create({ ...values, password: await bcrypt.hash(values.password, 10) });
 }
 

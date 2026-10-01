@@ -11,17 +11,14 @@ const loading = ref(false);
 
 async function submit() {
   error.value = "";
-  if (!form.userName.trim() || !form.password) {
-    error.value = "Invalid username or password.";
-    return;
-  }
   loading.value = true;
   try {
     const response = await AuthServices.loginUser({ ...form });
     Utils.setStore("user", response.data);
+    window.dispatchEvent(new CustomEvent("user-logged-in"));
     await router.push({ name: "home" });
   } catch (reason) {
-    error.value = reason.response?.data?.message || "Invalid username or password.";
+    error.value = reason.response?.data?.message || "Login failed.";
   } finally {
     loading.value = false;
   }

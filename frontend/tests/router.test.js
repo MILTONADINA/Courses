@@ -1,8 +1,8 @@
 /**
  * Feature 1 — User Authentication & Authorization
- * Spec: features/feature-1-user-authentication.md
+ * Spec: features/feature-1-user-authentication-authorization.md
  */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import router from "../src/router.js";
 import apiClient from "../src/services/services.js";
@@ -35,7 +35,11 @@ describe("Feature 1 — User Authentication & Authorization", () => {
     it("Expired session is rejected", async () => {
       localStorage.setItem("user", JSON.stringify({ token: "expired-session", role: "student" }));
       await router.push({ name: "home" });
+      const loggedOut = vi.fn();
+      window.addEventListener("user-logged-out", loggedOut);
       await rejectProtectedRequest();
+      window.removeEventListener("user-logged-out", loggedOut);
+      expect(loggedOut).toHaveBeenCalledOnce();
       expect(localStorage.getItem("user")).toBeNull();
       expect(router.currentRoute.value.name).toBe("login");
     });

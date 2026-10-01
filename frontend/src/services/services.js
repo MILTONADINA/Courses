@@ -27,7 +27,10 @@ apiClient.interceptors.response.use(
     const message = error.response?.data?.message || "";
 
     if (error.response?.status === 401 || /Unauthorized/i.test(message)) {
-      Utils.removeItem("user");
+      if (Utils.getStore("user")) {
+        Utils.removeItem("user");
+        window.dispatchEvent(new CustomEvent("user-logged-out"));
+      }
       if (router.hasRoute("login")) {
         router.push({ name: "login" });
       }

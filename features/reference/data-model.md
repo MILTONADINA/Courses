@@ -10,7 +10,8 @@
 |---|---|
 | `id` | Auto-generated primary key |
 | `firstName`, `lastName` | Required strings |
-| `email`, `universityId` | Required unique strings |
+| `email` | Required unique string |
+| `universityId` | Required string |
 | `userName` | Required unique string, stored lowercase |
 | `password` | Required bcrypt hash, excluded from default queries |
 | `role` | Required `admin` or `student` |
@@ -20,7 +21,7 @@
 | Field | Rule |
 |---|---|
 | `id` | Auto-generated primary key |
-| `token` | Required JWT string |
+| `token` | Required string: the JWT, or empty after logout |
 | `email` | Required user email |
 | `expirationDate` | Required date, 24 hours after creation |
 | `userId` | Required foreign key to `users.id` |
