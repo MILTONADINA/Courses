@@ -4,33 +4,33 @@
 **Branch pattern:** `feature/7-student-course-listing`  
 **Status:** Ready  
 **Created:** 2026-10-01  
-**Input:** A signed-in student can see the sections they are enrolled in.  
+**Input:** Give a signed-in student a page that lists the sections they already enrolled in, so they can see their classes without going back to Enroll.  
 **Depends on:** [Feature 6 — Enrollment Management](feature-6-enrollment-management.md)
 
 ---
 
 ## User Stories
 
-Every story is P1: each one must ship for the assignment's student course listing.
+Both stories are P1. The assignment has a student course listing, and it is useless if a student can see someone else's classes.
 
 ### US-7.1: View my enrolled sections
 
 **As a** signed-in student  
 **I want to** see the sections I am enrolled in  
-**So that** I can see which classes I am taking
+**So that** I can check my classes and when they meet
 
 **Priority:** P1  
-**Independent test:** Enroll a student in a section, then open that student's course list and confirm the section is there  
+**Independent test:** Enroll a student in a section, open that student's course list, and check that the course, section, semester, time, and instructor are all there  
 **Acceptance scenarios:** see ### US-7.1 under Acceptance Criteria
 
 ### US-7.2: Restrict the course list to the signed-in student
 
 **As the** application  
 **I want to** show each student only their own enrolled sections  
-**So that** a student cannot see another student's classes
+**So that** one student cannot look up another student's classes
 
 **Priority:** P1  
-**Independent test:** Request the course list as the enrolled student, as a different student, as an admin, and as a signed-out user  
+**Independent test:** Ask for the list as the enrolled student, as a different student, as an admin, and while signed out  
 **Acceptance scenarios:** see ### US-7.2 under Acceptance Criteria
 
 ---
@@ -60,11 +60,12 @@ Every story is P1: each one must ship for the assignment's student course listin
 
 ## Assumptions
 
-- Feature 6 enrollment is available. A student enrolls on the Enroll page. This feature only lists those enrollments.
-- Feature 6 provides the student-only check that returns `{ "message": "Student role required." }`.
-- Course number, course name, section number, semester name, meeting days, meeting times, and instructor name come from the enrolled section. This feature does not define a format for days or times.
-- The course catalog and faculty list stay admin-only. This page MUST NOT call `/course-t6/courses` or `/course-t6/faculty`.
-- `semesterName` is the semester name stored for the section's semester.
+- Students enroll, drop, and change sections on the Enroll page from Feature 6. This feature only lists what they already picked.
+- Feature 6's enrollment list returns ids only. It does not include the course name, meeting time, or instructor. Students also cannot call the admin course or faculty routes. That is why this feature adds `GET /course-t6/my-courses` and puts those display fields on the response.
+- I am showing the same section info Feature 6 already shows on the Enroll page, plus the semester name, so the student can tell which term the class is in.
+- Days and times are whatever Feature 5 stored. I am not inventing a format for them.
+- The assignment does not say the list has to be in a certain order, so I am not adding a sort.
+- Feature 6 already has the student-only check. Reuse it. Admins get `{ "message": "Student role required." }`.
 
 ---
 
@@ -99,12 +100,12 @@ Every story is P1: each one must ship for the assignment's student course listin
 
 ## Data Ownership & Isolation
 
-The list is the signed-in student's own enrollments.
+This list is only the student who is signed in.
 
-- The server MUST read the student from the session. The client MUST NOT choose which student is listed.
-- A supplied `studentId` MUST NOT change whose enrollments are returned.
-- An admin MUST NOT use this list.
-- The My courses page and the **My courses** menu link MUST be shown only to a student.
+- Read the student from the session. Do not let the page pick a student id.
+- If the request includes someone else's `studentId`, ignore it and still return the signed-in student's classes.
+- An admin does not get this list.
+- The My courses page and the **My courses** menu link are for students only.
 
 ---
 
@@ -112,7 +113,7 @@ The list is the signed-in student's own enrollments.
 
 ### Enrolled section
 
-A section the signed-in student is enrolled in. The listing shows the course, section, semester, meeting time, and instructor already stored for that enrollment. This feature does not create or change enrollments.
+One row is one section the signed-in student is already in. Show the course, section number, semester, days, times, and instructor that are already stored. Do not create or change the enrollment from this page.
 
 ---
 
@@ -124,7 +125,7 @@ All paths are under the API mount `/course-t6`.
 |---|---|---|---|
 | `GET` | `/course-t6/my-courses` | Student | `200` array |
 
-There is no create, update, or delete route in this feature.
+Read only. No create, update, or delete on this route.
 
 When the student has no enrollments, `GET /course-t6/my-courses` returns `200` with `[]`.
 
@@ -144,7 +145,7 @@ A listed section uses these fields:
 }
 ```
 
-`daysOfWeek`, `startTime`, and `endTime` are the values stored for the section. This feature does not require a format for them.
+`daysOfWeek`, `startTime`, and `endTime` are just the values already saved on the section. No extra format check in this feature.
 
 ### Course List Errors
 
@@ -163,7 +164,7 @@ A listed section uses these fields:
 **Route name:** `my-courses`  
 **View:** `frontend/src/views/MyCourses.vue`
 
-The page MUST be available to signed-in students. A signed-out user is sent to the Login page. A signed-in admin is sent to the Home page.
+This page is for a signed-in student. If nobody is signed in, send them to Login. If an admin opens it, send them Home.
 
 The page MUST:
 
@@ -177,13 +178,13 @@ The page MUST:
 
 ### MenuBar
 
-The MenuBar MUST show **My courses** to a student and link it to `/my-courses`. The MenuBar MUST NOT show **My courses** to an admin.
+Show **My courses** in the menu only for a student, and point it at `/my-courses`. An admin should not see that link.
 
 ---
 
 ## Data Model Requirements
 
-This feature adds no table and no columns. It reads the signed-in student's enrollments and the section, course, semester, and instructor fields those enrollments already use.
+No new table and no new columns. Read the signed-in student's enrollments and the course, section, semester, and instructor fields that are already there.
 
 ### Associations
 
@@ -350,7 +351,7 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+When it is time to code this, use this prompt:
 
 ```text
 Implement Feature 7 from @features/feature-7-student-course-listing.md on branch feature/7-student-course-listing.
