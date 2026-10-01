@@ -11,9 +11,11 @@
 
 ## User Stories
 
+Every story is P1: each one must ship for the assignment's Faculty Management (CRUD) feature.
+
 ### US-4.1: Add a faculty member
 
-**As the** admin  
+**As a** signed-in admin  
 **I want to** add a faculty member  
 **So that** the faculty member is available when sections are scheduled
 
@@ -23,7 +25,7 @@
 
 ### US-4.2: View faculty members
 
-**As the** admin  
+**As a** signed-in admin  
 **I want to** view the faculty members in the system  
 **So that** I can see who is available to teach
 
@@ -33,7 +35,7 @@
 
 ### US-4.3: Edit a faculty member
 
-**As the** admin  
+**As a** signed-in admin  
 **I want to** edit a faculty member's information  
 **So that** faculty records stay accurate
 
@@ -43,12 +45,12 @@
 
 ### US-4.4: Delete a faculty member
 
-**As the** admin  
+**As a** signed-in admin  
 **I want to** delete a faculty member  
-**So that** faculty who no longer teach are removed from the system
+**So that** the faculty list shows only people who still teach
 
 **Priority:** P1  
-**Independent test:** Sign in as an admin, delete an existing faculty member, and verify the faculty member no longer exists  
+**Independent test:** Sign in as an admin, delete an existing faculty member, and verify the faculty member no longer appears in the faculty list  
 **Acceptance scenarios:** see ### US-4.4 under Acceptance Criteria
 
 ### US-4.5: Restrict faculty management to admins
@@ -72,26 +74,25 @@
 - **FR-003**: `firstName`, `lastName`, and `department` MUST be required.
 - **FR-004**: Required faculty fields MUST reject empty values.
 - **FR-005**: Required faculty fields MUST reject whitespace-only values.
-- **FR-006**: Invalid faculty information MUST return `400` with a `{ "message": "..." }` response and MUST NOT create or change a faculty member.
-- **FR-007**: `department` MUST be free text with no required format beyond being a required value.
-- **FR-008**: The system MUST NOT require the combination of `firstName`, `lastName`, and `department` to be unique.
+- **FR-006**: Invalid faculty information MUST return `400` with a `{ "message": "..." }` response.
+- **FR-007**: Invalid faculty information MUST NOT create or change a faculty member.
+- **FR-008**: `department` MUST be free text with no required format beyond being a required value.
 - **FR-009**: The system MUST allow an admin to view all faculty members.
 - **FR-010**: The faculty list MUST be sorted by `lastName` ascending, then `firstName` ascending.
-- **FR-011**: The system MUST allow an admin to view a single faculty member by id.
-- **FR-012**: The system MUST allow an admin to edit a faculty member's `firstName`, `lastName`, and `department`.
-- **FR-013**: Editing a faculty member MUST require all three fields and apply the same validation rules as adding.
-- **FR-014**: The system MUST allow an admin to delete a faculty member.
-- **FR-015**: The Faculty page MUST ask the admin to confirm before a faculty member is deleted.
-- **FR-016**: Deleting a faculty member MUST return `200` with `{ "message": "Faculty member deleted successfully." }`.
-- **FR-017**: Requesting, editing, or deleting a faculty member id that does not exist MUST return `404` with `{ "message": "Faculty member with id=<id> not found." }`.
-- **FR-018**: A faculty member id that is not a number MUST return `400` with `{ "message": "Faculty member id must be a number." }`.
-- **FR-019**: Every faculty endpoint MUST use the Feature 1 authentication check.
-- **FR-020**: Every faculty endpoint MUST use the Feature 1 admin-only authorization check.
-- **FR-021**: An unauthenticated faculty request MUST return `401`.
-- **FR-022**: A faculty request from an authenticated student MUST return `403` with `{ "message": "Admin role required." }`.
-- **FR-023**: A faculty member MUST NOT be a user account and MUST NOT be able to log in.
-- **FR-024**: The Faculty page MUST be available only to authenticated admins.
-- **FR-025**: The MenuBar MUST show a **Faculty** link to admins only.
+- **FR-011**: The system MUST allow an admin to edit a faculty member's `firstName`, `lastName`, and `department`.
+- **FR-012**: Editing a faculty member MUST require all three fields and apply the same validation rules as adding.
+- **FR-013**: The system MUST allow an admin to delete a faculty member.
+- **FR-014**: Deleting a faculty member MUST return `200` with `{ "message": "Faculty member deleted successfully." }`.
+- **FR-015**: Editing or deleting a faculty member id that does not exist MUST return `404` with `{ "message": "Faculty member with id=<id> not found." }`.
+- **FR-016**: A faculty member id that is not a number MUST return `400` with `{ "message": "Faculty member id must be a number." }`.
+- **FR-017**: Every faculty endpoint MUST use the Feature 1 authentication check.
+- **FR-018**: Every faculty endpoint MUST use the Feature 1 admin-only authorization check.
+- **FR-019**: An unauthenticated faculty request MUST return `401` with `{ "message": "Unauthorized." }`.
+- **FR-020**: A faculty request from an authenticated student MUST return `403` with `{ "message": "Admin role required." }`.
+- **FR-021**: A faculty member MUST NOT be a user account.
+- **FR-022**: The Faculty page MUST be available only to authenticated admins.
+- **FR-023**: The MenuBar MUST show a **Faculty** link to admins only.
+- **FR-024**: When a faculty request fails without an API message, the Faculty page MUST show `Request failed.`
 
 ---
 
@@ -102,11 +103,9 @@
 - Only admins manage faculty members.
 - A faculty member is a record managed by an admin, not a user who logs in.
 - Feature 1 defines only the `admin` and `student` roles; this feature does not add a `faculty` role.
-- Two different faculty members can have the same name and department.
 - A department is stored as text on the faculty member; departments are not managed separately.
 - Deleting a faculty member is permanent.
-- What happens when a faculty member assigned to a section is deleted is defined by [Feature 5](feature-5-section-management.md), which introduces sections.
-- Because every faculty endpoint is admin-only, students cannot read faculty members. Features that show a section's instructor ([Feature 5](feature-5-section-management.md), [Feature 6](feature-6-enrollment-management.md), [Feature 7](feature-7-student-course-listing.md)) MUST include the instructor's name in the section data they return and MUST NOT call `/course-t6/faculty` for it.
+- What happens when a faculty member assigned to a section is deleted is defined by Feature 5, which introduces sections.
 
 ---
 
@@ -117,12 +116,11 @@
 - Faculty member id that does not exist → `404`.
 - Faculty member id that is not a number → `400`.
 - No faculty members exist → the list returns an empty array and the Faculty page shows an empty-state message.
-- Two faculty members with the same name and department → both are saved.
-- Admin cancels the delete confirmation → the faculty member is not deleted.
+- A faculty request fails without an API message → the Faculty page shows `Request failed.`
 - Authenticated student sends a faculty request → `403`.
 - Unauthenticated faculty request → `401`.
-- Expired, invalid, or revoked session sends a faculty request → `401`.
 - Student navigates to the Faculty page → sent to the Home page.
+- Unauthenticated user navigates to the Faculty page → sent to the Login page.
 
 ---
 
@@ -130,15 +128,14 @@
 
 - **SC-001**: An admin can add a faculty member with a first name, last name, and department.
 - **SC-002**: An admin can view all faculty members sorted by last name, then first name.
-- **SC-003**: An admin can view a single faculty member.
-- **SC-004**: An admin can edit a faculty member.
-- **SC-005**: An admin can delete a faculty member after confirming.
-- **SC-006**: Invalid faculty information is rejected and does not create or change a faculty member.
-- **SC-007**: An authenticated student cannot view, add, edit, or delete faculty members.
-- **SC-008**: An unauthenticated user cannot view, add, edit, or delete faculty members.
-- **SC-009**: Every acceptance scenario has an automated test before merge.
-- **SC-010**: All automated tests pass before merge.
-- **SC-011**: Nothing outside this feature is implemented.
+- **SC-003**: An admin can edit a faculty member.
+- **SC-004**: An admin can delete a faculty member.
+- **SC-005**: Invalid faculty information is rejected and does not create or change a faculty member.
+- **SC-006**: An authenticated student cannot view, add, edit, or delete faculty members.
+- **SC-007**: An unauthenticated user cannot view, add, edit, or delete faculty members.
+- **SC-008**: Every acceptance scenario has an automated test before merge.
+- **SC-009**: All automated tests pass before merge.
+- **SC-010**: Nothing outside this feature is implemented.
 
 ---
 
@@ -167,7 +164,7 @@ A Faculty Member has:
 
 A Faculty Member is managed by admins. A Faculty Member is not a User and has no login information or role.
 
-Later features relate Faculty Members to sections ([Feature 5](feature-5-section-management.md)).
+Later features relate Faculty Members to sections (Feature 5).
 
 ---
 
@@ -189,7 +186,9 @@ Every endpoint that returns a faculty member MUST return these fields:
   "id": 1,
   "firstName": "Ada",
   "lastName": "Lovelace",
-  "department": "Computer Science"
+  "department": "Computer Science",
+  "createdAt": "2026-09-30T20:15:00.000Z",
+  "updatedAt": "2026-09-30T20:15:00.000Z"
 }
 ```
 
@@ -209,24 +208,20 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
     "id": 2,
     "firstName": "Grace",
     "lastName": "Hopper",
-    "department": "Mathematics"
+    "department": "Mathematics",
+    "createdAt": "2026-09-30T20:16:00.000Z",
+    "updatedAt": "2026-09-30T20:16:00.000Z"
   },
   {
     "id": 1,
     "firstName": "Ada",
     "lastName": "Lovelace",
-    "department": "Computer Science"
+    "department": "Computer Science",
+    "createdAt": "2026-09-30T20:15:00.000Z",
+    "updatedAt": "2026-09-30T20:15:00.000Z"
   }
 ]
 ```
-
-### Get a Faculty Member
-
-**Endpoint:** `GET /course-t6/faculty/:id`
-
-**Purpose:** Return one faculty member.
-
-**Success:** `200 OK` with the faculty member response.
 
 ### Add a Faculty Member
 
@@ -234,11 +229,15 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
 
 **Purpose:** Create a faculty member.
 
-**Required fields:**
+**Request body:**
 
-- `firstName`
-- `lastName`
-- `department`
+```json
+{
+  "firstName": "Ada",
+  "lastName": "Lovelace",
+  "department": "Computer Science"
+}
+```
 
 **Success:** `201 Created` with the created faculty member response.
 
@@ -248,11 +247,15 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
 
 **Purpose:** Replace a faculty member's information.
 
-**Required fields:**
+**Request body:**
 
-- `firstName`
-- `lastName`
-- `department`
+```json
+{
+  "firstName": "Ada",
+  "lastName": "King",
+  "department": "Mathematics"
+}
+```
 
 **Success:** `200 OK` with the updated faculty member response.
 
@@ -286,8 +289,8 @@ All faculty errors MUST return:
 | Missing last name | `POST`, `PUT` | `400` | `Last name is required.` |
 | Missing department | `POST`, `PUT` | `400` | `Department is required.` |
 | Whitespace-only required field | `POST`, `PUT` | `400` | Field-specific required message |
-| Id is not a number | `GET /:id`, `PUT`, `DELETE` | `400` | `Faculty member id must be a number.` |
-| Id does not exist | `GET /:id`, `PUT`, `DELETE` | `404` | `Faculty member with id=<id> not found.` |
+| Id is not a number | `PUT`, `DELETE` | `400` | `Faculty member id must be a number.` |
+| Id does not exist | `PUT`, `DELETE` | `404` | `Faculty member with id=<id> not found.` |
 | No valid session | All | `401` | `Unauthorized.` |
 | Authenticated student | All | `403` | `Admin role required.` |
 
@@ -297,7 +300,8 @@ All faculty errors MUST return:
 
 ### Faculty Page
 
-**Route:** `/faculty`
+**Route:** `/faculty`  
+**Route name:** `faculty`
 
 The Faculty page MUST:
 
@@ -306,9 +310,10 @@ The Faculty page MUST:
 - Display an **Add Faculty** primary button.
 - Display faculty members in a table with **First name**, **Last name**, and **Department** columns, sorted as returned by the API.
 - Provide **Edit** and **Delete** actions for each faculty member.
+- Delete the faculty member and refresh the faculty list when **Delete** is selected.
 - Show a loading state while faculty members load.
 - Show `No faculty members yet.` when no faculty members exist.
-- Show an error alert when a faculty request fails.
+- Show the API error message when a faculty request fails, or `Request failed.` when the API gives no message.
 
 ### Add / Edit Faculty Dialog
 
@@ -322,15 +327,6 @@ The dialog MUST:
 - Provide **Save** and **Cancel** buttons.
 - Close and refresh the faculty list after a successful save.
 - Close without saving when **Cancel** is selected.
-
-### Delete Confirmation Dialog
-
-The dialog MUST:
-
-- Display `Delete <firstName> <lastName>? This cannot be undone.`
-- Provide **Delete** and **Cancel** buttons.
-- Delete the faculty member and refresh the faculty list when **Delete** is selected.
-- Close without deleting when **Cancel** is selected.
 
 ### MenuBar
 
@@ -356,6 +352,8 @@ The MenuBar MUST:
 | `firstName` | String | Required |
 | `lastName` | String | Required |
 | `department` | String | Required |
+| `createdAt` | Timestamp | Automatically generated |
+| `updatedAt` | Timestamp | Automatically generated |
 
 The table name MUST be `faculty` (not pluralized). The model MUST be registered in `backend/app/models/index.js`.
 
@@ -394,14 +392,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **And** the response contains the required-field message
 * **And** no faculty member is created
 
-#### Scenario: Admin adds a faculty member with the same name and department as another
-
-* **Given** I am signed in as an admin
-* **And** a faculty member named `Ada Lovelace` in `Computer Science` exists
-* **When** I add another faculty member named `Ada Lovelace` in `Computer Science`
-* **Then** the API returns `201`
-* **And** both faculty members exist
-
 ---
 
 ### US-4.2 — View faculty members
@@ -423,27 +413,26 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **Then** the API returns `200` with an empty list
 * **And** I see `No faculty members yet.`
 
-#### Scenario: Admin views a single faculty member
+#### Scenario: Faculty page shows a loading state while faculty members load
 
 * **Given** I am signed in as an admin
-* **And** a faculty member exists
-* **When** I request that faculty member by id
-* **Then** the API returns `200`
-* **And** the response contains the faculty member's id, first name, last name, and department
+* **And** the faculty request will not finish right away
+* **When** I open the Faculty page
+* **Then** a loading state is shown until the faculty members arrive
 
-#### Scenario: Admin requests a faculty member that does not exist
-
-* **Given** I am signed in as an admin
-* **When** I request a faculty member id that does not exist
-* **Then** the API returns `404`
-* **And** the response is `{ "message": "Faculty member with id=<id> not found." }`
-
-#### Scenario: Admin requests a faculty member with an id that is not a number
+#### Scenario: Faculty page shows the API error when faculty members fail to load
 
 * **Given** I am signed in as an admin
-* **When** I request the faculty member id `abc`
-* **Then** the API returns `400`
-* **And** the response is `{ "message": "Faculty member id must be a number." }`
+* **And** the faculty request will fail with an error message
+* **When** I open the Faculty page
+* **Then** the page shows the error message returned by the API
+
+#### Scenario: Faculty page shows a fallback error when the API gives no message
+
+* **Given** I am signed in as an admin
+* **And** the faculty request will fail without an error message
+* **When** I open the Faculty page
+* **Then** the page shows `Request failed.`
 
 ---
 
@@ -472,9 +461,17 @@ The `faculty` table has no relationship to `users` or `sessions`.
 #### Scenario: Admin edits a faculty member that does not exist
 
 * **Given** I am signed in as an admin
-* **When** I submit an edit for a faculty member id that does not exist
+* **And** no faculty member with id `999` exists
+* **When** I send `PUT /course-t6/faculty/999` with a valid first name, last name, and department
 * **Then** the API returns `404`
-* **And** the response is `{ "message": "Faculty member with id=<id> not found." }`
+* **And** the response is `{ "message": "Faculty member with id=999 not found." }`
+
+#### Scenario: Admin edits a faculty member with an id that is not a number
+
+* **Given** I am signed in as an admin
+* **When** I send `PUT /course-t6/faculty/abc` with a valid first name, last name, and department
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Faculty member id must be a number." }`
 
 ---
 
@@ -485,26 +482,24 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **Given** I am signed in as an admin
 * **And** a faculty member exists
 * **When** I select **Delete** for that faculty member
-* **And** I confirm the deletion
 * **Then** the API returns `200`
 * **And** the response is `{ "message": "Faculty member deleted successfully." }`
 * **And** the faculty member no longer appears in the faculty list
 
-#### Scenario: Admin cancels deleting a faculty member
-
-* **Given** I am signed in as an admin
-* **And** a faculty member exists
-* **When** I select **Delete** for that faculty member
-* **And** I select **Cancel** in the confirmation dialog
-* **Then** no delete request is sent
-* **And** the faculty member still appears in the faculty list
-
 #### Scenario: Admin deletes a faculty member that does not exist
 
 * **Given** I am signed in as an admin
-* **When** I send a delete request for a faculty member id that does not exist
+* **And** no faculty member with id `999` exists
+* **When** I send `DELETE /course-t6/faculty/999`
 * **Then** the API returns `404`
-* **And** the response is `{ "message": "Faculty member with id=<id> not found." }`
+* **And** the response is `{ "message": "Faculty member with id=999 not found." }`
+
+#### Scenario: Admin deletes a faculty member with an id that is not a number
+
+* **Given** I am signed in as an admin
+* **When** I send `DELETE /course-t6/faculty/abc`
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Faculty member id must be a number." }`
 
 ---
 
@@ -513,7 +508,7 @@ The `faculty` table has no relationship to `users` or `sessions`.
 #### Scenario: Student cannot manage faculty members
 
 * **Given** I am signed in as a student
-* **When** I send a request to list, view, add, edit, or delete faculty members
+* **When** I send a request to list, add, edit, or delete faculty members
 * **Then** the API returns `403`
 * **And** the response is `{ "message": "Admin role required." }`
 * **And** no faculty member is created, changed, or deleted
@@ -521,8 +516,9 @@ The `faculty` table has no relationship to `users` or `sessions`.
 #### Scenario: Unauthenticated user cannot manage faculty members
 
 * **Given** I am not logged in
-* **When** I send a request to list, view, add, edit, or delete faculty members
+* **When** I send a request to list, add, edit, or delete faculty members
 * **Then** the API returns `401`
+* **And** the response is `{ "message": "Unauthorized." }`
 * **And** no faculty member is created, changed, or deleted
 
 #### Scenario: Student cannot open the Faculty page
@@ -537,12 +533,17 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **When** I navigate to `/faculty`
 * **Then** I am sent to the Login page
 
-#### Scenario: Faculty link is shown only to admins
+#### Scenario: Admin sees the Faculty link in the MenuBar
 
-* **Given** I am signed in
-* **When** the MenuBar is displayed
-* **Then** the **Faculty** link is visible if my role is `admin`
-* **And** the **Faculty** link is not visible if my role is `student`
+* **Given** I am signed in as an admin
+* **When** I view the MenuBar
+* **Then** the **Faculty** link is displayed
+
+#### Scenario: Student does not see the Faculty link in the MenuBar
+
+* **Given** I am signed in as a student
+* **When** I view the MenuBar
+* **Then** the **Faculty** link is not displayed
 
 ---
 
@@ -555,23 +556,24 @@ Each scenario MUST map to at least one automated test.
 | US-4.1 | Admin adds a faculty member successfully | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin adds a faculty member successfully` |
 | US-4.1 | Admin adds a faculty member without a required field | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin adds a faculty member without a required field` |
 | US-4.1 | Admin submits whitespace-only faculty information | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin submits whitespace-only faculty information` |
-| US-4.1 | Admin adds a faculty member with the same name and department as another | `backend/tests/faculty.test.js` | `Admin adds a faculty member with the same name and department as another` |
 | US-4.2 | Admin views the faculty list | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin views the faculty list` |
 | US-4.2 | Admin views the faculty list when no faculty members exist | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin views the faculty list when no faculty members exist` |
-| US-4.2 | Admin views a single faculty member | `backend/tests/faculty.test.js` | `Admin views a single faculty member` |
-| US-4.2 | Admin requests a faculty member that does not exist | `backend/tests/faculty.test.js` | `Admin requests a faculty member that does not exist` |
-| US-4.2 | Admin requests a faculty member with an id that is not a number | `backend/tests/faculty.test.js` | `Admin requests a faculty member with an id that is not a number` |
+| US-4.2 | Faculty page shows a loading state while faculty members load | `frontend/tests/Faculty.test.js` | `Faculty page shows a loading state while faculty members load` |
+| US-4.2 | Faculty page shows the API error when faculty members fail to load | `frontend/tests/Faculty.test.js` | `Faculty page shows the API error when faculty members fail to load` |
+| US-4.2 | Faculty page shows a fallback error when the API gives no message | `frontend/tests/Faculty.test.js` | `Faculty page shows a fallback error when the API gives no message` |
 | US-4.3 | Admin edits a faculty member successfully | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin edits a faculty member successfully` |
 | US-4.3 | Admin edits a faculty member without a required field | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin edits a faculty member without a required field` |
 | US-4.3 | Admin edits a faculty member that does not exist | `backend/tests/faculty.test.js` | `Admin edits a faculty member that does not exist` |
+| US-4.3 | Admin edits a faculty member with an id that is not a number | `backend/tests/faculty.test.js` | `Admin edits a faculty member with an id that is not a number` |
 | US-4.4 | Admin deletes a faculty member successfully | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin deletes a faculty member successfully` |
-| US-4.4 | Admin cancels deleting a faculty member | `frontend/tests/Faculty.test.js` | `Admin cancels deleting a faculty member` |
 | US-4.4 | Admin deletes a faculty member that does not exist | `backend/tests/faculty.test.js` | `Admin deletes a faculty member that does not exist` |
+| US-4.4 | Admin deletes a faculty member with an id that is not a number | `backend/tests/faculty.test.js` | `Admin deletes a faculty member with an id that is not a number` |
 | US-4.5 | Student cannot manage faculty members | `backend/tests/faculty.test.js` | `Student cannot manage faculty members` |
 | US-4.5 | Unauthenticated user cannot manage faculty members | `backend/tests/faculty.test.js` | `Unauthenticated user cannot manage faculty members` |
 | US-4.5 | Student cannot open the Faculty page | `frontend/tests/Faculty.test.js` | `Student cannot open the Faculty page` |
 | US-4.5 | Unauthenticated user cannot open the Faculty page | `frontend/tests/Faculty.test.js` | `Unauthenticated user cannot open the Faculty page` |
-| US-4.5 | Faculty link is shown only to admins | `frontend/tests/Faculty.test.js` | `Faculty link is shown only to admins` |
+| US-4.5 | Admin sees the Faculty link in the MenuBar | `frontend/tests/Faculty.test.js` | `Admin sees the Faculty link in the MenuBar` |
+| US-4.5 | Student does not see the Faculty link in the MenuBar | `frontend/tests/Faculty.test.js` | `Student does not see the Faculty link in the MenuBar` |
 
 ---
 
@@ -590,7 +592,6 @@ Follow the layer order in @features/framework.md (models → routes → backend 
 
 Faculty routes must be:
 GET /course-t6/faculty
-GET /course-t6/faculty/:id
 POST /course-t6/faculty
 PUT /course-t6/faculty/:id
 DELETE /course-t6/faculty/:id
@@ -603,6 +604,9 @@ The table name must be faculty. Sort the faculty list by lastName, then firstNam
 
 Use the field name department. Do not use the slide name dept.
 
+The Faculty page route must be /faculty with route name faculty.
+Show the API error message when a faculty request fails, or "Request failed." when the API gives no message.
+
 Use the exact error messages defined in this specification.
 
 Map every acceptance scenario in the Test Coverage Map to at least one automated test.
@@ -612,15 +616,16 @@ Use the exact test file paths listed in the Test Coverage Map.
 Do not add features, behavior, API rules, database rules, validation rules, or UI behavior that are not defined in this specification.
 
 Before finishing:
-1. Run the project's automated tests.
+1. Run npm test from the project root (runs backend and frontend tests).
 2. Confirm every acceptance scenario is covered by an automated test.
 3. Confirm all tests pass.
 4. Update the reference documentation listed below to match the shipped code.
+5. Complete the Definition of Done and the merge checklist in @features/framework.md.
 
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
 
-**Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`
+**Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
 ---
 
@@ -628,26 +633,30 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 
 - [ ] Admins can add a faculty member with a first name, last name, and department.
 - [ ] `firstName`, `lastName`, and `department` are required and reject empty and whitespace-only values.
-- [ ] Duplicate faculty names and departments are allowed.
 - [ ] The database field is `department`, not `dept`.
 - [ ] Admins can view all faculty members sorted by last name, then first name.
-- [ ] Admins can view a single faculty member.
 - [ ] Admins can edit a faculty member.
-- [ ] Admins can delete a faculty member after confirming.
+- [ ] Admins can delete a faculty member.
 - [ ] Non-existent faculty member ids return `404` with the required message.
 - [ ] Non-numeric faculty member ids return `400` with the required message.
 - [ ] Every faculty endpoint uses the Feature 1 authentication and admin-only authorization checks.
 - [ ] Students receive `403` on every faculty endpoint.
-- [ ] Unauthenticated users receive `401` on every faculty endpoint.
+- [ ] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }` on every faculty endpoint.
 - [ ] Faculty members are not user accounts and no `faculty` role was added.
-- [ ] The Faculty page shows loading, empty, and error states.
+- [ ] The Faculty page route is `/faculty` with route name `faculty`.
+- [ ] The Faculty page shows loading and empty states.
+- [ ] The Faculty page shows the API error message when a request fails, or `Request failed.` when the API gives no message.
 - [ ] The Faculty page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
 - [ ] The MenuBar shows the **Faculty** link to admins only.
+- [ ] Backend and frontend are implemented per this spec (**FR-001**-**FR-024** satisfied).
+- [ ] **Success Criteria (SC-001**-**SC-010)** are met.
+- [ ] Test Coverage Map is complete.
 - [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass.
+- [ ] All tests pass (`npm test`).
 - [ ] `features/reference/api.md` is updated.
 - [ ] `features/reference/data-model.md` is updated.
 - [ ] `features/reference/behavior.md` is updated.
+- [ ] `features/reference/README.md` lists Feature 4 in its provenance table.
 - [ ] `features/README.md` links Feature 4 to `feature-4-faculty-management.md`.
 - [ ] Nothing outside this specification is implemented.
 
@@ -655,13 +664,9 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 
 ## Out of Scope
 
-- Faculty user accounts, a `faculty` role, or faculty logging in — Not planned in the current feature set
-- Assigning faculty members to sections → [Feature 5](feature-5-section-management.md)
-- Rules for deleting a faculty member who is assigned to a section → [Feature 5](feature-5-section-management.md)
-- Showing a section's instructor to students → [Feature 7](feature-7-student-course-listing.md)
-- Managing departments as a separate list — Not planned in the current feature set
-- Faculty contact information (email, phone, office) — Not planned in the current feature set
-- Searching or filtering faculty members — Not planned in the current feature set
-- Semester management → [Feature 2](feature-2-semester-management.md)
-- Course management → [Feature 3](feature-3-course-management.md)
-- Student management → [Feature 9](feature-9-student-management.md)
+- Assigning faculty members to sections → Feature 5
+- Rules for deleting a faculty member who is assigned to a section → Feature 5
+- Showing a section's instructor to students → [Feature 6](feature-6-enrollment-management.md)
+- Semester management → Feature 2
+- Course management → Feature 3
+- Student management → Feature 9
