@@ -83,12 +83,12 @@
 - **FR-014**: The semester list MUST be ordered by `startDate` ascending, then by `semesterName` ascending.
 - **FR-015**: A signed-in admin or student MUST be able to read one semester by id.
 - **FR-016**: A missing semester MUST return `404` with `{ "message": "Semester with id=<id> not found." }`.
-- **FR-017**: A non-numeric semester id MUST return `400` with `{ "message": "Semester id is invalid." }`.
+- **FR-017**: A non-numeric semester id MUST return `400` with `{ "message": "Semester id must be a number." }`.
 - **FR-018**: An admin MUST be able to update `semesterName`, `startDate`, and `endDate`.
-- **FR-019**: Update validation MUST use the same rules as creation.
+- **FR-019**: Update validation MUST use the same rules as creation. A semester MAY keep its current name. Renaming it to a name already used by a different semester MUST return `400`.
 - **FR-020**: A successful update MUST return `200` and the updated semester.
 - **FR-021**: An admin MUST be able to delete a semester.
-- **FR-022**: A successful delete MUST return `200` with `{ "message": "Semester was deleted successfully." }`.
+- **FR-022**: A successful delete MUST return `200` with `{ "message": "Semester deleted successfully." }`.
 - **FR-023**: After a semester is deleted, reading it MUST return `404`.
 - **FR-024**: A student MUST NOT create, update, or delete a semester.
 - **FR-025**: A student attempt to create, update, or delete a semester MUST return `403` with `{ "message": "Admin role required." }`.
@@ -115,8 +115,10 @@
 - Start date or end date that is not `YYYY-MM-DD` → `400`.
 - End date before start date → `400`.
 - Semester name already used, including a different capitalization → `400`.
+- Updating a semester to another semester's name → `400`.
+- Updating a semester while keeping its own name → `200`.
 - Unknown semester id → `404`.
-- Non-numeric semester id → `400`.
+- Non-numeric semester id → `400` with `Semester id must be a number.`
 - Student create, update, or delete → `403`.
 - Missing or invalid session → `401`.
 
@@ -198,7 +200,7 @@ Create and update accept this body:
 | Invalid end date | `400` | `Enter a valid end date.` |
 | End date before start date | `400` | `End date must be on or after the start date.` |
 | Duplicate semester name | `400` | `Semester name is already taken.` |
-| Non-numeric id | `400` | `Semester id is invalid.` |
+| Non-numeric id | `400` | `Semester id must be a number.` |
 | Unknown id | `404` | `Semester with id=<id> not found.` |
 | Student create, update, or delete | `403` | `Admin role required.` |
 | No valid session | `401` | `Unauthorized.` |
@@ -305,11 +307,13 @@ No foreign keys are added in this feature.
 #### Scenario: Signed-in user views the semester list
 
 * **Given** I am signed in
-* **And** a semester named `Fall 2026` exists
+* **And** a semester named `Spring 2026` has start date `2026-01-12`
+* **And** a semester named `Summer 2026` has start date `2026-01-12`
+* **And** a semester named `Fall 2026` has start date `2026-08-17`
+* **And** a semester named `Winter 2027` has start date `2027-01-11`
 * **When** I request the semester list
 * **Then** the API returns `200`
-* **And** the list includes that semester
-* **And** semesters are ordered by start date, then by name
+* **And** the names are in this order: `Spring 2026`, `Summer 2026`, `Fall 2026`, `Winter 2027`
 
 #### Scenario: Signed-in user views one semester
 
@@ -331,7 +335,7 @@ No foreign keys are added in this feature.
 * **Given** I am signed in
 * **When** I request semester id `abc`
 * **Then** the API returns `400`
-* **And** the response is `{ "message": "Semester id is invalid." }`
+* **And** the response is `{ "message": "Semester id must be a number." }`
 
 ---
 
@@ -344,6 +348,23 @@ No foreign keys are added in this feature.
 * **When** I update that semester to name `Spring 2027`, start date `2027-01-11`, and end date `2027-05-07`
 * **Then** the API returns `200`
 * **And** a later read returns those new values
+
+#### Scenario: Admin keeps a semester's current name
+
+* **Given** I am signed in as an admin
+* **And** a semester named `Fall 2026` exists
+* **When** I save that semester with semester name `Fall 2026` and valid dates
+* **Then** the API returns `200`
+* **And** the stored semester name is still `Fall 2026`
+
+#### Scenario: Admin renames a semester to another semester's name
+
+* **Given** I am signed in as an admin
+* **And** semesters named `Fall 2026` and `Spring 2027` exist
+* **When** I rename `Spring 2027` to `fall 2026`
+* **Then** the API returns `400`
+* **And** the response is `{ "message": "Semester name is already taken." }`
+* **And** the stored name of `Spring 2027` is unchanged
 
 #### Scenario: Admin updates a semester without a required field
 
@@ -371,7 +392,7 @@ No foreign keys are added in this feature.
 * **And** a semester exists
 * **When** I delete that semester
 * **Then** the API returns `200`
-* **And** the response is `{ "message": "Semester was deleted successfully." }`
+* **And** the response is `{ "message": "Semester deleted successfully." }`
 
 #### Scenario: Deleted semester is no longer returned
 
@@ -432,6 +453,18 @@ No foreign keys are added in this feature.
 * **Then** each request returns `401`
 * **And** the response is `{ "message": "Unauthorized." }`
 
+#### Scenario: Admin sees semester change actions
+
+* **Given** I am signed in as an admin
+* **When** I open the Semesters page
+* **Then** I see create, edit, and delete actions
+
+#### Scenario: Signed-in user sees the Semesters link
+
+* **Given** I am signed in
+* **When** I view the menu
+* **Then** I see a Semesters link to the Semesters page
+
 #### Scenario: Student does not see semester change actions
 
 * **Given** I am signed in as a student
@@ -464,6 +497,8 @@ Each scenario MUST map to at least one automated test.
 | US-2.2 | User requests a semester that does not exist | `backend/tests/semester.test.js` | `User requests a semester that does not exist` |
 | US-2.2 | User requests a semester id that is not a number | `backend/tests/semester.test.js` | `User requests a semester id that is not a number` |
 | US-2.3 | Admin updates a semester | `backend/tests/semester.test.js` | `Admin updates a semester` |
+| US-2.3 | Admin keeps a semester's current name | `backend/tests/semester.test.js` | `Admin keeps a semester's current name` |
+| US-2.3 | Admin renames a semester to another semester's name | `backend/tests/semester.test.js` | `Admin renames a semester to another semester's name` |
 | US-2.3 | Admin updates a semester without a required field | `backend/tests/semester.test.js` | `Admin updates a semester without a required field` |
 | US-2.3 | Admin updates a semester that does not exist | `backend/tests/semester.test.js` | `Admin updates a semester that does not exist` |
 | US-2.4 | Admin deletes a semester | `backend/tests/semester.test.js` | `Admin deletes a semester` |
@@ -474,6 +509,8 @@ Each scenario MUST map to at least one automated test.
 | US-2.5 | Student cannot delete a semester | `backend/tests/semester.test.js` | `Student cannot delete a semester` |
 | US-2.5 | Student can view semesters | `backend/tests/semester.test.js` | `Student can view semesters` |
 | US-2.5 | Unauthenticated user cannot use semester endpoints | `backend/tests/semester.test.js` | `Unauthenticated user cannot use semester endpoints` |
+| US-2.5 | Admin sees semester change actions | `frontend/tests/Semesters.test.js` | `Admin sees semester change actions` |
+| US-2.5 | Signed-in user sees the Semesters link | `frontend/tests/Semesters.test.js` | `Signed-in user sees the Semesters link` |
 | US-2.5 | Student does not see semester change actions | `frontend/tests/Semesters.test.js` | `Student does not see semester change actions` |
 | US-2.5 | Signed-out user is sent to Login | `frontend/tests/Semesters.test.js` | `Signed-out user is sent to Login` |
 
@@ -533,9 +570,9 @@ Do not implement behavior not in this spec.
 - [ ] The database field is `semesterName`, not `semsterName`.
 - [ ] Every acceptance scenario has an automated test.
 - [ ] All tests pass.
-- [x] `features/reference/api.md` is updated.
-- [x] `features/reference/data-model.md` is updated.
-- [x] `features/reference/behavior.md` is updated.
+- [ ] `features/reference/api.md` is updated.
+- [ ] `features/reference/data-model.md` is updated.
+- [ ] `features/reference/behavior.md` is updated.
 - [ ] `features/README.md` links Feature 2 to this file.
 - [ ] Nothing outside this specification is implemented.
 
