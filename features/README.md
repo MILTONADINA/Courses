@@ -19,7 +19,7 @@ No application code may be written unless it maps to a requirement in one of the
 | 1 | User Authentication & Authorization | [feature-1-user-authentication.md](./feature-1-user-authentication.md) | `feature/1-user-authentication` | — | Milton |
 | 2 | Semester Management | *not yet written* | `feature/2-semester-management` | 1 | Landry |
 | 3 | Course Management | *not yet written* | `feature/3-course-management` | 1 | Landry |
-| 4 | Faculty Management | *not yet written* | `feature/4-faculty-management` | 1 | Morgan |
+| 4 | Faculty Management | [feature-4-faculty-management.md](./feature-4-faculty-management.md) | `feature/4-faculty-management` | 1 | Morgan |
 | 5 | Section Management | *not yet written* | `feature/5-section-management` | 2, 3, 4 | Morgan |
 | 6 | Enrollment Management | *not yet written* | `feature/6-enrollment-management` | 5 | Milton |
 | 7 | Student Course Listing | *not yet written* | `feature/7-student-course-listing` | 6 | Landry |
