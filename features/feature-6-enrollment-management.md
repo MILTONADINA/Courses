@@ -978,7 +978,7 @@ Before finishing:
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
 
-**Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`
+**Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
 ---
 
@@ -1032,6 +1032,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] `features/reference/api.md` is updated.
 - [ ] `features/reference/data-model.md` is updated.
 - [ ] `features/reference/behavior.md` is updated.
+- [ ] `features/reference/README.md` lists Feature 6 in its provenance table.
 - [ ] `features/README.md` links Feature 6 to `feature-6-enrollment-management.md`.
 - [ ] Nothing outside this specification is implemented.
 
