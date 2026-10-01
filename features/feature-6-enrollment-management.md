@@ -71,6 +71,16 @@
 **Independent test:** Visit the Enroll route as a student, admin, and signed-out user and verify the correct routing behavior  
 **Acceptance scenarios:** see ### US-6.6 under Acceptance Criteria
 
+### US-6.7: Remove enrollments when their section or student is deleted
+
+**As the** application  
+**I want** enrollments to be removed when their section or student is deleted  
+**So that** no enrollment points to a section or student that no longer exists
+
+**Priority:** P1  
+**Independent test:** Delete a section that has enrollments and a student who has enrollments, and verify none of their enrollments remain  
+**Acceptance scenarios:** see ### US-6.7 under Acceptance Criteria
+
 ---
 
 ## Requirements
@@ -109,6 +119,16 @@
 - **FR-030**: The Enroll page route MUST be `/enroll` with route name `enroll`.
 - **FR-031**: A signed-out user navigating to `/enroll` MUST be sent to the Login page.
 - **FR-032**: An admin navigating to `/enroll` MUST be sent to the Home page.
+- **FR-033**: When a section is deleted, the system MUST delete all enrollments for that section.
+- **FR-034**: When a student is deleted, the system MUST delete all enrollments for that student.
+- **FR-035**: When the selected semester has no sections, the Enroll page MUST show `No sections for this semester.`
+- **FR-036**: When an API request on the Enroll page fails (loading semesters, sections, or enrollments, enrolling, or dropping), the Enroll page MUST display the error message returned by the API.
+- **FR-037**: Feature 6 MUST NOT restrict enrollment by semester start or end dates.
+- **FR-038**: After a successful enroll, that section MUST show **Drop**; after a successful drop, that section MUST show **Enroll**.
+- **FR-039**: **Drop** MUST remove the enrollment immediately without a confirmation dialog.
+- **FR-040**: Before a semester is selected, the Enroll page MUST show `Select a semester to see its sections.`
+- **FR-041**: When no semesters exist, the Enroll page MUST show `No semesters available.`
+- **FR-042**: The Enroll page MUST list sections ordered by course number, then section number.
 
 ---
 
@@ -126,8 +146,10 @@
 - Sections have no capacity field for this feature.
 - Sections have no active/inactive status for this feature.
 - Enrollment state is represented by the existence or absence of an enrollment row.
-- Feature 5 owns cleanup behavior when a section is deleted and MUST handle related enrollments.
-- Feature 9 owns cleanup behavior when a student is deleted and MUST handle related enrollments.
+- Feature 6 owns enrollment cleanup when a section is deleted, because Feature 5 is built before the `enrollments` table exists.
+- Feature 6 owns enrollment cleanup when a student is deleted, so Feature 9 does not need to depend on Feature 6.
+- Enrollment is not restricted by semester dates. A student may enroll in any listed semester.
+- An enrollment is never edited. To change sections, the student drops and enrolls again.
 
 ---
 
@@ -146,6 +168,13 @@
 - Unauthenticated request → `401`.
 - Signed-out user navigates to `/enroll` → Login page.
 - Admin navigates to `/enroll` → Home page.
+- No semester selected yet → Enroll page shows `Select a semester to see its sections.`
+- No semesters exist → Enroll page shows `No semesters available.`
+- Selected semester has no sections → Enroll page shows `No sections for this semester.`
+- Any Enroll page API request fails → Enroll page shows the API error message.
+- Semester has ended or not started yet → enrollment is still allowed.
+- Section with enrollments is deleted → its enrollments are deleted.
+- Student with enrollments is deleted → their enrollments are deleted.
 
 ---
 
@@ -167,6 +196,9 @@
 - **SC-014**: Every acceptance scenario has at least one automated test before merge.
 - **SC-015**: All automated tests pass before merge.
 - **SC-016**: Nothing outside this specification is implemented.
+- **SC-017**: Deleting a section or student leaves no enrollments pointing to it.
+- **SC-018**: The Enroll page shows guidance, empty-state, and API error messages.
+- **SC-019**: The Enroll page switches between **Enroll** and **Drop** right after a successful action.
 
 ---
 
@@ -304,8 +336,13 @@ The Enroll page MUST be available to authenticated students only.
 The page MUST:
 
 - Load semesters from Feature 2.
+- Show a loading state while semesters, sections, or enrollments load.
 - Allow the student to choose a semester.
+- Show `Select a semester to see its sections.` before a semester is selected.
+- Show `No semesters available.` when no semesters exist.
 - Load sections for the selected semester from Feature 5.
+- Show `No sections for this semester.` when the selected semester has no sections.
+- List sections ordered by course number, then section number.
 - Show each section's:
   - course number
   - course name
@@ -318,7 +355,9 @@ The page MUST:
 - Show **Drop** when the student is enrolled in that section.
 - Allow the student to enroll in a section.
 - Allow the student to drop their own enrollment.
-- Display API errors when enrollment or dropping fails.
+- Drop immediately, without a confirmation dialog.
+- After a successful enroll, show **Drop** for that section; after a successful drop, show **Enroll**.
+- Display the API error message when loading semesters, sections, or enrollments fails, or when enrolling or dropping fails.
 
 ### Route Access
 
@@ -354,8 +393,15 @@ The MenuBar MUST:
 - `studentId` MUST reference a user with role `student`.
 - No enrollment `status` field is required.
 - Enrollment date may be obtained from `createdAt`.
-- Section deletion cleanup is owned by Feature 5.
-- Student deletion cleanup is owned by Feature 9.
+- Deleting a section MUST delete its enrollments (`sectionId` foreign key `ON DELETE CASCADE`).
+- Deleting a student MUST delete their enrollments (`studentId` foreign key `ON DELETE CASCADE`).
+
+### Associations
+
+- An enrollment belongs to one section (`sectionId`) and one student (`studentId` → `users.id`).
+- A section has many enrollments.
+- A user with role `student` has many enrollments.
+- The model and its associations MUST be registered in `backend/app/models/index.js`.
 
 ---
 
@@ -370,6 +416,36 @@ The MenuBar MUST:
 * **When** I select that semester on the Enroll page
 * **Then** I see the sections belonging to that semester
 * **And** each section shows its course number and name, section number, meeting days/times, and instructor name
+* **And** the sections are ordered by course number, then section number
+
+#### Scenario: Enroll page asks the student to select a semester
+
+* **Given** I am signed in as a student
+* **And** semesters exist
+* **When** I open the Enroll page
+* **Then** I see `Select a semester to see its sections.`
+* **And** no sections are shown
+
+#### Scenario: Enroll page shows a message when no semesters exist
+
+* **Given** I am signed in as a student
+* **And** no semesters exist
+* **When** I open the Enroll page
+* **Then** I see `No semesters available.`
+
+#### Scenario: Enroll page shows a message when the semester has no sections
+
+* **Given** I am signed in as a student
+* **And** a semester has no sections
+* **When** I select that semester on the Enroll page
+* **Then** I see `No sections for this semester.`
+
+#### Scenario: Enroll page shows the API error when sections fail to load
+
+* **Given** I am signed in as a student on the Enroll page
+* **And** the sections request will fail with an error message
+* **When** I select a semester
+* **Then** the page shows the error message returned by the API
 
 ---
 
@@ -385,6 +461,13 @@ The MenuBar MUST:
 * **Then** the API returns `201`
 * **And** an enrollment is created for my authenticated user
 * **And** the enrollment references the selected section
+
+#### Scenario: Section shows Drop after the student enrolls
+
+* **Given** I am signed in as a student on the Enroll page
+* **And** I am not enrolled in a displayed section
+* **When** I click **Enroll** for that section
+* **Then** that section shows a **Drop** action
 
 #### Scenario: Supplied student ID does not override authenticated student
 
@@ -414,8 +497,8 @@ The MenuBar MUST:
 #### Scenario: Student enrolls in a section that does not exist
 
 * **Given** I am signed in as a student
-* **When** I submit an enrollment request for section ID `999`
 * **And** section `999` does not exist
+* **When** I submit an enrollment request for section ID `999`
 * **Then** the API returns `404`
 * **And** the response is `{ "message": "Section with id=999 not found." }`
 * **And** no enrollment is created
@@ -437,6 +520,14 @@ The MenuBar MUST:
 * **Then** the API returns `400`
 * **And** the response is `{ "message": "You are already enrolled in a section of this course." }`
 * **And** no additional enrollment is created
+
+#### Scenario: Enroll page shows the API error when enrolling fails
+
+* **Given** I am signed in as a student on the Enroll page
+* **And** I am already enrolled in one section of a course for the selected semester
+* **When** I click **Enroll** for another section of that same course
+* **Then** the page shows `You are already enrolled in a section of this course.`
+* **And** that section still shows an **Enroll** action
 
 ---
 
@@ -479,6 +570,14 @@ The MenuBar MUST:
 * **And** the response is `{ "message": "Enrollment deleted successfully." }`
 * **And** enrollment `5` no longer exists
 
+#### Scenario: Section shows Enroll after the student drops
+
+* **Given** I am signed in as a student on the Enroll page
+* **And** I am enrolled in a displayed section
+* **When** I click **Drop** for that section
+* **Then** no confirmation dialog is shown
+* **And** that section shows an **Enroll** action
+
 #### Scenario: Student submits a non-numeric enrollment ID
 
 * **Given** I am signed in as a student
@@ -510,22 +609,16 @@ The MenuBar MUST:
 #### Scenario: Admin cannot access enrollment routes
 
 * **Given** I am signed in as an admin
-* **When** I send `POST /course-t6/enrollments`
-* **Then** the API returns `403`
-* **And** the response is `{ "message": "Student role required." }`
-* **When** I send `GET /course-t6/enrollments`
-* **Then** the API returns `403`
-* **And** the response is `{ "message": "Student role required." }`
-* **When** I send `DELETE /course-t6/enrollments/1`
-* **Then** the API returns `403`
-* **And** the response is `{ "message": "Student role required." }`
+* **When** I send `POST /course-t6/enrollments`, `GET /course-t6/enrollments`, or `DELETE /course-t6/enrollments/1`
+* **Then** each request returns `403`
+* **And** each response is `{ "message": "Student role required." }`
 
 #### Scenario: Unauthenticated user cannot access enrollment routes
 
 * **Given** I am not authenticated
-* **When** I send a request to a Feature 6 enrollment endpoint
-* **Then** the API returns `401`
-* **And** the response is `{ "message": "Unauthorized." }`
+* **When** I send `POST /course-t6/enrollments`, `GET /course-t6/enrollments`, or `DELETE /course-t6/enrollments/1`
+* **Then** each request returns `401`
+* **And** each response is `{ "message": "Unauthorized." }`
 
 #### Scenario: Student sees Enroll in the MenuBar
 
@@ -563,6 +656,24 @@ The MenuBar MUST:
 
 ---
 
+### US-6.7 — Remove enrollments when their section or student is deleted
+
+#### Scenario: Deleting a section deletes its enrollments
+
+* **Given** a section has enrollments
+* **When** the section is deleted
+* **Then** no enrollments for that section remain
+* **And** enrollments for other sections are unchanged
+
+#### Scenario: Deleting a student deletes their enrollments
+
+* **Given** a student has enrollments
+* **When** the student is deleted
+* **Then** no enrollments for that student remain
+* **And** enrollments for other students are unchanged
+
+---
+
 ## Test Coverage Map
 
 Each scenario MUST map to at least one automated test.
@@ -570,38 +681,51 @@ Each scenario MUST map to at least one automated test.
 | Story | Scenario | Test File | Test Name |
 |---|---|---|---|
 | US-6.1 | Student views sections for a selected semester | `frontend/tests/Enroll.test.js` | `Student views sections for a selected semester` |
-| US-6.2 | Student enrolls in a section successfully | `backend/tests/enrollments.test.js`, `frontend/tests/Enroll.test.js` | `Student enrolls in a section successfully` |
-| US-6.2 | Supplied student ID does not override authenticated student | `backend/tests/enrollments.test.js` | `Supplied student ID does not override authenticated student` |
-| US-6.2 | Student submits enrollment without section ID | `backend/tests/enrollments.test.js` | `Student submits enrollment without section ID` |
-| US-6.2 | Student submits a non-numeric section ID | `backend/tests/enrollments.test.js` | `Student submits a non-numeric section ID` |
-| US-6.2 | Student enrolls in a section that does not exist | `backend/tests/enrollments.test.js` | `Student enrolls in a section that does not exist` |
-| US-6.2 | Student tries to enroll in the same section twice | `backend/tests/enrollments.test.js` | `Student tries to enroll in the same section twice` |
-| US-6.2 | Student tries to enroll in another section of the same course | `backend/tests/enrollments.test.js` | `Student tries to enroll in another section of the same course` |
-| US-6.3 | Student retrieves their own enrollments | `backend/tests/enrollments.test.js` | `Student retrieves their own enrollments` |
+| US-6.1 | Enroll page asks the student to select a semester | `frontend/tests/Enroll.test.js` | `Enroll page asks the student to select a semester` |
+| US-6.1 | Enroll page shows a message when no semesters exist | `frontend/tests/Enroll.test.js` | `Enroll page shows a message when no semesters exist` |
+| US-6.1 | Enroll page shows a message when the semester has no sections | `frontend/tests/Enroll.test.js` | `Enroll page shows a message when the semester has no sections` |
+| US-6.1 | Enroll page shows the API error when sections fail to load | `frontend/tests/Enroll.test.js` | `Enroll page shows the API error when sections fail to load` |
+| US-6.2 | Student enrolls in a section successfully | `backend/tests/enrollment.test.js` | `Student enrolls in a section successfully` |
+| US-6.2 | Section shows Drop after the student enrolls | `frontend/tests/Enroll.test.js` | `Section shows Drop after the student enrolls` |
+| US-6.2 | Supplied student ID does not override authenticated student | `backend/tests/enrollment.test.js` | `Supplied student ID does not override authenticated student` |
+| US-6.2 | Student submits enrollment without section ID | `backend/tests/enrollment.test.js` | `Student submits enrollment without section ID` |
+| US-6.2 | Student submits a non-numeric section ID | `backend/tests/enrollment.test.js` | `Student submits a non-numeric section ID` |
+| US-6.2 | Student enrolls in a section that does not exist | `backend/tests/enrollment.test.js` | `Student enrolls in a section that does not exist` |
+| US-6.2 | Student tries to enroll in the same section twice | `backend/tests/enrollment.test.js` | `Student tries to enroll in the same section twice` |
+| US-6.2 | Student tries to enroll in another section of the same course | `backend/tests/enrollment.test.js` | `Student tries to enroll in another section of the same course` |
+| US-6.2 | Enroll page shows the API error when enrolling fails | `frontend/tests/Enroll.test.js` | `Enroll page shows the API error when enrolling fails` |
+| US-6.3 | Student retrieves their own enrollments | `backend/tests/enrollment.test.js` | `Student retrieves their own enrollments` |
 | US-6.3 | Enroll page shows Enroll for a section I am not enrolled in | `frontend/tests/Enroll.test.js` | `Enroll page shows Enroll for a section I am not enrolled in` |
 | US-6.3 | Enroll page shows Drop for a section I am enrolled in | `frontend/tests/Enroll.test.js` | `Enroll page shows Drop for a section I am enrolled in` |
-| US-6.4 | Student drops their own enrollment | `backend/tests/enrollments.test.js`, `frontend/tests/Enroll.test.js` | `Student drops their own enrollment` |
-| US-6.4 | Student submits a non-numeric enrollment ID | `backend/tests/enrollments.test.js` | `Student submits a non-numeric enrollment ID` |
-| US-6.4 | Student tries to drop an enrollment that does not exist | `backend/tests/enrollments.test.js` | `Student tries to drop an enrollment that does not exist` |
-| US-6.4 | Student tries to drop another student's enrollment | `backend/tests/enrollments.test.js` | `Student tries to drop another student's enrollment` |
-| US-6.5 | Admin cannot access enrollment routes | `backend/tests/enrollments.test.js` | `Admin cannot access enrollment routes` |
-| US-6.5 | Unauthenticated user cannot access enrollment routes | `backend/tests/enrollments.test.js` | `Unauthenticated user cannot access enrollment routes` |
+| US-6.4 | Student drops their own enrollment | `backend/tests/enrollment.test.js` | `Student drops their own enrollment` |
+| US-6.4 | Section shows Enroll after the student drops | `frontend/tests/Enroll.test.js` | `Section shows Enroll after the student drops` |
+| US-6.4 | Student submits a non-numeric enrollment ID | `backend/tests/enrollment.test.js` | `Student submits a non-numeric enrollment ID` |
+| US-6.4 | Student tries to drop an enrollment that does not exist | `backend/tests/enrollment.test.js` | `Student tries to drop an enrollment that does not exist` |
+| US-6.4 | Student tries to drop another student's enrollment | `backend/tests/enrollment.test.js` | `Student tries to drop another student's enrollment` |
+| US-6.5 | Admin cannot access enrollment routes | `backend/tests/enrollment.test.js` | `Admin cannot access enrollment routes` |
+| US-6.5 | Unauthenticated user cannot access enrollment routes | `backend/tests/enrollment.test.js` | `Unauthenticated user cannot access enrollment routes` |
 | US-6.5 | Student sees Enroll in the MenuBar | `frontend/tests/Enroll.test.js` | `Student sees Enroll in the MenuBar` |
 | US-6.5 | Admin does not see Enroll in the MenuBar | `frontend/tests/Enroll.test.js` | `Admin does not see Enroll in the MenuBar` |
 | US-6.6 | Student can access the Enroll page | `frontend/tests/Enroll.test.js` | `Student can access the Enroll page` |
 | US-6.6 | Signed-out user is sent to Login from the Enroll page | `frontend/tests/Enroll.test.js` | `Signed-out user is sent to Login from the Enroll page` |
 | US-6.6 | Admin is sent to Home from the Enroll page | `frontend/tests/Enroll.test.js` | `Admin is sent to Home from the Enroll page` |
+| US-6.7 | Deleting a section deletes its enrollments | `backend/tests/enrollment.test.js` | `Deleting a section deletes its enrollments` |
+| US-6.7 | Deleting a student deletes their enrollments | `backend/tests/enrollment.test.js` | `Deleting a student deletes their enrollments` |
 
 ---
 
 ## Agent Implementation Request
 
+Use the following prompt when asking the implementation agent to implement this feature:
+
 ```text
-Implement Feature 6 from @features/feature-6-enrollment-management.md.
+Implement Feature 6 from @features/feature-6-enrollment-management.md on branch feature/6-enrollment-management.
 
 Only implement what is defined in this specification.
 
 Follow the project's existing architecture, API conventions, security rules, coding conventions, and feature framework.
+
+Follow the layer order in @features/framework.md (models → routes → backend tests → frontend services → views → frontend tests → router).
 
 Feature dependencies:
 - Feature 1 provides authentication.
@@ -615,8 +739,11 @@ DELETE /course-t6/enrollments/:id
 
 Enrollment management is student-only.
 
-Feature 6 must add a reusable student-only authorization check that returns:
+Add a reusable requireStudent check to backend/app/authorization/authorization.js, next to authenticate and requireAdmin. It must return:
 403 { "message": "Student role required." }
+Protect every enrollment route with authenticate and requireStudent.
+
+Register the Enrollment model and its associations in backend/app/models/index.js.
 
 On create, derive studentId from the authenticated user.
 Never trust studentId from the request body.
@@ -630,6 +757,20 @@ Do not reveal ownership through a 403 response.
 The Enroll page route must be /enroll with route name enroll.
 Signed-out users are sent to Login.
 Admins are sent to Home.
+Show a loading state while semesters, sections, or enrollments load.
+Show "Select a semester to see its sections." before a semester is selected.
+Show "No semesters available." when no semesters exist.
+Show "No sections for this semester." when the selected semester has no sections.
+List sections ordered by course number, then section number.
+After enrolling, show Drop for that section; after dropping, show Enroll.
+Drop immediately, without a confirmation dialog.
+Show the API error message when any request on the Enroll page fails.
+Do not restrict enrollment by semester dates.
+
+Deleting a section must delete its enrollments, and deleting a student must delete their enrollments.
+Use ON DELETE CASCADE on the sectionId and studentId foreign keys.
+
+Use the exact error messages defined in this specification.
 
 Map every Gherkin scenario in the Test Coverage Map to at least one automated test.
 
@@ -637,11 +778,12 @@ Use the exact test file paths listed in the Test Coverage Map.
 
 Do not implement capacity, waitlists, enrollment statuses, admin enrollment, admin removal, or other behavior not defined in this specification.
 
-Run the full test suite before finishing.
-
-If this feature changes API, data model, or product behavior, update the reference files listed below in the same PR.
-
-Update features/README.md so Feature 6 links to feature-6-enrollment-management.md.
+Before finishing:
+1. Run npm test from the project root (runs backend and frontend tests).
+2. Confirm every acceptance scenario is covered by an automated test.
+3. Confirm all tests pass.
+4. Update the reference documentation listed below to match the shipped code.
+5. Complete the Definition of Done and the merge checklist in @features/framework.md.
 
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
@@ -665,6 +807,15 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] POST enrollment returns the created enrollment including `id` and `sectionId`.
 - [ ] GET enrollments returns enrollment records including `id` and `sectionId`.
 - [ ] The Enroll page correctly displays Enroll or Drop for each section.
+- [ ] The Enroll page shows a loading state while semesters, sections, or enrollments load.
+- [ ] The Enroll page shows `Select a semester to see its sections.` before a semester is selected.
+- [ ] The Enroll page shows `No semesters available.` when no semesters exist.
+- [ ] The Enroll page shows `No sections for this semester.` when the selected semester has no sections.
+- [ ] Sections are listed by course number, then section number.
+- [ ] After enrolling, the section shows Drop; after dropping, it shows Enroll.
+- [ ] Drop happens without a confirmation dialog.
+- [ ] The Enroll page shows the API error message when any of its requests fail.
+- [ ] Enrollment is not restricted by semester dates.
 - [ ] Students can drop their own enrollments.
 - [ ] Students cannot drop another student's enrollment.
 - [ ] Missing or foreign enrollments return `404`.
@@ -678,10 +829,16 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] Admins navigating to `/enroll` are sent to Home.
 - [ ] The `enrollments` table contains `id`, `sectionId`, `studentId`, `createdAt`, and `updatedAt`.
 - [ ] `(studentId, sectionId)` is unique.
+- [ ] The Enrollment model and its associations are registered in `backend/app/models/index.js`.
+- [ ] Deleting a section deletes its enrollments.
+- [ ] Deleting a student deletes their enrollments.
 - [ ] No enrollment status field is added.
 - [ ] No capacity or active/inactive section logic is added.
+- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-042** satisfied).
+- [ ] **Success Criteria (SC-001**–**SC-019)** are met.
+- [ ] Test Coverage Map is complete.
 - [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass.
+- [ ] All tests pass (`npm test`).
 - [ ] `features/reference/api.md` is updated.
 - [ ] `features/reference/data-model.md` is updated.
 - [ ] `features/reference/behavior.md` is updated.
@@ -695,10 +852,10 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - Creating, editing, or deleting courses → [Feature 3](feature-3-course-management.md)
 - Faculty management → [Feature 4](feature-4-faculty-management.md)
 - Creating, editing, or deleting sections → [Feature 5](feature-5-section-management.md)
-- Section deletion cleanup for related enrollments → [Feature 5](feature-5-section-management.md)
 - Separate **My Enrolled Sections** page → [Feature 7](feature-7-student-course-listing.md)
 - Admin section roster → [Feature 8](feature-8-section-student-listing.md)
-- Student deletion cleanup for related enrollments → [Feature 9](feature-9-student-management.md)
+- Changing an enrollment to a different section (the student drops and enrolls again)
+- Restricting enrollment by semester start or end dates
 - Admin enrolling students
 - Admin removing students from enrollments
 - Section capacity
