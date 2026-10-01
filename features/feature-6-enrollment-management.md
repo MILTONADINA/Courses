@@ -5,7 +5,7 @@
 **Status:** Ready  
 **Created:** 2026-09-30  
 **Input:** Allow student users to enroll themselves in sections for a selected semester, change their enrollments to another section, and drop their own enrollments.  
-**Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 2 — Semester Management](feature-2-semester-management.md), [Feature 5 — Section Management](feature-5-section-management.md)
+**Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), Feature 2 — Semester Management, Feature 5 — Section Management
 
 ---
 
@@ -966,7 +966,7 @@ Map every Gherkin scenario in the Test Coverage Map to at least one automated te
 
 Use the exact test file paths listed in the Test Coverage Map.
 
-Do not implement capacity, waitlists, enrollment statuses, admin enrollment, admin removal, or other behavior not defined in this specification.
+Do not implement admin enrollment, admin removal, or other behavior not defined in this specification.
 
 Before finishing:
 1. Run npm test from the project root (runs backend and frontend tests).
@@ -1044,11 +1044,5 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - Creating, editing, or deleting sections → Feature 5
 - Separate **My Enrolled Sections** page → Feature 7
 - Admin section roster → Feature 8
-- Restricting enrollment by semester start or end dates
 - Admin enrolling students
 - Admin removing students from enrollments
-- Section capacity
-- Waitlists
-- Section active/inactive status
-- Enrollment status values such as `dropped`, `completed`, or `pending`
-- Enrollment approval workflows
