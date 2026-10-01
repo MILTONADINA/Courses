@@ -47,7 +47,7 @@ Every story is P1: each one must ship for the assignment's course management fea
 
 **As a** signed-in admin  
 **I want to** delete a course  
-**So that** a class that is no longer offered is removed
+**So that** students are not shown a class that is no longer offered
 
 **Priority:** P1  
 **Independent test:** Delete a course as an admin and confirm the list no longer includes it  
@@ -96,10 +96,11 @@ Every story is P1: each one must ship for the assignment's course management fea
 - **FR-025**: When no courses exist, the Courses page MUST show `No courses found.`
 - **FR-026**: When a Courses page request fails, the page MUST display the error message returned by the API.
 - **FR-027**: When a Courses page request fails without an API message, the page MUST show `Request failed.`
-- **FR-028**: The course form MUST check required fields before submitting, using the API's required messages, and MUST NOT send the request when validation fails.
-- **FR-029**: After a successful save or delete, the Courses page MUST show the updated list.
-- **FR-030**: The **Save** button MUST show a loading state while the save request runs.
-- **FR-031**: The course dialog MUST close after a successful save.
+- **FR-028**: The course form MUST check required fields before submitting, using the API's required messages.
+- **FR-029**: The course form MUST NOT send the request when validation fails.
+- **FR-030**: After a successful save or delete, the Courses page MUST show the updated list.
+- **FR-031**: The **Save** button MUST show a loading state while the save request runs.
+- **FR-032**: The course dialog MUST close after a successful save.
 
 ---
 
@@ -109,9 +110,7 @@ Every story is P1: each one must ship for the assignment's course management fea
 - The slide field names are kept: `courseNumber`, `courseName`, `courseDescription`, `courseSemesters`, `courseFrequency`, `courseHours`, and `courseDept`.
 - `courseSemesters`, `courseFrequency`, `courseHours`, and `courseDept` are text. This feature does not require a format for them.
 - `courseSemesters` is text on the course. It is not a link to the semesters table. Connecting a course to a semester belongs to Feature 5.
-- A course does not have to be unique.
 - Only admins manage courses. A student does not get a course catalog from this feature.
-- Because every course endpoint is admin-only, Features 5 and 6 MUST include the course number and name in the section data they return. They MUST NOT call `/course-t6/courses` for a student.
 - No section records exist in this feature, so delete does not check for sections.
 
 ---
@@ -732,7 +731,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] The database fields match the slide names, including `courseDept`.
 - [ ] `courseSemesters` is text and is not a foreign key to semesters.
 - [ ] The Course model is registered in `backend/app/models/index.js`.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-031** satisfied).
+- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-032** satisfied).
 - [ ] **Success Criteria (SC-001**–**SC-009)** are met.
 - [ ] Test Coverage Map is complete.
 - [ ] Every acceptance scenario has an automated test.
