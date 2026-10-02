@@ -148,6 +148,16 @@ describe("Feature 2 — Semester Management", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
     });
+
+    it("Student can view semesters", async () => {
+      const admin = await adminToken();
+      const created = await createSemester(admin);
+      const token = await studentToken();
+      const list = await request(app).get("/course-t6/semesters").set(authed(token));
+
+      expect(list.status).toBe(200);
+      expect(list.body.map((item) => item.id)).toContain(created.body.id);
+    });
   });
 
   describe("US-2.3 — Update a semester", () => {
@@ -280,16 +290,6 @@ describe("Feature 2 — Semester Management", () => {
       expect(response.status).toBe(403);
       expect(response.body).toEqual({ message: "Admin role required." });
       expect(await db.semester.findByPk(created.body.id)).not.toBeNull();
-    });
-
-    it("Student can view semesters", async () => {
-      const admin = await adminToken();
-      const created = await createSemester(admin);
-      const token = await studentToken();
-      const list = await request(app).get("/course-t6/semesters").set(authed(token));
-
-      expect(list.status).toBe(200);
-      expect(list.body.map((item) => item.id)).toContain(created.body.id);
     });
 
     it("Unauthenticated user cannot use semester endpoints", async () => {
