@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
     const Semester = sequelize.define("semester", {
-      semesterName: {
+      semsterName: {
         type: DataTypes.STRING,
         allowNull: false,
       },

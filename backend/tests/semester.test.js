@@ -8,7 +8,7 @@ import db from "../app/models/index.js";
 import { seedAdmin } from "../app/scripts/seed.mjs";
 
 const semester = {
-  semesterName: "Fall 2026",
+  semsterName: "Fall 2026",
   startDate: "2026-08-17",
   endDate: "2026-12-11",
 };
@@ -71,7 +71,7 @@ describe("Feature 2 — Semester Management", () => {
     it("Admin creates a semester without a required field", async () => {
       const token = await adminToken();
       for (const [field, message] of [
-        ["semesterName", "Semester name is required."],
+        ["semsterName", "Semester name is required."],
         ["startDate", "Start date is required."],
         ["endDate", "End date is required."],
       ]) {
@@ -84,7 +84,7 @@ describe("Feature 2 — Semester Management", () => {
 
     it("Admin submits a whitespace-only semester name", async () => {
       const token = await adminToken();
-      const response = await createSemester(token, { ...semester, semesterName: "   " });
+      const response = await createSemester(token, { ...semester, semsterName: "   " });
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Semester name is required." });
@@ -114,17 +114,17 @@ describe("Feature 2 — Semester Management", () => {
     it("Signed-in user views the semester list", async () => {
       const token = await adminToken();
       await createSemester(token, {
-        semesterName: "Winter 2027",
+        semsterName: "Winter 2027",
         startDate: "2027-01-11",
         endDate: "2027-05-07",
       });
       await createSemester(token, {
-        semesterName: "Summer 2026",
+        semsterName: "Summer 2026",
         startDate: "2026-01-12",
         endDate: "2026-05-08",
       });
       await createSemester(token, {
-        semesterName: "Spring 2026",
+        semsterName: "Spring 2026",
         startDate: "2026-01-12",
         endDate: "2026-05-08",
       });
@@ -133,7 +133,7 @@ describe("Feature 2 — Semester Management", () => {
       const response = await request(app).get("/course-t6/semesters").set(authed(token));
 
       expect(response.status).toBe(200);
-      expect(response.body.map((item) => item.semesterName)).toEqual([
+      expect(response.body.map((item) => item.semsterName)).toEqual([
         "Spring 2026",
         "Summer 2026",
         "Fall 2026",
@@ -165,7 +165,7 @@ describe("Feature 2 — Semester Management", () => {
       const token = await adminToken();
       const created = await createSemester(token);
       const updated = {
-        semesterName: "Spring 2027",
+        semsterName: "Spring 2027",
         startDate: "2027-01-11",
         endDate: "2027-05-07",
       };
@@ -184,12 +184,12 @@ describe("Feature 2 — Semester Management", () => {
       const response = await request(app)
         .put(`/course-t6/semesters/${created.body.id}`)
         .set(authed(token))
-        .send({ ...semester, semesterName: "" });
+        .send({ ...semester, semsterName: "" });
       const stored = await db.semester.findByPk(created.body.id);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Semester name is required." });
-      expect(stored.semesterName).toBe("Fall 2026");
+      expect(stored.semsterName).toBe("Fall 2026");
     });
 
     it("Admin updates a semester that does not exist", async () => {
@@ -271,12 +271,12 @@ describe("Feature 2 — Semester Management", () => {
       const response = await request(app)
         .put(`/course-t6/semesters/${created.body.id}`)
         .set(authed(token))
-        .send({ ...semester, semesterName: "Spring 2027" });
+        .send({ ...semester, semsterName: "Spring 2027" });
       const stored = await db.semester.findByPk(created.body.id);
 
       expect(response.status).toBe(403);
       expect(response.body).toEqual({ message: "Admin role required." });
-      expect(stored.semesterName).toBe("Fall 2026");
+      expect(stored.semsterName).toBe("Fall 2026");
     });
 
     it("Student cannot delete a semester", async () => {

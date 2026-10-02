@@ -21,7 +21,7 @@ vi.mock("../src/services/semesterServices.js", () => ({
 
 const fall = {
   id: 1,
-  semesterName: "Fall 2026",
+  semsterName: "Fall 2026",
   startDate: "2026-08-17",
   endDate: "2026-12-11",
 };
@@ -83,13 +83,13 @@ describe("Feature 2 — Semester Management", () => {
       const { wrapper } = await mountPage();
 
       await clickLabeled(wrapper, "Add semester");
-      await fill(wrapper, "semesterName", "Fall 2026");
+      await fill(wrapper, "semsterName", "Fall 2026");
       await fill(wrapper, "startDate", "2026-08-17");
       await fill(wrapper, "endDate", "2026-12-11");
       await clickLabeled(wrapper, "Save");
 
       expect(SemesterServices.createSemester).toHaveBeenCalledWith({
-        semesterName: "Fall 2026",
+        semsterName: "Fall 2026",
         startDate: "2026-08-17",
         endDate: "2026-12-11",
       });
@@ -115,7 +115,7 @@ describe("Feature 2 — Semester Management", () => {
       const { wrapper } = await mountPage();
 
       await clickLabeled(wrapper, "Add semester");
-      await fill(wrapper, "semesterName", "Fall 2026");
+      await fill(wrapper, "semsterName", "Fall 2026");
       await fill(wrapper, "startDate", "2026-08-17");
       await fill(wrapper, "endDate", "2026-12-11");
       const save = [...document.querySelectorAll('[data-testid="save-semester"]')].at(-1);
@@ -133,7 +133,7 @@ describe("Feature 2 — Semester Management", () => {
       const { wrapper } = await mountPage();
 
       await clickLabeled(wrapper, "Add semester");
-      await fill(wrapper, "semesterName", "Fall 2026");
+      await fill(wrapper, "semsterName", "Fall 2026");
       await fill(wrapper, "startDate", "2026-08-17");
       await fill(wrapper, "endDate", "2026-12-11");
       await clickLabeled(wrapper, "Save");
@@ -147,7 +147,7 @@ describe("Feature 2 — Semester Management", () => {
       const { wrapper } = await mountPage();
 
       await clickLabeled(wrapper, "Add semester");
-      await fill(wrapper, "semesterName", "Fall 2026");
+      await fill(wrapper, "semsterName", "Fall 2026");
       await fill(wrapper, "startDate", "2026-08-17");
       await fill(wrapper, "endDate", "2026-12-11");
       await clickLabeled(wrapper, "Save");
@@ -214,16 +214,16 @@ describe("Feature 2 — Semester Management", () => {
       SemesterServices.listSemesters
         .mockResolvedValueOnce({ data: [fall] })
         .mockResolvedValue({
-          data: [{ ...fall, semesterName: "Spring 2027", startDate: "2027-01-11", endDate: "2027-05-07" }],
+          data: [{ ...fall, semsterName: "Spring 2027", startDate: "2027-01-11", endDate: "2027-05-07" }],
         });
       const { wrapper } = await mountPage();
 
       await clickLabeled(wrapper, "Edit");
-      await fill(wrapper, "semesterName", "Spring 2027");
+      await fill(wrapper, "semsterName", "Spring 2027");
       await clickLabeled(wrapper, "Save");
 
       expect(SemesterServices.updateSemester).toHaveBeenCalledWith(1, {
-        semesterName: "Spring 2027",
+        semsterName: "Spring 2027",
         startDate: "2026-08-17",
         endDate: "2026-12-11",
       });

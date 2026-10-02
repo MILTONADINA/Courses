@@ -31,8 +31,8 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Rule | Enforcement | Provenance |
 |---|---|---|
 | Admins create, update, and delete semesters. Any signed-in user can list them | `semester.routes.js`, `semester.controller.js` | Feature 2 FR-001, FR-002, FR-010, FR-015, FR-018 |
-| `semesterName`, `startDate`, and `endDate` are required. A whitespace-only name is rejected as missing. Dates must be real `YYYY-MM-DD` values | `semester.controller.js` | Feature 2 FR-004–FR-006, FR-008 |
-| The list is ordered by `startDate`, then `semesterName`. An empty list returns `200` with `[]` | `semester.controller.js#findAll` | Feature 2 FR-011, FR-012 |
+| `semsterName`, `startDate`, and `endDate` are required. A whitespace-only name is rejected as missing. Dates must be real `YYYY-MM-DD` values | `semester.controller.js` | Feature 2 FR-004–FR-006, FR-008 |
+| The list is ordered by `startDate`, then `semsterName`. An empty list returns `200` with `[]` | `semester.controller.js#findAll` | Feature 2 FR-011, FR-012 |
 | A non-numeric id returns `Semester id must be a number.` An unknown id returns `Semester with id=<id> not found.` Delete returns `Semester deleted successfully.` | `semester.controller.js` | Feature 2 FR-013, FR-014, FR-019 |
 | Students receive `403` on create, update, and delete. A missing session returns `401` | `semester.routes.js` | Feature 2 FR-020–FR-022 |
 | `/semesters` is signed-in only. The menu shows **Semesters** to every signed-in user | `router.js`, `MenuBar.vue` | Feature 2 FR-025, FR-026 |

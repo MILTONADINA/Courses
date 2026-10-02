@@ -15,7 +15,7 @@ const saving = ref(false);
 const editing = ref(false);
 const editingId = ref(null);
 
-const semesterName = ref("");
+const semsterName = ref("");
 const startDate = ref("");
 const endDate = ref("");
 
@@ -40,7 +40,7 @@ function openAddForm() {
   editing.value = false;
   editingId.value = null;
 
-  semesterName.value = "";
+  semsterName.value = "";
   startDate.value = "";
   endDate.value = "";
 
@@ -49,7 +49,7 @@ function openAddForm() {
 
 function openEditForm(semester) {
   error.value = "";
-  semesterName.value = semester.semesterName;
+  semsterName.value = semester.semsterName;
   startDate.value = semester.startDate;
   endDate.value = semester.endDate;
   editing.value = true;
@@ -58,7 +58,7 @@ function openEditForm(semester) {
 }
 
 function requiredMessage() {
-  if (!semesterName.value.trim()) return "Semester name is required.";
+  if (!semsterName.value.trim()) return "Semester name is required.";
   if (!String(startDate.value).trim()) return "Start date is required.";
   if (!String(endDate.value).trim()) return "End date is required.";
   return "";
@@ -73,7 +73,7 @@ async function saveSemester() {
   }
 
   const data = {
-    semesterName: semesterName.value,
+    semsterName: semsterName.value,
     startDate: startDate.value,
     endDate: endDate.value,
   };
@@ -180,11 +180,11 @@ onMounted(async () => {
           </v-alert>
 
           <v-text-field
-            v-model="semesterName"
+            v-model="semsterName"
             label="Semester name"
             density="comfortable"
             rounded="lg"
-            data-testid="semesterName"
+            data-testid="semsterName"
           />
 
           <v-text-field
@@ -247,7 +247,7 @@ onMounted(async () => {
           <div class="d-flex align-center justify-space-between">
             <div>
               <div class="text-h6">
-                {{ semester.semesterName }}
+                {{ semester.semsterName }}
               </div>
 
               <div>

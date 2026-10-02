@@ -13,12 +13,12 @@ function isCalendarDate(value) {
 
 function readSemester(body) {
   const data = body || {};
-  const semesterName = typeof data.semesterName === "string" ? data.semesterName.trim() : "";
-  return { semesterName, startDate: data.startDate, endDate: data.endDate };
+  const semsterName = typeof data.semsterName === "string" ? data.semsterName.trim() : "";
+  return { semsterName, startDate: data.startDate, endDate: data.endDate };
 }
 
 function validateSemester(values) {
-  if (!values.semesterName) return "Semester name is required.";
+  if (!values.semsterName) return "Semester name is required.";
   if (values.startDate === undefined || values.startDate === null || values.startDate === "") {
     return "Start date is required.";
   }
@@ -56,7 +56,7 @@ controller.create = async (req, res) => {
 controller.findAll = async (_req, res) => {
   try {
     const semesters = await db.semester.findAll({
-      order: [["startDate", "ASC"], ["semesterName", "ASC"]],
+      order: [["startDate", "ASC"], ["semsterName", "ASC"]],
     });
     return res.status(200).send(semesters);
   } catch (error) {
