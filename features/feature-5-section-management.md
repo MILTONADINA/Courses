@@ -379,7 +379,7 @@ The Sections page MUST:
 - Display an **Add Section** primary button.
 - Display sections in a table with **Semester**, **Course**, **Section**, **Instructor**, **Days**, and **Time** columns, sorted as returned by the API.
 - Show the course as `<courseNumber> <courseName>`, the instructor as `<firstName> <lastName>`, and the time as `<startTime>–<endTime>`.
-- Provide **Edit** and **Delete** actions for each section.
+- Provide **Edit** and **Delete** text-labeled actions for each section (not icon-only).
 - Delete the section and refresh the section list when **Delete** is selected.
 - Show a loading state while sections load.
 - Show `No sections yet.` when no sections exist.
@@ -947,5 +947,5 @@ After all tests pass, the developer updates the reference documentation listed b
 - Faculty management → [Feature 4](feature-4-faculty-management.md)
 - Enrolling students in sections → [Feature 6](feature-6-enrollment-management.md)
 - Removing enrollments when a section is deleted → [Feature 6](feature-6-enrollment-management.md)
-- Student course listing → Feature 7
-- Section student listing → Feature 8
+- Student course listing → [Feature 7](feature-7-student-course-listing.md)
+- Section student listing → [Feature 8](feature-8-section-student-listing.md)
