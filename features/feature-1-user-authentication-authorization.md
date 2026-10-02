@@ -954,12 +954,12 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 - [x] Successful login redirects to the Home page.
 - [x] The Register and Sign in buttons show a loading state while their request runs.
 - [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-038** satisfied).
-- [ ] **Success Criteria (SC-001**–**SC-013)** are met for this amendment.
+- [x] **Success Criteria (SC-001**–**SC-013)** are met for this amendment.
 - [x] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test with the file path and name in the amended Test Coverage Map.
-- [ ] All tests pass (`npm test`) after the registration tests are aligned with this amendment.
-- [ ] Existing registration tests use the clarified API and form scenario names; client-invalid forms send no request (owner: Milton).
-- [ ] Agility is synchronized with the amended registration acceptance criteria (owner: Milton; deferred until review).
+- [x] Every acceptance scenario has an automated test with the file path and name in the amended Test Coverage Map.
+- [x] All tests pass (`npm test`) after the registration tests are aligned with this amendment.
+- [x] Existing registration tests use the clarified API and form scenario names; client-invalid forms send no request (owner: Milton).
+- [x] Agility is synchronized with the amended registration acceptance criteria (owner: Milton; synchronized after review).
 - [x] `features/reference/api.md` is updated.
 - [x] `features/reference/data-model.md` is updated.
 - [x] `features/reference/behavior.md` is updated.
@@ -968,6 +968,8 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 - [x] Nothing outside this specification is implemented.
 
 ---
+
+**Amendment verification:** All 36 acceptance scenarios match their mapped test names and paths. Root `npm test` passes with 27 backend and 21 frontend tests using native MySQL `course-t6-test`, including the admin seed scenarios. Agility criteria and references are synchronized; application code and story statuses are unchanged.
 
 ## Out of Scope
 
