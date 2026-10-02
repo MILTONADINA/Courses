@@ -40,7 +40,7 @@ Every story is P1: each one must ship for the assignment's Section Student Listi
 ### Functional Requirements
 
 - **FR-001**: The system MUST allow an admin to list the students enrolled in a section.
-- **FR-002**: The section student list MUST include the section's `sectionNumber`, its course's `courseNumber` and `courseName`, and its semester's `semesterName`.
+- **FR-002**: The section student list MUST include the section's `sectionNumber`, its course's `courseNumber` and `courseName`, and its semester's `semsterName`.
 - **FR-003**: Each listed student MUST include the student's `id`, `firstName`, `lastName`, `universityId`, and `email`.
 - **FR-004**: A listed student MUST NOT include `password`.
 - **FR-005**: The list MUST include only students enrolled in the requested section.
@@ -148,7 +148,7 @@ There is no create, update, or delete route in this feature.
     "sectionNumber": "01",
     "courseNumber": "CMSC 4113",
     "courseName": "Software Engineering IV",
-    "semesterName": "Fall 2026"
+    "semsterName": "Fall 2026"
   },
   "students": [
     {
@@ -203,7 +203,7 @@ The page MUST be available only to authenticated admins. A signed-out user is se
 The page MUST:
 
 - Load `GET /course-t6/sections/:id/students` for the section in the route.
-- Display the heading `<courseNumber> <courseName> — Section <sectionNumber> (<semesterName>)`.
+- Display the heading `<courseNumber> <courseName> — Section <sectionNumber> (<semsterName>)`.
 - Display students in a table with **Last name**, **First name**, **University ID**, and **Email** columns, in the order returned by the API.
 - Show a loading state while the list loads.
 - Show `No students enrolled.` when the section has no enrollments.
@@ -239,7 +239,7 @@ This feature adds no table and no columns. It reads the section's course and sem
 * **And** student `Grace Hopper` with university ID `100200` and email `grace.hopper@example.com` is enrolled in section `3`
 * **When** I send `GET /course-t6/sections/3/students`
 * **Then** the API returns `200`
-* **And** the response contains `sectionNumber` `01`, `courseNumber` `CMSC 4113`, `courseName` `Software Engineering IV`, and `semesterName` `Fall 2026`
+* **And** the response contains `sectionNumber` `01`, `courseNumber` `CMSC 4113`, `courseName` `Software Engineering IV`, and `semsterName` `Fall 2026`
 * **And** the students include `firstName` `Grace`, `lastName` `Hopper`, `universityId` `100200`, and `email` `grace.hopper@example.com`
 
 #### Scenario: Section students are sorted by last name, then first name
@@ -406,7 +406,7 @@ Application code for this feature is written by hand ("create code (by hand) and
 Write these by hand on branch `feature/8-section-student-listing`, in the layer order in `features/framework.md` (models → routes → backend tests → frontend services → views → frontend tests → router). Build only what this specification defines.
 
 - [ ] Route `GET /course-t6/sections/:id/students`, protected by `authenticate` and `requireAdmin` from `backend/app/authorization/authorization.js`.
-- [ ] The response has the section's `id`, `sectionNumber`, `courseNumber`, `courseName`, and `semesterName`, and a `students` array.
+- [ ] The response has the section's `id`, `sectionNumber`, `courseNumber`, `courseName`, and `semsterName`, and a `students` array.
 - [ ] Each student has `id`, `firstName`, `lastName`, `universityId`, and `email`, and never `password`.
 - [ ] Only students enrolled in that section are returned, sorted by `lastName`, then `firstName`.
 - [ ] A section with no enrollments returns `200` with `students: []`.
@@ -414,7 +414,7 @@ Write these by hand on branch `feature/8-section-student-listing`, in the layer 
 - [ ] No create, update, or delete route, and no table, columns, or associations are added.
 - [ ] The Section students page route is `/sections/:id/students` with route name `section-students`; signed-out users are sent to Login and students to Home.
 - [ ] Each row of the Sections page has a **Students** action that opens `/sections/:id/students`.
-- [ ] The page shows the heading `<courseNumber> <courseName> — Section <sectionNumber> (<semesterName>)` and Last name, First name, University ID, and Email columns in the order returned by the API.
+- [ ] The page shows the heading `<courseNumber> <courseName> — Section <sectionNumber> (<semsterName>)` and Last name, First name, University ID, and Email columns in the order returned by the API.
 - [ ] The page shows a loading state, `No students enrolled.` when the list is empty, the API message when the request fails, and `Request failed.` when the API gives no message.
 - [ ] The page has no actions that add, remove, or change enrollments, and no MenuBar link is added.
 

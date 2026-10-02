@@ -137,7 +137,7 @@ A listed section uses these fields:
   "courseNumber": "CMSC-4123",
   "courseName": "Software Engineering IV",
   "sectionNumber": "01",
-  "semesterName": "Fall 2026",
+  "semsterName": "Fall 2026",
   "daysOfWeek": "MWF",
   "startTime": "09:00",
   "endTime": "09:50",
@@ -169,7 +169,7 @@ This page is for a signed-in student. If nobody is signed in, send them to Login
 The page MUST:
 
 - Load `GET /course-t6/my-courses`.
-- Show `courseNumber`, `courseName`, `sectionNumber`, `semesterName`, `daysOfWeek`, `startTime`, `endTime`, and `instructorName` for each enrolled section.
+- Show `courseNumber`, `courseName`, `sectionNumber`, `semsterName`, `daysOfWeek`, `startTime`, `endTime`, and `instructorName` for each enrolled section.
 - Show a loading state while the list loads.
 - Show `No enrolled sections.` when the list is empty.
 - Display the API `message` when the request fails.
@@ -203,7 +203,7 @@ No new table and no new columns. Read the signed-in student's enrollments and th
 * **And** that section meets `MWF` from `09:00` to `09:50` with instructor `Ada Lovelace`
 * **When** I request my course list
 * **Then** the API returns `200`
-* **And** the list includes `courseNumber` `CMSC-4123`, `courseName` `Software Engineering IV`, `sectionNumber` `01`, `semesterName` `Fall 2026`, `daysOfWeek` `MWF`, `startTime` `09:00`, `endTime` `09:50`, and `instructorName` `Ada Lovelace`
+* **And** the list includes `courseNumber` `CMSC-4123`, `courseName` `Software Engineering IV`, `sectionNumber` `01`, `semsterName` `Fall 2026`, `daysOfWeek` `MWF`, `startTime` `09:00`, `endTime` `09:50`, and `instructorName` `Ada Lovelace`
 
 #### Scenario: Student views more than one enrolled section
 

@@ -94,7 +94,7 @@ Every story is P1: each one must ship for the assignment's Section Management (C
 - **FR-013**: The section list MUST accept an optional `semesterId` query parameter that returns only the sections of that semester.
 - **FR-014**: A `semesterId` query parameter that is not a number MUST return `400` with `{ "message": "Semester id must be a number." }`.
 - **FR-015**: The section list MUST be sorted by the semester's `startDate` ascending, then the course's `courseNumber` ascending, then `sectionNumber` ascending.
-- **FR-016**: Every section returned by the API MUST include its semester's `semesterName`, its course's `courseNumber` and `courseName`, and its faculty member's `firstName` and `lastName`.
+- **FR-016**: Every section returned by the API MUST include its semester's `semsterName`, its course's `courseNumber` and `courseName`, and its faculty member's `firstName` and `lastName`.
 - **FR-017**: The system MUST allow an admin to edit every section field.
 - **FR-018**: Editing a section MUST require every field and apply the same validation rules as adding.
 - **FR-019**: The system MUST allow an admin to delete a section.
@@ -121,7 +121,7 @@ Every story is P1: each one must ship for the assignment's Section Management (C
 ## Assumptions
 
 - Feature 1 authentication and the admin-only authorization check are on `dev`.
-- Feature 2 provides the `semesters` table with `id`, `semesterName`, `startDate`, and `endDate`, and `GET /course-t6/semesters` for any signed-in user.
+- Feature 2 provides the `semesters` table with `id`, `semsterName`, `startDate`, and `endDate`, and `GET /course-t6/semesters` for any signed-in user.
 - Feature 3 provides the `courses` table with `id`, `courseNumber`, and `courseName`, and `GET /course-t6/courses` for admins.
 - Feature 4 provides the `faculty` table with `id`, `firstName`, and `lastName`, and `GET /course-t6/faculty` for admins.
 - The project slide names the instructor field `facultyId`. This specification uses `facultyId`.
@@ -234,7 +234,7 @@ Every endpoint that returns a section MUST return these fields:
   "daysOfWeek": "MWF",
   "startTime": "09:00",
   "endTime": "09:50",
-  "semester": { "id": 2, "semesterName": "Fall 2026" },
+  "semester": { "id": 2, "semsterName": "Fall 2026" },
   "course": { "id": 3, "courseNumber": "CMSC 4113", "courseName": "Software Engineering IV" },
   "faculty": { "id": 4, "firstName": "Ada", "lastName": "Lovelace" },
   "createdAt": "2026-09-30T20:15:00.000Z",
@@ -866,7 +866,7 @@ The developer writes the models, routes, frontend services, views, and router fo
 - Section routes: `GET /course-t6/sections`, `POST /course-t6/sections`, `PUT /course-t6/sections/:id`, `DELETE /course-t6/sections/:id`.
 - Every section route uses `authenticate` from `backend/app/authorization/authorization.js`; `POST`, `PUT`, and `DELETE` also use `requireAdmin`.
 - `GET /course-t6/sections` accepts an optional `semesterId` query parameter.
-- Every section response includes `semester { id, semesterName }`, `course { id, courseNumber, courseName }`, and `faculty { id, firstName, lastName }`.
+- Every section response includes `semester { id, semsterName }`, `course { id, courseNumber, courseName }`, and `faculty { id, firstName, lastName }`.
 - The list is sorted by the semester's `startDate`, then the course's `courseNumber`, then `sectionNumber`.
 - The field is named `facultyId`. `startTime` and `endTime` are stored as times and returned as `HH:MM`.
 - `semesterId`, `courseId`, and `facultyId` use `ON DELETE RESTRICT`, and the semester, course, and faculty delete endpoints return `400` with this specification's messages when sections reference them.

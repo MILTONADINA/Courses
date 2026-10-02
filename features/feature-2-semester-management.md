@@ -71,19 +71,19 @@ Every story is P1: each one must ship for the assignment's semester management f
 
 - **FR-001**: Semester management MUST use the authenticated user and role from Feature 1.
 - **FR-002**: An admin MUST be able to create a semester.
-- **FR-003**: A semester MUST store `semesterName`, `startDate`, and `endDate`.
-- **FR-004**: `semesterName`, `startDate`, and `endDate` MUST be required.
-- **FR-005**: A whitespace-only `semesterName` MUST be rejected as missing.
+- **FR-003**: A semester MUST store `semsterName`, `startDate`, and `endDate`.
+- **FR-004**: `semsterName`, `startDate`, and `endDate` MUST be required.
+- **FR-005**: A whitespace-only `semsterName` MUST be rejected as missing.
 - **FR-006**: `startDate` and `endDate` MUST be calendar dates in `YYYY-MM-DD` form.
 - **FR-007**: Successful creation MUST return `201` and the created semester.
 - **FR-008**: Invalid semester information MUST return `400` with `{ "message": "..." }`.
 - **FR-009**: Invalid semester information MUST NOT create or change a semester.
 - **FR-010**: A signed-in admin or student MUST be able to list semesters.
-- **FR-011**: The semester list MUST be ordered by `startDate` ascending, then by `semesterName` ascending.
+- **FR-011**: The semester list MUST be ordered by `startDate` ascending, then by `semsterName` ascending.
 - **FR-012**: When no semesters exist, the list MUST return `200` with `[]`.
 - **FR-013**: A missing semester on update or delete MUST return `404` with `{ "message": "Semester with id=<id> not found." }`.
 - **FR-014**: A non-numeric semester id on update or delete MUST return `400` with `{ "message": "Semester id must be a number." }`.
-- **FR-015**: An admin MUST be able to update `semesterName`, `startDate`, and `endDate`.
+- **FR-015**: An admin MUST be able to update `semsterName`, `startDate`, and `endDate`.
 - **FR-016**: Update validation MUST use the same rules as creation.
 - **FR-017**: A successful update MUST return `200` and the updated semester.
 - **FR-018**: An admin MUST be able to delete a semester.
@@ -108,7 +108,7 @@ Every story is P1: each one must ship for the assignment's semester management f
 ## Assumptions
 
 - Feature 1 authentication is available, including `authenticate` and the admin-only check `requireAdmin` that returns `{ "message": "Admin role required." }`.
-- The project slide spells the name field `semsterName`. This specification uses `semesterName`.
+- The semester name field is `semsterName`, matching the spelling on the project slide.
 - Students may list semesters. Choosing a semester and enrolling belongs to Feature 6.
 - No section records exist in this feature, so delete does not check for sections.
 
@@ -171,7 +171,7 @@ All paths are under the API mount `/course-t6`.
 | Method | Path | Authentication | Success |
 |---|---|---|---|
 | `POST` | `/course-t6/semesters` | Admin | `201` semester |
-| `GET` | `/course-t6/semesters` | Signed-in user | `200` array, ordered by `startDate` then `semesterName` |
+| `GET` | `/course-t6/semesters` | Signed-in user | `200` array, ordered by `startDate` then `semsterName` |
 | `PUT` | `/course-t6/semesters/:id` | Admin | `200` semester |
 | `DELETE` | `/course-t6/semesters/:id` | Admin | `200` message |
 
@@ -182,7 +182,7 @@ A semester response uses these fields:
 ```json
 {
   "id": 1,
-  "semesterName": "Fall 2026",
+  "semsterName": "Fall 2026",
   "startDate": "2026-08-17",
   "endDate": "2026-12-11",
   "createdAt": "2026-09-30T20:15:00.000Z",
@@ -194,7 +194,7 @@ Create and update accept this body:
 
 ```json
 {
-  "semesterName": "Fall 2026",
+  "semsterName": "Fall 2026",
   "startDate": "2026-08-17",
   "endDate": "2026-12-11"
 }
@@ -243,7 +243,7 @@ The page MUST be available to signed-in users. A signed-out user is sent to the 
 
 The page MUST:
 
-- Load `GET /course-t6/semesters` and show `semesterName`, `startDate`, and `endDate` for each semester.
+- Load `GET /course-t6/semesters` and show `semsterName`, `startDate`, and `endDate` for each semester.
 - Show a loading state while the list loads.
 - Show `No semesters found.` when the list is empty.
 - Show **Add semester** to an admin. This opens a dialog titled **Add semester**.
@@ -272,13 +272,13 @@ The MenuBar MUST show **Semesters** to every signed-in user and link it to `/sem
 | Field | Type/Requirement | Rules |
 |---|---|---|
 | `id` | Primary key | Auto-generated |
-| `semesterName` | String | Required |
+| `semsterName` | String | Required |
 | `startDate` | Date only | Required, `YYYY-MM-DD` |
 | `endDate` | Date only | Required, `YYYY-MM-DD` |
 | `createdAt` | Timestamp | Automatically generated |
 | `updatedAt` | Timestamp | Automatically generated |
 
-The column name is `semesterName`.
+The column name is `semsterName`.
 
 ### Associations
 
@@ -296,7 +296,7 @@ The column name is `semesterName`.
 * **Given** I am signed in as an admin
 * **When** I submit semester name `Fall 2026`, start date `2026-08-17`, and end date `2026-12-11`
 * **Then** the API returns `201`
-* **And** the response contains `semesterName` `Fall 2026`, `startDate` `2026-08-17`, and `endDate` `2026-12-11`
+* **And** the response contains `semsterName` `Fall 2026`, `startDate` `2026-08-17`, and `endDate` `2026-12-11`
 
 #### Scenario: Admin creates a semester without a required field
 
@@ -641,10 +641,14 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+Application code for this feature is written by hand. AI may be used only to build the automated tests, as required by the course slides.
+
+### Handwritten application code
+
+The following checklist is for the person coding this feature:
 
 ```text
-Implement Feature 2 from @features/feature-2-semester-management.md on branch feature/2-semester-management.
+Write Feature 2 by hand from @features/feature-2-semester-management.md on branch feature/2-semester-management.
 
 Only implement what is defined in this specification.
 
@@ -663,7 +667,7 @@ DELETE /course-t6/semesters/:id
 
 There is no GET /course-t6/semesters/:id route.
 
-Use the field name semesterName. Do not use the slide spelling semsterName.
+Use the field name semsterName exactly as written on the project slide.
 
 Create, update, and delete require authenticate and requireAdmin.
 List requires authenticate for any signed-in user.
@@ -705,6 +709,13 @@ Before finishing:
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
 
+### Automated tests (AI allowed)
+
+AI may write or update only the automated tests. It MUST NOT write or change application code in `backend/app` or `frontend/src`.
+
+- Use the exact scenarios, test file paths, and test names in the Test Coverage Map.
+- Report any application-code failure for the developer to fix by hand; do not change the specification or weaken a test to make it pass.
+
 **Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
 ---
@@ -731,7 +742,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] The list updates after a successful save or delete.
 - [ ] The page shows a loading state, `No semesters found.` when empty, the API message on failure, and the fallback message when the API gives no message.
 - [ ] The MenuBar links signed-in users to Semesters.
-- [ ] The database field is `semesterName`, not `semsterName`.
+- [ ] The database field is `semsterName`, matching the project slide.
 - [ ] The Semester model is registered in `backend/app/models/index.js`.
 - [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-033** satisfied).
 - [ ] **Success Criteria (SC-001**–**SC-009)** are met.
@@ -744,6 +755,8 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] `features/reference/README.md` lists Feature 2 in its provenance table.
 - [ ] `features/README.md` links Feature 2 to this file.
 - [ ] Nothing outside this specification is implemented.
+- [ ] Agility is synchronized with the amended semester field in Features 2, 5, 7, and 8 (owner: Landry; deferred until review).
+- [ ] The Feature 2 implementation in PR #17 is aligned with `semsterName` before that implementation is merged (owner: Landry).
 
 ---
 
