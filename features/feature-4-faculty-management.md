@@ -70,16 +70,16 @@ Every story is P1: each one must ship for the assignment's Faculty Management (C
 ### Functional Requirements
 
 - **FR-001**: The system MUST allow an admin to add a faculty member.
-- **FR-002**: A faculty member MUST have a `firstName`, `lastName`, and `department`.
-- **FR-003**: `firstName`, `lastName`, and `department` MUST be required.
+- **FR-002**: A faculty member MUST have a `firstName`, `lastName`, and `dept`.
+- **FR-003**: `firstName`, `lastName`, and `dept` MUST be required.
 - **FR-004**: Required faculty fields MUST reject empty values.
 - **FR-005**: Required faculty fields MUST reject whitespace-only values.
 - **FR-006**: Invalid faculty information MUST return `400` with a `{ "message": "..." }` response.
 - **FR-007**: Invalid faculty information MUST NOT create or change a faculty member.
-- **FR-008**: `department` MUST be free text with no required format beyond being a required value.
+- **FR-008**: `dept` MUST be free text with no required format beyond being a required value.
 - **FR-009**: The system MUST allow an admin to view all faculty members.
 - **FR-010**: The faculty list MUST be sorted by `lastName` ascending, then `firstName` ascending.
-- **FR-011**: The system MUST allow an admin to edit a faculty member's `firstName`, `lastName`, and `department`.
+- **FR-011**: The system MUST allow an admin to edit a faculty member's `firstName`, `lastName`, and `dept`.
 - **FR-012**: Editing a faculty member MUST require all three fields and apply the same validation rules as adding.
 - **FR-013**: The system MUST allow an admin to delete a faculty member.
 - **FR-014**: Deleting a faculty member MUST return `200` with `{ "message": "Faculty member deleted successfully." }`.
@@ -99,7 +99,7 @@ Every story is P1: each one must ship for the assignment's Faculty Management (C
 ## Assumptions
 
 - Feature 1 authentication and the admin-only authorization check are on `dev`.
-- The project slide calls the department field `dept`. This specification uses `department`.
+- The faculty department field is `dept`, matching the project slide.
 - Only admins manage faculty members.
 - A faculty member is a record managed by an admin, not a user who logs in.
 - Feature 1 defines only the `admin` and `student` roles; this feature does not add a `faculty` role.
@@ -186,7 +186,7 @@ Every endpoint that returns a faculty member MUST return these fields:
   "id": 1,
   "firstName": "Ada",
   "lastName": "Lovelace",
-  "department": "Computer Science",
+  "dept": "Computer Science",
   "createdAt": "2026-09-30T20:15:00.000Z",
   "updatedAt": "2026-09-30T20:15:00.000Z"
 }
@@ -208,7 +208,7 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
     "id": 2,
     "firstName": "Grace",
     "lastName": "Hopper",
-    "department": "Mathematics",
+    "dept": "Mathematics",
     "createdAt": "2026-09-30T20:16:00.000Z",
     "updatedAt": "2026-09-30T20:16:00.000Z"
   },
@@ -216,7 +216,7 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
     "id": 1,
     "firstName": "Ada",
     "lastName": "Lovelace",
-    "department": "Computer Science",
+    "dept": "Computer Science",
     "createdAt": "2026-09-30T20:15:00.000Z",
     "updatedAt": "2026-09-30T20:15:00.000Z"
   }
@@ -235,7 +235,7 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
 {
   "firstName": "Ada",
   "lastName": "Lovelace",
-  "department": "Computer Science"
+  "dept": "Computer Science"
 }
 ```
 
@@ -253,7 +253,7 @@ Returns an array of faculty members sorted by `lastName` ascending, then `firstN
 {
   "firstName": "Ada",
   "lastName": "King",
-  "department": "Mathematics"
+  "dept": "Mathematics"
 }
 ```
 
@@ -323,6 +323,7 @@ The dialog MUST:
 - Provide **First name**, **Last name**, and **Department** fields.
 - Pre-fill the fields with the faculty member's current values when editing.
 - Validate that every field is filled in and not whitespace-only before submitting, using the same messages as the API.
+- Do not send a save request when a required field is empty or whitespace-only.
 - Display API validation errors.
 - Provide **Save** and **Cancel** buttons.
 - Close and refresh the faculty list after a successful save.
@@ -351,7 +352,7 @@ The MenuBar MUST:
 | `id` | Primary key | Auto-generated |
 | `firstName` | String | Required |
 | `lastName` | String | Required |
-| `department` | String | Required |
+| `dept` | String | Required |
 | `createdAt` | Timestamp | Automatically generated |
 | `updatedAt` | Timestamp | Automatically generated |
 
@@ -377,20 +378,36 @@ The `faculty` table has no relationship to `users` or `sessions`.
 #### Scenario: Admin adds a faculty member without a required field
 
 * **Given** I am signed in as an admin
-* **When** I leave a required faculty field empty
-* **And** I submit the Add Faculty form
+* **When** I send `POST /course-t6/faculty` with a required field empty and all other fields valid
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** no faculty member is created
+
 
 #### Scenario: Admin submits whitespace-only faculty information
 
 * **Given** I am signed in as an admin
-* **When** I provide only whitespace for a required faculty field
-* **And** I submit the Add Faculty form
+* **When** I send `POST /course-t6/faculty` with only whitespace for a required field and all other fields valid
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** no faculty member is created
+
+
+#### Scenario: Add Faculty form blocks submit when a required field is empty
+
+* **Given** I am signed in as an admin with the Add Faculty dialog open and all other fields valid
+* **When** I leave a required field empty
+* **And** I select **Save**
+* **Then** I see that field's required message
+* **And** no save request is sent
+
+#### Scenario: Add Faculty form blocks submit when a required field is only whitespace
+
+* **Given** I am signed in as an admin with the Add Faculty dialog open and all other fields valid
+* **When** I enter only whitespace for a required field
+* **And** I select **Save**
+* **Then** I see that field's required message
+* **And** no save request is sent
 
 ---
 
@@ -451,12 +468,28 @@ The `faculty` table has no relationship to `users` or `sessions`.
 #### Scenario: Admin edits a faculty member without a required field
 
 * **Given** I am signed in as an admin
-* **And** a faculty member exists
-* **When** I clear a required faculty field
-* **And** I submit the Edit Faculty form
+* **And** faculty member `1` exists
+* **When** I send `PUT /course-t6/faculty/1` with a required field empty and all other fields valid
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** the faculty member is not changed
+
+
+#### Scenario: Edit Faculty form blocks submit when a required field is empty
+
+* **Given** I am signed in as an admin with the Edit Faculty dialog open and all other fields valid
+* **When** I clear a required field
+* **And** I select **Save**
+* **Then** I see that field's required message
+* **And** no save request is sent
+
+#### Scenario: Edit Faculty form blocks submit when a required field is only whitespace
+
+* **Given** I am signed in as an admin with the Edit Faculty dialog open and all other fields valid
+* **When** I replace a required field with only whitespace
+* **And** I select **Save**
+* **Then** I see that field's required message
+* **And** no save request is sent
 
 #### Scenario: Admin edits a faculty member that does not exist
 
@@ -554,15 +587,19 @@ Each scenario MUST map to at least one automated test.
 | Story | Scenario | Test File | Test Name |
 |---|---|---|---|
 | US-4.1 | Admin adds a faculty member successfully | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin adds a faculty member successfully` |
-| US-4.1 | Admin adds a faculty member without a required field | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin adds a faculty member without a required field` |
-| US-4.1 | Admin submits whitespace-only faculty information | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin submits whitespace-only faculty information` |
+| US-4.1 | Admin adds a faculty member without a required field | `backend/tests/faculty.test.js` | `Admin adds a faculty member without a required field` |
+| US-4.1 | Admin submits whitespace-only faculty information | `backend/tests/faculty.test.js` | `Admin submits whitespace-only faculty information` |
+| US-4.1 | Add Faculty form blocks submit when a required field is empty | `frontend/tests/Faculty.test.js` | `Add Faculty form blocks submit when a required field is empty` |
+| US-4.1 | Add Faculty form blocks submit when a required field is only whitespace | `frontend/tests/Faculty.test.js` | `Add Faculty form blocks submit when a required field is only whitespace` |
 | US-4.2 | Admin views the faculty list | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin views the faculty list` |
 | US-4.2 | Admin views the faculty list when no faculty members exist | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin views the faculty list when no faculty members exist` |
 | US-4.2 | Faculty page shows a loading state while faculty members load | `frontend/tests/Faculty.test.js` | `Faculty page shows a loading state while faculty members load` |
 | US-4.2 | Faculty page shows the API error when faculty members fail to load | `frontend/tests/Faculty.test.js` | `Faculty page shows the API error when faculty members fail to load` |
 | US-4.2 | Faculty page shows a fallback error when the API gives no message | `frontend/tests/Faculty.test.js` | `Faculty page shows a fallback error when the API gives no message` |
 | US-4.3 | Admin edits a faculty member successfully | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin edits a faculty member successfully` |
-| US-4.3 | Admin edits a faculty member without a required field | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin edits a faculty member without a required field` |
+| US-4.3 | Admin edits a faculty member without a required field | `backend/tests/faculty.test.js` | `Admin edits a faculty member without a required field` |
+| US-4.3 | Edit Faculty form blocks submit when a required field is empty | `frontend/tests/Faculty.test.js` | `Edit Faculty form blocks submit when a required field is empty` |
+| US-4.3 | Edit Faculty form blocks submit when a required field is only whitespace | `frontend/tests/Faculty.test.js` | `Edit Faculty form blocks submit when a required field is only whitespace` |
 | US-4.3 | Admin edits a faculty member that does not exist | `backend/tests/faculty.test.js` | `Admin edits a faculty member that does not exist` |
 | US-4.3 | Admin edits a faculty member with an id that is not a number | `backend/tests/faculty.test.js` | `Admin edits a faculty member with an id that is not a number` |
 | US-4.4 | Admin deletes a faculty member successfully | `backend/tests/faculty.test.js`, `frontend/tests/Faculty.test.js` | `Admin deletes a faculty member successfully` |
@@ -579,10 +616,14 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+Application code for this feature is written by hand. AI may be used only to build the automated tests, as required by the course slides.
+
+### Handwritten application code
+
+The following checklist is for the person coding this feature:
 
 ```text
-Implement Feature 4 from @features/feature-4-faculty-management.md on branch feature/4-faculty-management.
+Write Feature 4 by hand from @features/feature-4-faculty-management.md on branch feature/4-faculty-management.
 
 Only implement what is defined in this specification.
 
@@ -602,7 +643,7 @@ A faculty member is not a user account. Do not add a faculty role and do not cha
 
 The table name must be faculty. Sort the faculty list by lastName, then firstName.
 
-Use the field name department. Do not use the slide name dept.
+Use the field name dept from the project slide.
 
 The Faculty page route must be /faculty with route name faculty.
 Show the API error message when a faculty request fails, or "Request failed." when the API gives no message.
@@ -625,6 +666,14 @@ Before finishing:
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
 
+### Automated tests (AI allowed)
+
+AI may write or update only the automated tests. It MUST NOT write or change application code in `backend/app` or `frontend/src`.
+
+- Use the exact scenarios, test file paths, and test names in the Test Coverage Map.
+- API validation scenarios send requests directly to the API; faculty form validation scenarios show the field error and send no save request.
+- Report any application-code failure for the developer to fix by hand; do not change the specification or weaken a test to make it pass.
+
 **Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
 ---
@@ -632,8 +681,8 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 ## Definition of Done
 
 - [ ] Admins can add a faculty member with a first name, last name, and department.
-- [ ] `firstName`, `lastName`, and `department` are required and reject empty and whitespace-only values.
-- [ ] The database field is `department`, not `dept`.
+- [ ] `firstName`, `lastName`, and `dept` are required and reject empty and whitespace-only values.
+- [ ] The database field is `dept`, matching the project slide.
 - [ ] Admins can view all faculty members sorted by last name, then first name.
 - [ ] Admins can edit a faculty member.
 - [ ] Admins can delete a faculty member.
@@ -659,6 +708,7 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [ ] `features/reference/README.md` lists Feature 4 in its provenance table.
 - [ ] `features/README.md` links Feature 4 to `feature-4-faculty-management.md`.
 - [ ] Nothing outside this specification is implemented.
+- [ ] Agility is synchronized with the amended faculty validation acceptance criteria (owner: Morgan; deferred until review).
 
 ---
 
