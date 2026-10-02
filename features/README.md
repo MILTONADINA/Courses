@@ -23,7 +23,7 @@ No application code may be written unless it maps to a requirement in one of the
 | 5 | Section Management | [feature-5-section-management.md](./feature-5-section-management.md) | `feature/5-section-management` | 1, 2, 3, 4 | Morgan |
 | 6 | Enrollment Management | [feature-6-enrollment-management.md](./feature-6-enrollment-management.md) | `feature/6-enrollment-management` | 1, 2, 5 | Milton |
 | 7 | Student Course Listing | [feature-7-student-course-listing.md](./feature-7-student-course-listing.md) | `feature/7-student-course-listing` | 6 | Landry |
-| 8 | Section Student Listing | [feature-8-section-student-listing.md](./feature-8-section-student-listing.md) | `feature/8-section-student-listing` | 6 | Morgan |
+| 8 | Section Student Listing | [feature-8-section-student-listing.md](./feature-8-section-student-listing.md) | `feature/8-section-student-listing` | 1, 5, 6 | Morgan |
 | 9 | Student Management | [feature-9-student-management.md](./feature-9-student-management.md) | `feature/9-student-management` | 1 | Landry |
 
 When you write a spec, replace *not yet written* with a link to your `feature-N-short-name.md` in the same PR.
