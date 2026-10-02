@@ -2,7 +2,7 @@
 
 **Feature ID:** 1  
 **Branch pattern:** `feature/1-user-authentication-authorization`  
-**Status:** Shipped; specification amendment pending review  
+**Status:** Shipped  
 **Created:** 2026-09-28  
 **Input:** Allow users to register and log in to the Courses Management System. The system has admin users and student users.
 
@@ -522,7 +522,6 @@ role = admin
 * **And** the response contains the required-field message
 * **And** no user account is created
 
-
 #### Scenario: User submits whitespace-only required information
 
 * **Given** I am not registered
@@ -531,7 +530,6 @@ role = admin
 * **And** the response contains the required-field message
 * **And** no user account is created
 
-
 #### Scenario: User submits a password shorter than 8 characters
 
 * **Given** I am not registered
@@ -539,7 +537,6 @@ role = admin
 * **Then** the API returns `400`
 * **And** the response is `{ "message": "Password must be at least 8 characters." }`
 * **And** no user account is created
-
 
 #### Scenario: Register form blocks submit when a required field is empty
 
@@ -969,13 +966,11 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 
 ---
 
-**Amendment verification:** All 36 acceptance scenarios match their mapped test names and paths. Root `npm test` passes with 27 backend and 21 frontend tests using native MySQL `course-t6-test`, including the admin seed scenarios. Agility criteria and references are synchronized; application code and story statuses are unchanged.
-
 ## Out of Scope
 
-- Course creation, editing, and deletion → Feature 3
+- Course creation, editing, and deletion → [Feature 3](feature-3-course-management.md)
 - Students enrolling in sections → [Feature 6](feature-6-enrollment-management.md)
-- Section days and times → Feature 5
-- Admin adding students → Feature 9
+- Section days and times → [Feature 5](feature-5-section-management.md)
+- Admin adding students → [Feature 9](feature-9-student-management.md)
 - Adding faculty → [Feature 4](feature-4-faculty-management.md)
 - Password reset (`POST /reset-password`)
