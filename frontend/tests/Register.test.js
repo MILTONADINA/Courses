@@ -17,6 +17,12 @@ const valid = {
   universityId: "123456", userName: "jdoe", password: "password123",
 };
 
+const requiredMessages = [
+  ["firstName", "First name is required."], ["lastName", "Last name is required."],
+  ["email", "Email is required."], ["universityId", "University ID is required."],
+  ["userName", "Username is required."], ["password", "Password is required."],
+];
+
 async function fill(wrapper, values = valid) {
   for (const [field, value] of Object.entries(values)) {
     await wrapper.find(`[data-testid="${field}"] input`).setValue(value);
@@ -46,27 +52,27 @@ describe("Feature 1 — User Authentication & Authorization", () => {
       expect(router.currentRoute.value.name).toBe("login");
     });
 
-    it("User registers without a required field", async () => {
-      for (const field of Object.keys(valid)) {
+    it("Register form blocks submit when a required field is empty", async () => {
+      for (const [field, message] of requiredMessages) {
         const { wrapper } = await mountRegister();
         await fill(wrapper, { ...valid, [field]: "" });
         await submit(wrapper);
-        expect(wrapper.find(".v-alert").exists()).toBe(true);
+        expect(wrapper.find(".v-alert").text()).toContain(message);
         expect(AuthServices.registerUser).not.toHaveBeenCalled();
       }
     });
 
-    it("User submits whitespace-only required information", async () => {
-      for (const field of Object.keys(valid)) {
+    it("Register form blocks submit when a required field is only whitespace", async () => {
+      for (const [field, message] of requiredMessages) {
         const { wrapper } = await mountRegister();
         await fill(wrapper, { ...valid, [field]: "   " });
         await submit(wrapper);
-        expect(wrapper.find(".v-alert").exists()).toBe(true);
+        expect(wrapper.find(".v-alert").text()).toContain(message);
         expect(AuthServices.registerUser).not.toHaveBeenCalled();
       }
     });
 
-    it("User submits a password shorter than 8 characters", async () => {
+    it("Register form blocks submit when the password is shorter than 8 characters", async () => {
       const { wrapper } = await mountRegister();
       await fill(wrapper, { ...valid, password: "short" });
       await submit(wrapper);

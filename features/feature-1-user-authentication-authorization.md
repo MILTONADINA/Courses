@@ -373,7 +373,8 @@ The Register page MUST:
 
 - Provide fields for `firstName`, `lastName`, `email`, `universityId`, `userName`, and `password`.
 - NOT provide a role selector.
-- Validate registration information with the same rules and messages as the API.
+- Validate registration information before submitting, using the same rules and messages as the API.
+- Do not send a registration request when client validation fails.
 - Display validation errors.
 - Show `Registration failed.` when a request fails without an API message.
 - Show a loading state on the **Register** button while the request runs.
@@ -515,30 +516,51 @@ role = admin
 
 #### Scenario: User registers without a required field
 
-* **Given** I am on the registration page
-* **When** I leave a required field empty
-* **And** I submit the registration form
+* **Given** I am not registered
+* **When** I send `POST /course-t6/register` with a required field empty and all other fields valid
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** no user account is created
 
 #### Scenario: User submits whitespace-only required information
 
-* **Given** I am on the registration page
-* **When** I provide only whitespace for a required field
-* **And** I submit the registration form
+* **Given** I am not registered
+* **When** I send `POST /course-t6/register` with only whitespace for a required field and all other fields valid
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** no user account is created
 
 #### Scenario: User submits a password shorter than 8 characters
 
-* **Given** I am on the registration page
-* **When** I enter a password with fewer than 8 characters
-* **And** I submit the registration form
+* **Given** I am not registered
+* **When** I send `POST /course-t6/register` with a password shorter than 8 characters and all other fields valid
 * **Then** the API returns `400`
 * **And** the response is `{ "message": "Password must be at least 8 characters." }`
 * **And** no user account is created
+
+#### Scenario: Register form blocks submit when a required field is empty
+
+* **Given** I am on the registration page with all other fields valid
+* **When** I leave a required field empty
+* **And** I submit the registration form
+* **Then** I see that field's required message
+* **And** no registration request is sent
+
+#### Scenario: Register form blocks submit when a required field is only whitespace
+
+* **Given** I am on the registration page with all other fields valid
+* **When** I enter only whitespace for a required field
+* **And** I submit the registration form
+* **Then** I see that field's required message
+* **And** no registration request is sent
+
+#### Scenario: Register form blocks submit when the password is shorter than 8 characters
+
+* **Given** I am on the registration page with all other fields valid
+* **When** I enter a password shorter than 8 characters
+* **And** I submit the registration form
+* **Then** I see `Password must be at least 8 characters.`
+* **And** no registration request is sent
 
 #### Scenario: User registers with an existing username
 
@@ -787,9 +809,12 @@ Each scenario MUST map to at least one automated test.
 |---|---|---|---|
 | US-1.1 | User registers successfully | `backend/tests/auth.test.js`, `frontend/tests/Register.test.js` | `User registers successfully` |
 | US-1.1 | Registration ignores a supplied admin role | `backend/tests/auth.test.js` | `Registration ignores a supplied admin role` |
-| US-1.1 | User registers without a required field | `backend/tests/auth.test.js`, `frontend/tests/Register.test.js` | `User registers without a required field` |
-| US-1.1 | User submits whitespace-only required information | `backend/tests/auth.test.js`, `frontend/tests/Register.test.js` | `User submits whitespace-only required information` |
-| US-1.1 | User submits a password shorter than 8 characters | `backend/tests/auth.test.js`, `frontend/tests/Register.test.js` | `User submits a password shorter than 8 characters` |
+| US-1.1 | User registers without a required field | `backend/tests/auth.test.js` | `User registers without a required field` |
+| US-1.1 | User submits whitespace-only required information | `backend/tests/auth.test.js` | `User submits whitespace-only required information` |
+| US-1.1 | User submits a password shorter than 8 characters | `backend/tests/auth.test.js` | `User submits a password shorter than 8 characters` |
+| US-1.1 | Register form blocks submit when a required field is empty | `frontend/tests/Register.test.js` | `Register form blocks submit when a required field is empty` |
+| US-1.1 | Register form blocks submit when a required field is only whitespace | `frontend/tests/Register.test.js` | `Register form blocks submit when a required field is only whitespace` |
+| US-1.1 | Register form blocks submit when the password is shorter than 8 characters | `frontend/tests/Register.test.js` | `Register form blocks submit when the password is shorter than 8 characters` |
 | US-1.1 | User registers with an existing username | `backend/tests/auth.test.js` | `User registers with an existing username` |
 | US-1.1 | User registers with an existing email | `backend/tests/auth.test.js` | `User registers with an existing email` |
 | US-1.1 | Register page shows the API error when registration fails | `frontend/tests/Register.test.js` | `Register page shows the API error when registration fails` |
@@ -823,10 +848,14 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+Application code for this feature is written by hand. AI may be used only to build the automated tests, as required by the course slides.
+
+### Handwritten application code
+
+The following checklist is for the person coding this feature:
 
 ```text
-Implement Feature 1 from @features/feature-1-user-authentication-authorization.md on branch feature/1-user-authentication-authorization.
+Write Feature 1 by hand from @features/feature-1-user-authentication-authorization.md on branch feature/1-user-authentication-authorization.
 
 Only implement what is defined in this specification.
 
@@ -871,6 +900,14 @@ Before finishing:
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
 
+### Automated tests (AI allowed)
+
+AI may write or update only the automated tests. It MUST NOT write or change application code in `backend/app` or `frontend/src`.
+
+- Use the exact scenarios, test file paths, and test names in the Test Coverage Map.
+- API validation scenarios send requests directly to the API; form validation scenarios show the field error and send no registration request.
+- Report any application-code failure for the developer to fix by hand; do not change the specification or weaken a test to make it pass.
+
 **Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
 ---
@@ -914,10 +951,12 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 - [x] Successful login redirects to the Home page.
 - [x] The Register and Sign in buttons show a loading state while their request runs.
 - [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-038** satisfied).
-- [x] **Success Criteria (SC-001**–**SC-013)** are met.
+- [x] **Success Criteria (SC-001**–**SC-013)** are met for this amendment.
 - [x] Test Coverage Map is complete.
-- [x] Every acceptance scenario has an automated test.
-- [x] All tests pass (`npm test`).
+- [x] Every acceptance scenario has an automated test with the file path and name in the amended Test Coverage Map.
+- [x] All tests pass (`npm test`) after the registration tests are aligned with this amendment.
+- [x] Existing registration tests use the clarified API and form scenario names; client-invalid forms send no request (owner: Milton).
+- [x] Agility is synchronized with the amended registration acceptance criteria (owner: Milton; synchronized after review).
 - [x] `features/reference/api.md` is updated.
 - [x] `features/reference/data-model.md` is updated.
 - [x] `features/reference/behavior.md` is updated.
@@ -929,9 +968,9 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 
 ## Out of Scope
 
-- Course creation, editing, and deletion → Feature 3
+- Course creation, editing, and deletion → [Feature 3](feature-3-course-management.md)
 - Students enrolling in sections → [Feature 6](feature-6-enrollment-management.md)
-- Section days and times → Feature 5
-- Admin adding students → Feature 9
+- Section days and times → [Feature 5](feature-5-section-management.md)
+- Admin adding students → [Feature 9](feature-9-student-management.md)
 - Adding faculty → [Feature 4](feature-4-faculty-management.md)
 - Password reset (`POST /reset-password`)
