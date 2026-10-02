@@ -383,7 +383,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **And** the response contains the required-field message
 * **And** no faculty member is created
 
-
 #### Scenario: Admin submits whitespace-only faculty information
 
 * **Given** I am signed in as an admin
@@ -391,7 +390,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** no faculty member is created
-
 
 #### Scenario: Add Faculty form blocks submit when a required field is empty
 
@@ -473,7 +471,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** the faculty member is not changed
-
 
 #### Scenario: Edit Faculty form blocks submit when a required field is empty
 
