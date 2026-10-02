@@ -5,7 +5,7 @@
 **Status:** Ready  
 **Created:** 2026-10-01  
 **Input:** A signed-in admin can see the students enrolled in a section.  
-**Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), Feature 5 — Section Management, [Feature 6 — Enrollment Management](feature-6-enrollment-management.md)
+**Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 5 — Section Management](feature-5-section-management.md), [Feature 6 — Enrollment Management](feature-6-enrollment-management.md)
 
 ---
 
@@ -214,7 +214,7 @@ The page MUST:
 
 The Sections page from Feature 5 MUST:
 
-- Show a **Students** action for each section that opens `/sections/:id/students` for that section.
+- Show a **Students** text-labeled action (not icon-only) for each section that opens `/sections/:id/students` for that section.
 
 ---
 
@@ -465,8 +465,8 @@ When the code and tests are done, update the reference documentation listed belo
 
 ## Out of Scope
 
-- Creating, editing, or deleting sections → Feature 5
+- Creating, editing, or deleting sections → [Feature 5](feature-5-section-management.md)
 - Enrolling, dropping, or changing a section → [Feature 6](feature-6-enrollment-management.md)
 - Admin enrolling students or removing students from enrollments
-- A student's own list of enrolled sections → Feature 7
-- Adding, editing, or deleting student accounts → Feature 9
+- A student's own list of enrolled sections → [Feature 7](feature-7-student-course-listing.md)
+- Adding, editing, or deleting student accounts → [Feature 9](feature-9-student-management.md)
