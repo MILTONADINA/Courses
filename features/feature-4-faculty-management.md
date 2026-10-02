@@ -105,7 +105,7 @@ Every story is P1: each one must ship for the assignment's Faculty Management (C
 - Feature 1 defines only the `admin` and `student` roles; this feature does not add a `faculty` role.
 - A department is stored as text on the faculty member; departments are not managed separately.
 - Deleting a faculty member is permanent.
-- What happens when a faculty member assigned to a section is deleted is defined by Feature 5, which introduces sections.
+- What happens when a faculty member assigned to a section is deleted is defined by [Feature 5](feature-5-section-management.md), which introduces sections.
 
 ---
 
@@ -164,7 +164,7 @@ A Faculty Member has:
 
 A Faculty Member is managed by admins. A Faculty Member is not a User and has no login information or role.
 
-Later features relate Faculty Members to sections (Feature 5).
+Later features relate Faculty Members to sections ([Feature 5](feature-5-section-management.md)).
 
 ---
 
@@ -309,7 +309,7 @@ The Faculty page MUST:
 - Display a **Faculty** heading.
 - Display an **Add Faculty** primary button.
 - Display faculty members in a table with **First name**, **Last name**, and **Department** columns, sorted as returned by the API.
-- Provide **Edit** and **Delete** actions for each faculty member.
+- Provide **Edit** and **Delete** text-labeled actions for each faculty member (not icon-only).
 - Delete the faculty member and refresh the faculty list when **Delete** is selected.
 - Show a loading state while faculty members load.
 - Show `No faculty members yet.` when no faculty members exist.
@@ -383,7 +383,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **And** the response contains the required-field message
 * **And** no faculty member is created
 
-
 #### Scenario: Admin submits whitespace-only faculty information
 
 * **Given** I am signed in as an admin
@@ -391,7 +390,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** no faculty member is created
-
 
 #### Scenario: Add Faculty form blocks submit when a required field is empty
 
@@ -473,7 +471,6 @@ The `faculty` table has no relationship to `users` or `sessions`.
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** the faculty member is not changed
-
 
 #### Scenario: Edit Faculty form blocks submit when a required field is empty
 
@@ -714,9 +711,9 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 
 ## Out of Scope
 
-- Assigning faculty members to sections → Feature 5
-- Rules for deleting a faculty member who is assigned to a section → Feature 5
+- Assigning faculty members to sections → [Feature 5](feature-5-section-management.md)
+- Rules for deleting a faculty member who is assigned to a section → [Feature 5](feature-5-section-management.md)
 - Showing a section's instructor to students → [Feature 6](feature-6-enrollment-management.md)
-- Semester management → Feature 2
-- Course management → Feature 3
-- Student management → Feature 9
+- Semester management → [Feature 2](feature-2-semester-management.md)
+- Course management → [Feature 3](feature-3-course-management.md)
+- Student management → [Feature 9](feature-9-student-management.md)
