@@ -638,10 +638,14 @@ Each scenario MUST map to at least one automated test.
 
 ## Agent Implementation Request
 
-Use the following prompt when asking the implementation agent to implement this feature:
+Application code for this feature is written by hand. AI may be used only to build the automated tests, as required by the course slides.
+
+### Handwritten application code
+
+The following checklist is for the person coding this feature:
 
 ```text
-Implement Feature 3 from @features/feature-3-course-management.md on branch feature/3-course-management.
+Write Feature 3 by hand from @features/feature-3-course-management.md on branch feature/3-course-management.
 
 Only implement what is defined in this specification.
 
@@ -702,6 +706,13 @@ Before finishing:
 
 Do not mark the feature complete if any requirement or acceptance scenario remains unimplemented or untested.
 ```
+
+### Automated tests (AI allowed)
+
+AI may write or update only the automated tests. It MUST NOT write or change application code in `backend/app` or `frontend/src`.
+
+- Use the exact scenarios, test file paths, and test names in the Test Coverage Map.
+- Report any application-code failure for the developer to fix by hand; do not change the specification or weaken a test to make it pass.
 
 **Reference updates for this feature:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`, `features/reference/README.md` (provenance)
 
