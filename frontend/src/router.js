@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
+import Semesters from "./views/Semesters.vue";
 import Utils from "./config/utils.js";
 
 const router = createRouter({
@@ -22,6 +23,12 @@ const router = createRouter({
       path: "/register",
       name: "register",
       component: Register,
+    },
+    {
+      path: "/semesters",
+      name: "semesters",
+      component: Semesters,
+      meta: { requiresAuth: true },
     },
     {
       path: "/:pathMatch(.*)*",
