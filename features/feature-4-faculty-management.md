@@ -468,8 +468,8 @@ The `faculty` table has no relationship to `users` or `sessions`.
 #### Scenario: Admin edits a faculty member without a required field
 
 * **Given** I am signed in as an admin
-* **And** a faculty member exists
-* **When** I send `PUT /course-t6/faculty/<id>` for that faculty member with a required field empty and all other fields valid
+* **And** faculty member `1` exists
+* **When** I send `PUT /course-t6/faculty/1` with a required field empty and all other fields valid
 * **Then** the API returns `400`
 * **And** the response contains the required-field message
 * **And** the faculty member is not changed
