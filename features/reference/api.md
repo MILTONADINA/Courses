@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 1 authentication and Feature 2 semester endpoints implemented. The API is mounted at `/course-t6`.
+**Status:** Feature 1 authentication, Feature 2 semester, and Feature 4 faculty endpoints implemented. The API is mounted at `/course-t6`.
 
 ## Endpoints
 
@@ -13,6 +13,10 @@
 | `GET` | `/course-t6/semesters` | Signed-in user | `200` array, ordered by `startDate` then `semsterName` |
 | `PUT` | `/course-t6/semesters/:id` | Admin | `200` semester |
 | `DELETE` | `/course-t6/semesters/:id` | Admin | `200` with `{ "message": "Semester deleted successfully." }` |
+| `GET` | `/course-t6/faculty` | Admin | `200` array, ordered by `lastName` then `firstName` |
+| `POST` | `/course-t6/faculty` | Admin | `201` faculty member |
+| `PUT` | `/course-t6/faculty/:id` | Admin | `200` faculty member |
+| `DELETE` | `/course-t6/faculty/:id` | Admin | `200` with `{ "message": "Faculty member deleted successfully." }` |
 
 Registration requires `firstName`, `lastName`, `email`, `universityId`, `userName`, and `password`. It creates a `student` (a `role` in the body is ignored) and does not sign the user in. It returns `id`, `firstName`, `lastName`, `email`, `universityId`, `userName`, and `role`. Missing or whitespace-only fields, a password under 8 characters, or a duplicate `userName` or `email` return `400` with `{ "message": "..." }`.
 
@@ -23,6 +27,10 @@ Protected routes, including logout, return `401` with `{ "message": "Unauthorize
 Create and update a semester with `semsterName`, `startDate`, and `endDate`. A semester response includes `id`, those three fields, `createdAt`, and `updatedAt`. There is no `GET /course-t6/semesters/:id` route. When no semesters exist, the list returns `200` with `[]`.
 
 A missing semester name, or a whitespace-only semester name, returns `400` with `Semester name is required.` A missing start date or end date returns `400` with `Start date is required.` or `End date is required.` A whitespace-only date, or a date that is not a real `YYYY-MM-DD` value, returns `400` with `Enter a valid start date.` or `Enter a valid end date.` A non-numeric id on update or delete returns `400` with `Semester id must be a number.` An unknown id returns `404` with `Semester with id=<id> not found.` A student who creates, updates, or deletes a semester receives `403`. An unexpected semester error returns `500` with `Semester could not be created.`, `Semesters could not be loaded.`, `Semester could not be updated.`, or `Semester could not be deleted.`
+
+Create and update a faculty member with `firstName`, `lastName`, and `dept`. A faculty member response includes `id`, those three fields, `createdAt`, and `updatedAt`. There is no `GET /course-t6/faculty/:id` route. When no faculty members exist, the list returns `200` with `[]`. Every faculty route requires an admin: no session returns `401` with `Unauthorized.`, and an authenticated student receives `403` with `Admin role required.`
+
+A missing or whitespace-only field returns `400` with `First name is required.`, `Last name is required.`, or `Department is required.`, checked in that order. A non-numeric id on update or delete returns `400` with `Faculty member id must be a number.` An unknown id returns `404` with `Faculty member with id=<id> not found.` An unexpected faculty error returns `500` with `Faculty member could not be created.`, `Faculty members could not be loaded.`, `Faculty member could not be updated.`, or `Faculty member could not be deleted.`
 
 ## Conventions
 
