@@ -25,6 +25,7 @@ async function signOut() {
 <template>
   <v-app-bar v-if="user" color="primary">
     <v-btn :to="{ name: 'semesters' }" variant="text">Semesters</v-btn>
+    <v-btn v-if="user?.role === 'admin'" :to="{ name: 'students' }" variant="text">Students</v-btn>
     <v-btn data-testid="sign-out" variant="text" @click="signOut">Sign out</v-btn>
   </v-app-bar>
   <v-alert v-if="error" type="error" density="compact">{{ error }}</v-alert>
