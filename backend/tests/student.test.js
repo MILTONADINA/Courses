@@ -125,6 +125,25 @@ describe("Feature 9 — Student Management", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Username is already taken." });
+
+      const original = db.user.findOne;
+      db.user.findOne = async function findStudent(options) {
+        if (options?.where?.userName) return null;
+        return original.call(this, options);
+      };
+      let raced;
+      try {
+        raced = await createStudent(token, {
+          ...student,
+          email: "other@example.com",
+          userName: "jdoe",
+        });
+      } finally {
+        db.user.findOne = original;
+      }
+
+      expect(raced.status).toBe(400);
+      expect(raced.body).toEqual({ message: "Username is already taken." });
     });
 
     it("Admin submits an email that is already registered", async () => {
@@ -138,6 +157,25 @@ describe("Feature 9 — Student Management", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Email is already registered." });
+
+      const original = db.user.findOne;
+      db.user.findOne = async function findStudent(options) {
+        if (options?.where?.email) return null;
+        return original.call(this, options);
+      };
+      let raced;
+      try {
+        raced = await createStudent(token, {
+          ...student,
+          email: "jane@example.com",
+          userName: "other",
+        });
+      } finally {
+        db.user.findOne = original;
+      }
+
+      expect(raced.status).toBe(400);
+      expect(raced.body).toEqual({ message: "Email is already registered." });
     });
 
     it("Supplied role does not create an admin", async () => {
@@ -198,16 +236,19 @@ describe("Feature 9 — Student Management", () => {
         .set(authed(token))
         .send({
           firstName: "Janet",
-          lastName: "Doe",
+          lastName: "Smith",
           email: "janet@example.com",
-          universityId: "123456",
-          userName: "jdoe",
+          universityId: "654321",
+          userName: "janet",
         });
 
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
         firstName: "Janet",
+        lastName: "Smith",
         email: "janet@example.com",
+        universityId: "654321",
+        userName: "janet",
         role: "student",
       });
       expect(response.body.password).toBeUndefined();
@@ -237,24 +278,33 @@ describe("Feature 9 — Student Management", () => {
       const token = await adminToken();
       const created = await createStudent(token);
       const before = await db.user.unscoped().findByPk(created.body.id);
-      await request(app)
+      const response = await request(app)
         .put(`/course-t6/students/${created.body.id}`)
         .set(authed(token))
         .send({
           firstName: "Janet",
-          lastName: "Doe",
+          lastName: "Smith",
           email: "janet@example.com",
           universityId: "654321",
-          userName: "jdoe",
+          userName: "janet",
           password: "newpassword",
           role: "admin",
         });
       const after = await db.user.unscoped().findByPk(created.body.id);
       const login = await request(app).post("/course-t6/login").send({
-        userName: "jdoe",
+        userName: "janet",
         password: "password123",
       });
 
+      expect(response.status).toBe(200);
+      expect(response.body).toMatchObject({
+        firstName: "Janet",
+        lastName: "Smith",
+        email: "janet@example.com",
+        universityId: "654321",
+        userName: "janet",
+        role: "student",
+      });
       expect(after.password).toBe(before.password);
       expect(after.role).toBe("student");
       expect(login.status).toBe(200);

@@ -188,6 +188,7 @@ describe("Feature 9 — Student Management", () => {
       const { wrapper } = await mountPage();
 
       expect(wrapper.text()).toContain("Students are unavailable.");
+      expect(wrapper.text()).not.toContain("No students found.");
     });
 
     it("Students page shows a fallback error when the API gives no message", async () => {
@@ -196,6 +197,7 @@ describe("Feature 9 — Student Management", () => {
       const { wrapper } = await mountPage();
 
       expect(wrapper.text()).toContain("Request failed.");
+      expect(wrapper.text()).not.toContain("No students found.");
     });
   });
 

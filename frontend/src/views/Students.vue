@@ -9,6 +9,7 @@ const isAdmin = user?.role === "admin";
 const students = ref([]);
 const error = ref("");
 const loading = ref(false);
+const loaded = ref(false);
 const showForm = ref(false);
 const saving = ref(false);
 const editing = ref(false);
@@ -48,7 +49,9 @@ async function loadStudents() {
   try {
     const response = await StudentServices.listStudents();
     students.value = response.data;
+    loaded.value = true;
   } catch (reason) {
+    loaded.value = false;
     error.value = reason.response?.data?.message || "Request failed.";
   } finally {
     loading.value = false;
@@ -177,8 +180,8 @@ onMounted(async () => {
       </v-dialog>
 
       <div v-if="loading">Loading students...</div>
-      <div v-else-if="students.length === 0">No students found.</div>
-      <div v-else>
+      <div v-else-if="loaded && students.length === 0">No students found.</div>
+      <div v-else-if="loaded">
         <v-card v-for="student in students" :key="student.id" variant="outlined" class="pa-4 mb-3">
           <div>{{ student.firstName }} {{ student.lastName }}</div>
           <div>{{ student.email }}</div>

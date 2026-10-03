@@ -56,6 +56,20 @@ async function findStudent(id) {
   return db.user.findOne({ where: { id, role: "student" } });
 }
 
+function conflictMessage(error) {
+  const duplicate = error?.name === "SequelizeUniqueConstraintError" || error?.parent?.code === "ER_DUP_ENTRY";
+  if (!duplicate) return "";
+  const detail = [
+    ...(error.errors || []).map((item) => `${item.path || ""} ${item.message || ""}`),
+    JSON.stringify(error.fields || {}),
+    error.parent?.sqlMessage || "",
+    error.message || "",
+  ].join(" ");
+  if (/userName/i.test(detail)) return duplicateMessages.userName;
+  if (/email/i.test(detail)) return duplicateMessages.email;
+  return "";
+}
+
 controller.create = async (req, res) => {
   const data = req.body || {};
   const values = readProfile(data);
@@ -77,6 +91,8 @@ controller.create = async (req, res) => {
     const student = await db.user.findByPk(created.id);
     return res.status(201).send(student);
   } catch (error) {
+    const conflict = conflictMessage(error);
+    if (conflict) return res.status(400).send({ message: conflict });
     logger.error(`Student create failed: ${error.message}`);
     return res.status(500).send({ message: "Request failed." });
   }
@@ -108,6 +124,8 @@ controller.update = async (req, res) => {
     await student.update(values);
     return res.status(200).send(student);
   } catch (error) {
+    const conflict = conflictMessage(error);
+    if (conflict) return res.status(400).send({ message: conflict });
     logger.error(`Student update failed: ${error.message}`);
     return res.status(500).send({ message: "Request failed." });
   }
