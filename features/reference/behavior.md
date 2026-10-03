@@ -41,3 +41,16 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | The form checks required fields before submit and does not send the request when one is empty | `Semesters.vue` | Feature 2 FR-031 |
 | The page shows a loading state, `No semesters found.` when empty, the API message on failure, and `Semesters could not be loaded.`, `Semester could not be saved.`, or `Semester could not be deleted.` when the API gives no message | `Semesters.vue` | Feature 2 FR-027–FR-030 |
 | The list refreshes after a successful save or delete. Edit uses the semester already on the list | `Semesters.vue` | Feature 2 FR-032 |
+
+## Students
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| Only admins can list, create, update, and delete students. Students are rows in `users` with role `student` | `student.routes.js`, `student.controller.js` | Feature 9 |
+| Create requires the six profile fields and a password of at least 8 characters. Role in the body is ignored and saved as `student`. `userName` is stored lowercase | `student.controller.js` | Feature 9 |
+| The list includes only students and never includes `password`. An empty list returns `200` with `[]` | `student.controller.js#findAll` | Feature 9 |
+| Update changes name, email, university ID, and username. It does not change password or role | `student.controller.js#update` | Feature 9 |
+| A non-numeric id returns `Student id must be a number.` An unknown id or an admin id returns `Student with id=<id> not found.` Delete returns `Student deleted successfully.` | `student.controller.js` | Feature 9 |
+| `/students` is admin only. Students are sent Home. Signed-out users are sent to Login. The menu shows **Students** only to admins | `router.js`, `MenuBar.vue` | Feature 9 |
+| The form is a dialog titled **Add student** or **Edit student**. Add asks for a password. Edit does not | `Students.vue` | Feature 9 |
+| The page shows `Loading students...`, `No students found.`, the API message on failure, and `Request failed.` when the API gives no message | `Students.vue` | Feature 9 |
