@@ -118,9 +118,15 @@ describe("Feature 3 — Course Management", () => {
       const { wrapper } = await mountPage();
 
       await clickLabeled(wrapper, "Add course");
+      await fill(wrapper, "courseNumber", course.courseNumber);
+      await fill(wrapper, "courseDescription", course.courseDescription);
+      await fill(wrapper, "courseSemesters", course.courseSemesters);
+      await fill(wrapper, "courseFrequency", course.courseFrequency);
+      await fill(wrapper, "courseHours", course.courseHours);
+      await fill(wrapper, "courseDept", course.courseDept);
       await clickLabeled(wrapper, "Save");
 
-      expect(document.body.textContent).toContain("Course number is required.");
+      expect(document.body.textContent).toContain("Course name is required.");
       expect(CourseServices.createCourse).not.toHaveBeenCalled();
       expect(CourseServices.updateCourse).not.toHaveBeenCalled();
     });
@@ -191,6 +197,7 @@ describe("Feature 3 — Course Management", () => {
       const { wrapper } = await mountPage();
 
       expect(wrapper.text()).toContain("Courses are unavailable.");
+      expect(wrapper.text()).not.toContain("No courses found.");
     });
 
     it("Courses page shows a fallback error when the API gives no message", async () => {
@@ -199,6 +206,7 @@ describe("Feature 3 — Course Management", () => {
       const { wrapper } = await mountPage();
 
       expect(wrapper.text()).toContain("Request failed.");
+      expect(wrapper.text()).not.toContain("No courses found.");
     });
   });
 

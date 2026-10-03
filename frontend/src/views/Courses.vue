@@ -9,6 +9,7 @@ const isAdmin = user?.role === "admin";
 const courses = ref([]);
 const error = ref("");
 const loading = ref(false);
+const loaded = ref(false);
 const showForm = ref(false);
 const saving = ref(false);
 const editing = ref(false);
@@ -60,7 +61,9 @@ async function loadCourses() {
   try {
     const response = await CourseServices.listCourses();
     courses.value = response.data;
+    loaded.value = true;
   } catch (reason) {
+    loaded.value = false;
     error.value = reason.response?.data?.message || "Request failed.";
   } finally {
     loading.value = false;
@@ -175,8 +178,8 @@ onMounted(async () => {
       </v-dialog>
 
       <div v-if="loading">Loading courses...</div>
-      <div v-else-if="courses.length === 0">No courses found.</div>
-      <div v-else>
+      <div v-else-if="loaded && courses.length === 0">No courses found.</div>
+      <div v-else-if="loaded">
         <v-card v-for="course in courses" :key="course.id" variant="outlined" class="pa-4 mb-3">
           <div class="text-h6">{{ course.courseName }}</div>
           <div>{{ course.courseNumber }}</div>
