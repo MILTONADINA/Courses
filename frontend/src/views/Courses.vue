@@ -181,16 +181,16 @@ onMounted(async () => {
       <div v-else-if="loaded && courses.length === 0">No courses found.</div>
       <div v-else-if="loaded">
         <v-card v-for="course in courses" :key="course.id" variant="outlined" class="pa-4 mb-3">
-          <div class="text-h6">{{ course.courseName }}</div>
-          <div>{{ course.courseNumber }}</div>
-          <div>{{ course.courseDescription }}</div>
-          <div>{{ course.courseSemesters }}</div>
-          <div>{{ course.courseFrequency }}</div>
-          <div>{{ course.courseHours }}</div>
-          <div>{{ course.courseDept }}</div>
+          <div class="text-h6 text-primary">{{ course.courseName }}</div>
+          <div class="text-secondary">{{ course.courseNumber }}</div>
+          <div class="text-secondary">{{ course.courseDescription }}</div>
+          <div class="text-secondary">{{ course.courseSemesters }}</div>
+          <div class="text-secondary">{{ course.courseFrequency }}</div>
+          <div class="text-secondary">{{ course.courseHours }}</div>
+          <div class="text-secondary">{{ course.courseDept }}</div>
           <div v-if="isAdmin" class="d-flex ga-2 mt-2">
-            <v-btn data-testid="edit-course" variant="text" @click="openEditForm(course)">Edit</v-btn>
-            <v-btn data-testid="delete-course" variant="text" @click="deleteCourse(course)">Delete</v-btn>
+            <v-btn data-testid="edit-course" variant="text" color="primary" @click="openEditForm(course)">Edit</v-btn>
+            <v-btn data-testid="delete-course" variant="text" color="primary" @click="deleteCourse(course)">Delete</v-btn>
           </div>
         </v-card>
       </div>
