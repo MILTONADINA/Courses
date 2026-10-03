@@ -183,13 +183,13 @@ onMounted(async () => {
       <div v-else-if="loaded && students.length === 0">No students found.</div>
       <div v-else-if="loaded">
         <v-card v-for="student in students" :key="student.id" variant="outlined" class="pa-4 mb-3">
-          <div>{{ student.firstName }} {{ student.lastName }}</div>
-          <div>{{ student.email }}</div>
-          <div>{{ student.universityId }}</div>
-          <div>{{ student.userName }}</div>
+          <div class="text-primary">{{ student.firstName }} {{ student.lastName }}</div>
+          <div class="text-secondary">{{ student.email }}</div>
+          <div class="text-secondary">{{ student.universityId }}</div>
+          <div class="text-secondary">{{ student.userName }}</div>
           <div v-if="isAdmin" class="d-flex ga-2 mt-2">
-            <v-btn data-testid="edit-student" variant="text" @click="openEditForm(student)">Edit</v-btn>
-            <v-btn data-testid="delete-student" variant="text" @click="deleteStudent(student)">Delete</v-btn>
+            <v-btn data-testid="edit-student" variant="text" color="primary" @click="openEditForm(student)">Edit</v-btn>
+            <v-btn data-testid="delete-student" variant="text" color="primary" @click="deleteStudent(student)">Delete</v-btn>
           </div>
         </v-card>
       </div>

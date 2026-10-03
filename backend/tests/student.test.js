@@ -148,10 +148,10 @@ describe("Feature 9 — Student Management", () => {
 
     it("Admin submits an email that is already registered", async () => {
       const token = await adminToken();
-      await createStudent(token);
+      await createStudent(token, { ...student, email: "username@example.com" });
       const response = await createStudent(token, {
         ...student,
-        email: "jane@example.com",
+        email: "username@example.com",
         userName: "other",
       });
 
@@ -167,7 +167,7 @@ describe("Feature 9 — Student Management", () => {
       try {
         raced = await createStudent(token, {
           ...student,
-          email: "jane@example.com",
+          email: "username@example.com",
           userName: "other",
         });
       } finally {

@@ -59,14 +59,14 @@ async function findStudent(id) {
 function conflictMessage(error) {
   const duplicate = error?.name === "SequelizeUniqueConstraintError" || error?.parent?.code === "ER_DUP_ENTRY";
   if (!duplicate) return "";
-  const detail = [
-    ...(error.errors || []).map((item) => `${item.path || ""} ${item.message || ""}`),
-    JSON.stringify(error.fields || {}),
-    error.parent?.sqlMessage || "",
-    error.message || "",
-  ].join(" ");
-  if (/userName/i.test(detail)) return duplicateMessages.userName;
-  if (/email/i.test(detail)) return duplicateMessages.email;
+  const keyName = error.parent?.sqlMessage?.match(/for key '([^']+)'/)?.[1]?.split(".").pop() || "";
+  const fields = [
+    ...Object.keys(error.fields || {}),
+    ...(error.errors || []).map((item) => item.path || ""),
+    keyName,
+  ];
+  if (fields.some((field) => /userName/i.test(field))) return duplicateMessages.userName;
+  if (fields.some((field) => /email/i.test(field))) return duplicateMessages.email;
   return "";
 }
 
