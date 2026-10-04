@@ -3,6 +3,7 @@ import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import Semesters from "./views/Semesters.vue";
+import Courses from "./views/Courses.vue";
 import Faculty from "./views/Faculty.vue";
 import Utils from "./config/utils.js";
 
@@ -32,10 +33,16 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/courses",
+      name: "courses",
+      component: Courses,
+      meta: { requiresAuth: true, adminOnly: true },
+    },
+    {
       path: "/faculty",
       name: "faculty",
       component: Faculty,
-      meta: { requiresAuth: true, requiresAdmin: true },
+      meta: { requiresAuth: true, adminOnly: true },
     },
     {
       path: "/:pathMatch(.*)*",
@@ -49,7 +56,7 @@ router.beforeEach((to) => {
   if (to.meta.requiresAuth && !user?.token) {
     return { name: "login" };
   }
-  if (to.meta.requiresAdmin && user.role !== "admin") {
+  if (to.meta.adminOnly && user?.role !== "admin") {
     return { name: "home" };
   }
 });
