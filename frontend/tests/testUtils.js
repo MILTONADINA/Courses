@@ -15,6 +15,7 @@ export async function createTestRouter(initialPath = "/") {
       { path: "/register", name: "register", component: { template: "<div>Register</div>" } },
       { path: "/semesters", name: "semesters", component: { template: "<div>Semesters</div>" } },
       { path: "/courses", name: "courses", component: { template: "<div>Courses</div>" } },
+      { path: "/faculty", name: "faculty", component: { template: "<div>Faculty</div>" } },
     ],
   });
 
