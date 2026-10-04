@@ -33,3 +33,4 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Semesters, semester list/create/update/delete, Semesters page | [Feature 2](../feature-2-semester-management.md) |
 | Courses, course list/create/update/delete, Courses page | [Feature 3](../feature-3-course-management.md) |
 | Faculty members, admin-only faculty list/add/edit/delete, Faculty page | [Feature 4](../feature-4-faculty-management.md) |
+| Student accounts on the existing users table, Students page | [Feature 9](../feature-9-student-management.md) |

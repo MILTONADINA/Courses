@@ -67,3 +67,16 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `/faculty` is admin-only: students are sent to Home and signed-out users to Login. The menu shows **Faculty** to admins only | `router.js`, `MenuBar.vue` | Feature 4 FR-022, FR-023 |
 | The Faculty page lists First name, Last name, and Department with text **Edit** and **Delete** actions, shows a loading state, `No faculty members yet.` when empty, and the API message or `Request failed.` on failure | `Faculty.vue` | Feature 4 FR-024, screen requirements |
 | The **Add Faculty** / **Edit Faculty** dialog checks every field before submit with the API's messages, sends no request when a check fails, shows API errors, and closes and refreshes the list after a successful save | `Faculty.vue` | Feature 4 screen requirements |
+
+## Students
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| Only admins can list, create, update, and delete students. Students are rows in `users` with role `student` | `student.routes.js`, `student.controller.js` | Feature 9 |
+| Create requires the six profile fields and a password of at least 8 characters. Role in the body is ignored and saved as `student`. `userName` is stored lowercase | `student.controller.js` | Feature 9 |
+| The list includes only students and never includes `password`. An empty list returns `200` with `[]` | `student.controller.js#findAll` | Feature 9 |
+| Update changes name, email, university ID, and username. It does not change password or role | `student.controller.js#update` | Feature 9 |
+| A non-numeric id returns `Student id must be a number.` An unknown id or an admin id returns `Student with id=<id> not found.` Delete returns `Student deleted successfully.` | `student.controller.js` | Feature 9 |
+| `/students` is admin only. Students are sent Home. Signed-out users are sent to Login. The menu shows **Students** only to admins | `router.js`, `MenuBar.vue` | Feature 9 |
+| The form is a dialog titled **Add student** or **Edit student**. Add asks for a password. Edit does not | `Students.vue` | Feature 9 |
+| The page shows `Loading students...`, `No students found.`, the API message on failure, and `Request failed.` when the API gives no message | `Students.vue` | Feature 9 |

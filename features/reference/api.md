@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, and Feature 4 faculty endpoints implemented. The API is mounted at `/course-t6`.
+**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, Feature 4 faculty endpoints, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
 
 ## Endpoints
 
@@ -21,6 +21,10 @@
 | `POST` | `/course-t6/faculty` | Admin | `201` faculty member |
 | `PUT` | `/course-t6/faculty/:id` | Admin | `200` faculty member |
 | `DELETE` | `/course-t6/faculty/:id` | Admin | `200` with `{ "message": "Faculty member deleted successfully." }` |
+| `POST` | `/course-t6/students` | Admin | `201` student |
+| `GET` | `/course-t6/students` | Admin | `200` array of students |
+| `PUT` | `/course-t6/students/:id` | Admin | `200` student |
+| `DELETE` | `/course-t6/students/:id` | Admin | `200` with `{ "message": "Student deleted successfully." }` |
 
 Registration requires `firstName`, `lastName`, `email`, `universityId`, `userName`, and `password`. It creates a `student` (a `role` in the body is ignored) and does not sign the user in. It returns `id`, `firstName`, `lastName`, `email`, `universityId`, `userName`, and `role`. Missing or whitespace-only fields, a password under 8 characters, or a duplicate `userName` or `email` return `400` with `{ "message": "..." }`.
 
@@ -37,6 +41,8 @@ Create and update a course with `courseNumber`, `courseName`, `courseDescription
 Create and update a faculty member with `firstName`, `lastName`, and `dept`. A faculty member response includes `id`, those three fields, `createdAt`, and `updatedAt`. There is no `GET /course-t6/faculty/:id` route. When no faculty members exist, the list returns `200` with `[]`. Every faculty route requires an admin: no session returns `401` with `Unauthorized.`, and an authenticated student receives `403` with `Admin role required.`
 
 A missing or whitespace-only field returns `400` with `First name is required.`, `Last name is required.`, or `Department is required.`, checked in that order. Trimming is used only for this check; saved values are not trimmed. A non-numeric id on update or delete returns `400` with `Faculty member id must be a number.` An unknown id, including a negative number, returns `404` with `Faculty member with id=<id> not found.` An unexpected faculty error returns `500` with `Faculty member could not be created.`, `Faculty members could not be loaded.`, `Faculty member could not be updated.`, or `Faculty member could not be deleted.`
+
+Create a student with `firstName`, `lastName`, `email`, `universityId`, `userName`, and `password`. The account is always saved as `student`, even if the body sends another role. `userName` is stored lowercase. Update changes `firstName`, `lastName`, `email`, `universityId`, and `userName` only. A student response includes `id`, `firstName`, `lastName`, `email`, `universityId`, `userName`, `role`, `createdAt`, and `updatedAt`. It never includes `password`. There is no `GET /course-t6/students/:id` route. The list includes only students and returns `200` with `[]` when none exist. A missing or whitespace-only required field returns `400` with that field's required message. A password shorter than 8 characters returns `400` with `Password must be at least 8 characters.` A duplicate username returns `Username is already taken.` A duplicate email returns `Email is already registered.` A non-numeric id returns `400` with `Student id must be a number.` An unknown id, or an admin id, returns `404` with `Student with id=<id> not found.` Students and signed-out users cannot use any student route.
 
 ## Conventions
 
