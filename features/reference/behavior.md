@@ -42,6 +42,19 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | The page shows a loading state, `No semesters found.` when empty, the API message on failure, and `Semesters could not be loaded.`, `Semester could not be saved.`, or `Semester could not be deleted.` when the API gives no message | `Semesters.vue` | Feature 2 FR-027–FR-030 |
 | The list refreshes after a successful save or delete. Edit uses the semester already on the list | `Semesters.vue` | Feature 2 FR-032 |
 
+## Courses
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| Only admins can list, create, update, and delete courses | `course.routes.js`, `course.controller.js` | Feature 3 |
+| All seven course fields are required. Whitespace-only counts as missing. Saved text is not trimmed | `course.controller.js` | Feature 3 |
+| An empty list returns `200` with `[]`. There is no get-by-id route | `course.controller.js` | Feature 3 |
+| A non-numeric id returns `Course id must be a number.` An unknown id returns `Course with id=<id> not found.` Delete returns `Course deleted successfully.` | `course.controller.js` | Feature 3 |
+| Students receive `403`. A missing session returns `401` | `course.routes.js` | Feature 3 |
+| `/courses` is admin only. Students are sent Home. Signed-out users are sent to Login. The menu shows **Courses** only to admins | `router.js`, `MenuBar.vue` | Feature 3 |
+| The form is a dialog titled **Add course** or **Edit course**, with **Save** and **Cancel**. It closes after a successful save. **Save** shows a loading state | `Courses.vue` | Feature 3 |
+| The page shows `Loading courses...`, `No courses found.`, the API message on failure, and `Request failed.` when the API gives no message | `Courses.vue` | Feature 3 |
+
 ## Students
 
 | Rule | Enforcement | Provenance |

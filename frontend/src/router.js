@@ -3,6 +3,7 @@ import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import Semesters from "./views/Semesters.vue";
+import Courses from "./views/Courses.vue";
 import Students from "./views/Students.vue";
 import Utils from "./config/utils.js";
 
@@ -32,6 +33,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/courses",
+      name: "courses",
+      component: Courses,
+      meta: { requiresAuth: true, adminOnly: true },
+    },
+    {
       path: "/students",
       name: "students",
       component: Students,
@@ -45,11 +52,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const signedIn = Utils.getStore("user");
-  if (to.meta.requiresAuth && !signedIn?.token) {
+  const user = Utils.getStore("user");
+  if (to.meta.requiresAuth && !user?.token) {
     return { name: "login" };
   }
-  if (to.meta.adminOnly && signedIn?.role !== "admin") {
+  if (to.meta.adminOnly && user?.role !== "admin") {
     return { name: "home" };
   }
 });

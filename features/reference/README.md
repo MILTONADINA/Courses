@@ -31,4 +31,5 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 |------|------------|
 | Users, sessions, register/login/logout, admin-only check, admin seed | [Feature 1](../feature-1-user-authentication-authorization.md) |
 | Semesters, semester list/create/update/delete, Semesters page | [Feature 2](../feature-2-semester-management.md) |
+| Courses, course list/create/update/delete, Courses page | [Feature 3](../feature-3-course-management.md) |
 | Student accounts on the existing users table, Students page | [Feature 9](../feature-9-student-management.md) |

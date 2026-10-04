@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 1 authentication, Feature 2 semester endpoints, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
+**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
 
 ## Endpoints
 
@@ -13,6 +13,10 @@
 | `GET` | `/course-t6/semesters` | Signed-in user | `200` array, ordered by `startDate` then `semsterName` |
 | `PUT` | `/course-t6/semesters/:id` | Admin | `200` semester |
 | `DELETE` | `/course-t6/semesters/:id` | Admin | `200` with `{ "message": "Semester deleted successfully." }` |
+| `POST` | `/course-t6/courses` | Admin | `201` course |
+| `GET` | `/course-t6/courses` | Admin | `200` array |
+| `PUT` | `/course-t6/courses/:id` | Admin | `200` course |
+| `DELETE` | `/course-t6/courses/:id` | Admin | `200` with `{ "message": "Course deleted successfully." }` |
 | `POST` | `/course-t6/students` | Admin | `201` student |
 | `GET` | `/course-t6/students` | Admin | `200` array of students |
 | `PUT` | `/course-t6/students/:id` | Admin | `200` student |
@@ -27,6 +31,8 @@ Protected routes, including logout, return `401` with `{ "message": "Unauthorize
 Create and update a semester with `semsterName`, `startDate`, and `endDate`. A semester response includes `id`, those three fields, `createdAt`, and `updatedAt`. There is no `GET /course-t6/semesters/:id` route. When no semesters exist, the list returns `200` with `[]`.
 
 A missing semester name, or a whitespace-only semester name, returns `400` with `Semester name is required.` A missing start date or end date returns `400` with `Start date is required.` or `End date is required.` A whitespace-only date, or a date that is not a real `YYYY-MM-DD` value, returns `400` with `Enter a valid start date.` or `Enter a valid end date.` A non-numeric id on update or delete returns `400` with `Semester id must be a number.` An unknown id returns `404` with `Semester with id=<id> not found.` A student who creates, updates, or deletes a semester receives `403`. An unexpected semester error returns `500` with `Semester could not be created.`, `Semesters could not be loaded.`, `Semester could not be updated.`, or `Semester could not be deleted.`
+
+Create and update a course with `courseNumber`, `courseName`, `courseDescription`, `courseSemesters`, `courseFrequency`, `courseHours`, and `courseDept`. A course response includes `id`, those seven fields, `createdAt`, and `updatedAt`. There is no `GET /course-t6/courses/:id` route. When no courses exist, the list returns `200` with `[]`. A missing or whitespace-only required field returns `400` with that field's required message, such as `Course name is required.` A non-numeric id returns `400` with `Course id must be a number.` An unknown id, including a negative number, returns `404` with `Course with id=<id> not found.` Students and signed-out users cannot use any course route. An unexpected course error returns `500` with `Request failed.`
 
 Create a student with `firstName`, `lastName`, `email`, `universityId`, `userName`, and `password`. The account is always saved as `student`, even if the body sends another role. `userName` is stored lowercase. Update changes `firstName`, `lastName`, `email`, `universityId`, and `userName` only. A student response includes `id`, `firstName`, `lastName`, `email`, `universityId`, `userName`, `role`, `createdAt`, and `updatedAt`. It never includes `password`. There is no `GET /course-t6/students/:id` route. The list includes only students and returns `200` with `[]` when none exist. A missing or whitespace-only required field returns `400` with that field's required message. A password shorter than 8 characters returns `400` with `Password must be at least 8 characters.` A duplicate username returns `Username is already taken.` A duplicate email returns `Email is already registered.` A non-numeric id returns `400` with `Student id must be a number.` An unknown id, or an admin id, returns `404` with `Student with id=<id> not found.` Students and signed-out users cannot use any student route.
 
