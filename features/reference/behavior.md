@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of Feature 1 and Feature 2 product rules.
+**Living snapshot** of Feature 1, Feature 2, Feature 3, and Feature 4 product rules.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -54,6 +54,19 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `/courses` is admin only. Students are sent Home. Signed-out users are sent to Login. The menu shows **Courses** only to admins | `router.js`, `MenuBar.vue` | Feature 3 |
 | The form is a dialog titled **Add course** or **Edit course**, with **Save** and **Cancel**. It closes after a successful save. **Save** shows a loading state | `Courses.vue` | Feature 3 |
 | The page shows `Loading courses...`, `No courses found.`, the API message on failure, and `Request failed.` when the API gives no message | `Courses.vue` | Feature 3 |
+
+## Faculty
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| Only admins list, add, edit, and delete faculty members. Students receive `403`; a missing session returns `401` | `faculty.routes.js` | Feature 4 FR-001, FR-009, FR-011, FR-013, FR-017–FR-020 |
+| `firstName`, `lastName`, and `dept` are required and reject empty or whitespace-only values. Saved text is not trimmed. `dept` is free text | `faculty.controller.js` | Feature 4 FR-002–FR-008, FR-012 |
+| The list is ordered by `lastName`, then `firstName`. An empty list returns `200` with `[]` | `faculty.controller.js#findAll` | Feature 4 FR-010 |
+| A non-numeric id returns `Faculty member id must be a number.` An unknown id, including a negative number, returns `Faculty member with id=<id> not found.` Delete is permanent and returns `Faculty member deleted successfully.` | `faculty.controller.js` | Feature 4 FR-014–FR-016 |
+| A faculty member is not a user account; no `faculty` role exists | `faculty.model.js` | Feature 4 FR-021 |
+| `/faculty` is admin-only: students are sent to Home and signed-out users to Login. The menu shows **Faculty** to admins only | `router.js`, `MenuBar.vue` | Feature 4 FR-022, FR-023 |
+| The Faculty page lists First name, Last name, and Department with text **Edit** and **Delete** actions, shows a loading state, `No faculty members yet.` when empty, and the API message or `Request failed.` on failure | `Faculty.vue` | Feature 4 FR-024, screen requirements |
+| The **Add Faculty** / **Edit Faculty** dialog checks every field before submit with the API's messages, sends no request when a check fails, shows API errors, and closes and refreshes the list after a successful save | `Faculty.vue` | Feature 4 screen requirements |
 
 ## Students
 
