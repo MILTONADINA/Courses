@@ -165,11 +165,18 @@ describe("Feature 4 — Faculty Management", () => {
 
     it("Faculty page shows a loading state while faculty members load", async () => {
       signIn("admin");
-      FacultyServices.listFaculty.mockReturnValue(new Promise(() => {}));
+      let finishLoading;
+      FacultyServices.listFaculty.mockReturnValue(new Promise((resolve) => { finishLoading = resolve; }));
       const { wrapper } = await mountPage();
 
       expect(wrapper.find('[data-testid="faculty-loading"]').exists()).toBe(true);
       expect(wrapper.text()).toContain("Loading faculty members...");
+
+      finishLoading({ data: [ada] });
+      await flushPromises();
+
+      expect(wrapper.find('[data-testid="faculty-loading"]').exists()).toBe(false);
+      expect(rows(wrapper)).toEqual([["Ada", "Lovelace", "Computer Science"]]);
     });
 
     it("Faculty page shows the API error when faculty members fail to load", async () => {

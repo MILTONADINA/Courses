@@ -36,7 +36,7 @@ Create and update a course with `courseNumber`, `courseName`, `courseDescription
 
 Create and update a faculty member with `firstName`, `lastName`, and `dept`. A faculty member response includes `id`, those three fields, `createdAt`, and `updatedAt`. There is no `GET /course-t6/faculty/:id` route. When no faculty members exist, the list returns `200` with `[]`. Every faculty route requires an admin: no session returns `401` with `Unauthorized.`, and an authenticated student receives `403` with `Admin role required.`
 
-A missing or whitespace-only field returns `400` with `First name is required.`, `Last name is required.`, or `Department is required.`, checked in that order. A non-numeric id on update or delete returns `400` with `Faculty member id must be a number.` An unknown id returns `404` with `Faculty member with id=<id> not found.` An unexpected faculty error returns `500` with `Faculty member could not be created.`, `Faculty members could not be loaded.`, `Faculty member could not be updated.`, or `Faculty member could not be deleted.`
+A missing or whitespace-only field returns `400` with `First name is required.`, `Last name is required.`, or `Department is required.`, checked in that order. Trimming is used only for this check; saved values are not trimmed. A non-numeric id on update or delete returns `400` with `Faculty member id must be a number.` An unknown id, including a negative number, returns `404` with `Faculty member with id=<id> not found.` An unexpected faculty error returns `500` with `Faculty member could not be created.`, `Faculty members could not be loaded.`, `Faculty member could not be updated.`, or `Faculty member could not be deleted.`
 
 ## Conventions
 

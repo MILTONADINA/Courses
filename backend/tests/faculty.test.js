@@ -157,9 +157,12 @@ describe("Feature 4 — Faculty Management", () => {
     it("Admin edits a faculty member that does not exist", async () => {
       const token = await adminToken();
       const response = await request(app).put("/course-t6/faculty/999").set(authed(token)).send(ada);
+      const negative = await request(app).put("/course-t6/faculty/-1").set(authed(token)).send(ada);
 
       expect(response.status).toBe(404);
       expect(response.body).toEqual({ message: "Faculty member with id=999 not found." });
+      expect(negative.status).toBe(404);
+      expect(negative.body).toEqual({ message: "Faculty member with id=-1 not found." });
     });
 
     it("Admin edits a faculty member with an id that is not a number", async () => {
@@ -187,9 +190,12 @@ describe("Feature 4 — Faculty Management", () => {
     it("Admin deletes a faculty member that does not exist", async () => {
       const token = await adminToken();
       const response = await request(app).delete("/course-t6/faculty/999").set(authed(token));
+      const negative = await request(app).delete("/course-t6/faculty/-1").set(authed(token));
 
       expect(response.status).toBe(404);
       expect(response.body).toEqual({ message: "Faculty member with id=999 not found." });
+      expect(negative.status).toBe(404);
+      expect(negative.body).toEqual({ message: "Faculty member with id=-1 not found." });
     });
 
     it("Admin deletes a faculty member with an id that is not a number", async () => {

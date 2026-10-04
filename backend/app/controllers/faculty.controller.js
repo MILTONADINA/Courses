@@ -12,19 +12,17 @@ const requiredFields = [
 function readFaculty(body) {
   const data = body || {};
   const values = {};
-  for (const [field] of requiredFields) {
-    values[field] = typeof data[field] === "string" ? data[field].trim() : "";
-  }
+  for (const [field] of requiredFields) values[field] = data[field];
   return values;
 }
 
 function validateFaculty(values) {
-  const missing = requiredFields.find(([field]) => !values[field]);
+  const missing = requiredFields.find(([field]) => typeof values[field] !== "string" || !values[field].trim());
   return missing ? missing[1] : "";
 }
 
 function parseId(value) {
-  if (!/^\d+$/.test(String(value))) return null;
+  if (!/^-?\d+$/.test(String(value))) return null;
   return Number(value);
 }
 
