@@ -381,6 +381,7 @@ describe("Feature 5 - Section Management", () => {
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Semester has sections and cannot be deleted." });
       expect(await db.semester.findByPk(2)).not.toBeNull();
+      expect(await db.section.findByPk(1)).not.toBeNull();
     });
 
     it("Admin cannot delete a course that has sections", async () => {
@@ -392,6 +393,7 @@ describe("Feature 5 - Section Management", () => {
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Course has sections and cannot be deleted." });
       expect(await db.course.findByPk(3)).not.toBeNull();
+      expect(await db.section.findByPk(1)).not.toBeNull();
     });
 
     it("Admin cannot delete a faculty member who has sections", async () => {
@@ -403,6 +405,7 @@ describe("Feature 5 - Section Management", () => {
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "Faculty member has sections and cannot be deleted." });
       expect(await db.faculty.findByPk(4)).not.toBeNull();
+      expect(await db.section.findByPk(1)).not.toBeNull();
     });
   });
 });
