@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of Feature 1, Feature 2, Feature 3, Feature 4, and Feature 5 product rules.
+**Living snapshot** of Features 1–6 and Feature 9 product rules.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -81,6 +81,21 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `/sections` is admin-only: students are sent to Home and signed-out users to Login. The menu shows **Sections** to admins only | `router.js`, `MenuBar.vue` | Feature 5 FR-031, FR-032 |
 | The Sections page lists Semester, Course, Section, Instructor, Days, and Time with text **Edit** and **Delete** actions, shows a loading state, `No sections yet.` when empty, and the API message or `Request failed.` on failure | `Sections.vue` | Feature 5 FR-033, screen requirements |
 | The **Add Section** / **Edit Section** dialog picks the semester, course, and instructor from lists, checks every field and the time format before submit with the API's messages, sends no request when a check fails, stays open with the API error or `Request failed.` when a save fails, and closes and refreshes the list after a successful save | `Sections.vue` | Feature 5 FR-034–FR-036, screen requirements |
+
+## Enrollments
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| Only authenticated students may list, create, change, or drop enrollments. Non-students receive `403`; invalid sessions receive `401` | `enrollment.routes.js`, `authorization.js#requireStudent` | Feature 6 FR-001–FR-003, FR-022–FR-023 |
+| Creation derives the owner from the authenticated user and ignores supplied `studentId`. Listing, changes, and deletion are scoped to that owner. Changes update only `sectionId`. Missing and foreign enrollments both return `404` | `enrollment.controller.js` | Feature 6 FR-007–FR-009, FR-014–FR-021, FR-035–FR-037 |
+| Section ids are required, numeric, and must reference an existing section. Duplicate enrollment is rejected on create and change; a unique index also protects concurrent requests | `enrollment.controller.js`, `enrollment.model.js` | Feature 6 FR-010–FR-013, FR-036, data model requirements |
+| Deleting a section or student removes their enrollments through `ON DELETE CASCADE` | `models/index.js` | Feature 6 FR-029–FR-030 |
+| `/enroll` (route name `enroll`) is student-only; signed-out users go to Login and admins go Home. The menu shows **Enroll** only to authenticated students | `router.js`, `MenuBar.vue` | Feature 6 FR-024–FR-028 |
+| The page loads semesters and the student's enrollments before enabling selection. Selecting a semester loads its sections, preserves API order, and displays course number/name, section number, instructor, days, and times | `Enroll.vue` | Feature 6 FR-004–FR-006, screen requirements |
+| Unenrolled sections show **Enroll**; enrolled sections show **Drop** and **Change section**. Successful actions update the displayed enrollment state immediately | `Enroll.vue` | Feature 6 FR-016, FR-033, FR-038, FR-040 |
+| The page shows loading states, `No semesters available.`, or `No sections for this semester.` as appropriate. Errors display the API message or `Request failed.` | `Enroll.vue` | Feature 6 FR-031–FR-034, FR-041, screen requirements |
+| **Change section** offers only other, unenrolled sections of the selected semester. No choices shows `No other sections available.`; no selection shows `Section id is required.` without a request | `Enroll.vue` | Feature 6 FR-038–FR-039, screen requirements |
+| Dialog **Save** shows loading, closes on success, and retains the original enrollment on failure with the API error or fallback. **Cancel** closes without saving | `Enroll.vue` | Feature 6 FR-032, FR-040–FR-041, screen requirements |
 
 ## Students
 

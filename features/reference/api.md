@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, Feature 4 faculty endpoints, Feature 5 section endpoints, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
+**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, Feature 4 faculty endpoints, Feature 5 section endpoints, Feature 6 enrollment endpoints, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
 
 ## Endpoints
 
@@ -25,6 +25,10 @@
 | `POST` | `/course-t6/sections` | Admin | `201` section |
 | `PUT` | `/course-t6/sections/:id` | Admin | `200` section |
 | `DELETE` | `/course-t6/sections/:id` | Admin | `200` with `{ "message": "Section deleted successfully." }` |
+| `POST` | `/course-t6/enrollments` | Student | `201` enrollment |
+| `GET` | `/course-t6/enrollments` | Student | `200` array of the authenticated student's enrollments |
+| `PUT` | `/course-t6/enrollments/:id` | Student, owner | `200` updated enrollment |
+| `DELETE` | `/course-t6/enrollments/:id` | Student, owner | `200` with `{ "message": "Enrollment deleted successfully." }` |
 | `POST` | `/course-t6/students` | Admin | `201` student |
 | `GET` | `/course-t6/students` | Admin | `200` array of students |
 | `PUT` | `/course-t6/students/:id` | Admin | `200` student |
@@ -53,6 +57,24 @@ Section fields are checked in this order: required fields, then ids, then times,
 Deleting a semester, course, or faculty member that a section uses returns `400` with `Semester has sections and cannot be deleted.`, `Course has sections and cannot be deleted.`, or `Faculty member has sections and cannot be deleted.`, and nothing is deleted.
 
 Create a student with `firstName`, `lastName`, `email`, `universityId`, `userName`, and `password`. The account is always saved as `student`, even if the body sends another role. `userName` is stored lowercase. Update changes `firstName`, `lastName`, `email`, `universityId`, and `userName` only. A student response includes `id`, `firstName`, `lastName`, `email`, `universityId`, `userName`, `role`, `createdAt`, and `updatedAt`. It never includes `password`. There is no `GET /course-t6/students/:id` route. The list includes only students and returns `200` with `[]` when none exist. A missing or whitespace-only required field returns `400` with that field's required message. A password shorter than 8 characters returns `400` with `Password must be at least 8 characters.` A duplicate username returns `Username is already taken.` A duplicate email returns `Email is already registered.` A non-numeric id returns `400` with `Student id must be a number.` An unknown id, or an admin id, returns `404` with `Student with id=<id> not found.` Students and signed-out users cannot use any student route.
+
+## Enrollment payloads and errors
+
+Create or change an enrollment with `{ "sectionId": 3 }`. Responses contain `id`, `sectionId`, `studentId`, `createdAt`, and `updatedAt`. A supplied `studentId` is ignored: create uses the authenticated user's id and change preserves the owner. GET returns only that student's enrollments, or `[]`. There is no get-by-id enrollment route.
+
+All enrollment routes use `authenticate` and `requireStudent`. An invalid or missing session returns `401` with `Unauthorized.`; authenticated non-students receive `403` with `Student role required.`. An update or delete of an absent or another student's enrollment returns the same `404`, without revealing ownership.
+
+| Condition | Status | Message |
+|---|---|---|
+| Missing or blank `sectionId` on create/change | `400` | `Section id is required.` |
+| Non-numeric `sectionId` on create/change | `400` | `Section id must be a number.` |
+| Section not found | `404` | `Section with id=<id> not found.` |
+| Student already enrolled in the target section | `400` | `You are already enrolled in this section.` |
+| Non-numeric enrollment id on change/delete | `400` | `Enrollment id must be a number.` |
+| Enrollment absent or owned by another student | `404` | `Enrollment with id=<id> not found.` |
+| Unexpected enrollment error | `500` | `Request failed.` |
+
+Deleting a section or student also deletes their enrollments through database foreign-key cascades.
 
 ## Conventions
 

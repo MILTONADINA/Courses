@@ -27,3 +27,8 @@ export function requireAdmin(req, res, next) {
   if (req.user.role !== "admin") return res.status(403).send({ message: "Admin role required." });
   return next();
 }
+
+export function requireStudent(req, res, next) {
+  if (req.user.role !== "student") return res.status(403).send({ message: "Student role required." });
+  return next();
+}
