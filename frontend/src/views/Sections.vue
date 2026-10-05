@@ -206,6 +206,7 @@ onMounted(loadSections);
             <td>{{ section.daysOfWeek }}</td>
             <td>{{ section.startTime }}–{{ section.endTime }}</td>
             <td class="text-right">
+              <v-btn data-testid="section-students" variant="text" :to="{ name: 'section-students', params: { id: section.id } }">Students</v-btn>
               <v-btn data-testid="edit-section" variant="text" @click="openForm(section)">Edit</v-btn>
               <v-btn data-testid="delete-section" variant="text" @click="remove(section)">Delete</v-btn>
             </td>

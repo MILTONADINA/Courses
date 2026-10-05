@@ -7,6 +7,7 @@ import Courses from "./views/Courses.vue";
 import Faculty from "./views/Faculty.vue";
 import Students from "./views/Students.vue";
 import Sections from "./views/Sections.vue";
+import SectionStudents from "./views/SectionStudents.vue";
 import Enroll from "./views/Enroll.vue";
 import Utils from "./config/utils.js";
 
@@ -57,6 +58,13 @@ const router = createRouter({
       path: "/sections",
       name: "sections",
       component: Sections,
+      meta: { requiresAuth: true, adminOnly: true },
+    },
+    {
+      path: "/sections/:id/students",
+      name: "section-students",
+      component: SectionStudents,
+      props: true,
       meta: { requiresAuth: true, adminOnly: true },
     },
     {
