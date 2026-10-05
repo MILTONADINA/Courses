@@ -116,6 +116,53 @@ controller.findAll = async (req, res) => {
   }
 };
 
+controller.findStudents = async (req, res) => {
+  if (!isNumber(req.params.id)) return res.status(400).send({ message: "Section id must be a number." });
+  const id = Number(req.params.id);
+
+  try {
+    const section = await db.section.findByPk(id, {
+      attributes: ["id", "sectionNumber"],
+      include: [
+        { model: db.course, as: "course", attributes: ["courseNumber", "courseName"] },
+        { model: db.semester, as: "semester", attributes: ["semsterName"] },
+      ],
+    });
+    if (!section) return res.status(404).send(notFound(id));
+    const enrollments = await db.enrollment.findAll({
+      where: { sectionId: id },
+      include: [{
+        model: db.user,
+        as: "student",
+        attributes: ["id", "firstName", "lastName", "universityId", "email"],
+      }],
+      order: [
+        [{ model: db.user, as: "student" }, "lastName", "ASC"],
+        [{ model: db.user, as: "student" }, "firstName", "ASC"],
+      ],
+    });
+    return res.status(200).send({
+      section: {
+        id: section.id,
+        sectionNumber: section.sectionNumber,
+        courseNumber: section.course.courseNumber,
+        courseName: section.course.courseName,
+        semsterName: section.semester.semsterName,
+      },
+      students: enrollments.map(({ student }) => ({
+        id: student.id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        universityId: student.universityId,
+        email: student.email,
+      })),
+    });
+  } catch (error) {
+    logger.error(`Section students list failed: ${error.message}`);
+    return res.status(500).send({ message: "Request failed." });
+  }
+};
+
 controller.create = async (req, res) => {
   const values = readSection(req.body);
   const message = validateSection(values);
