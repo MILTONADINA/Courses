@@ -9,6 +9,7 @@ import Students from "./views/Students.vue";
 import Sections from "./views/Sections.vue";
 import SectionStudents from "./views/SectionStudents.vue";
 import Enroll from "./views/Enroll.vue";
+import MyCourses from "./views/MyCourses.vue";
 import Utils from "./config/utils.js";
 
 const router = createRouter({
@@ -71,6 +72,12 @@ const router = createRouter({
       path: "/enroll",
       name: "enroll",
       component: Enroll,
+      meta: { requiresAuth: true, studentOnly: true },
+    },
+    {
+      path: "/my-courses",
+      name: "my-courses",
+      component: MyCourses,
       meta: { requiresAuth: true, studentOnly: true },
     },
     {
