@@ -55,7 +55,7 @@ afterEach(() => {
 
 describe("Feature 7 — Student Course Listing", () => {
   describe("US-7.1 — View my enrolled sections", () => {
-    it("Page shows the enrolled section", async () => {
+    it("My courses page shows an enrolled section", async () => {
       signIn();
       MyCoursesServices.listMyCourses.mockResolvedValue({ data: [course] });
       await mountPage();
@@ -69,7 +69,7 @@ describe("Feature 7 — Student Course Listing", () => {
       expect(page.text()).toContain("Ada Lovelace");
     });
 
-    it("Page shows a loading state", async () => {
+    it("My courses page shows a loading state", async () => {
       signIn();
       const pending = deferred();
       MyCoursesServices.listMyCourses.mockReturnValue(pending.promise);
@@ -79,27 +79,27 @@ describe("Feature 7 — Student Course Listing", () => {
       await flushPromises();
     });
 
-    it("Page shows no enrolled sections", async () => {
+    it("My courses page shows a message when the student has no enrollments", async () => {
       signIn();
       await mountPage();
       expect(page.text()).toContain("No enrolled sections.");
     });
 
-    it("Page shows the API error", async () => {
+    it("My courses page shows the API error when the list fails", async () => {
       signIn();
       MyCoursesServices.listMyCourses.mockRejectedValue(failure("Courses could not be loaded."));
       await mountPage();
       expect(page.text()).toContain("Courses could not be loaded.");
     });
 
-    it("Page shows Request failed when the API gives no message", async () => {
+    it("My courses page shows a fallback error when the API gives no message", async () => {
       signIn();
       MyCoursesServices.listMyCourses.mockRejectedValue(new Error("Network Error"));
       await mountPage();
       expect(page.text()).toContain("Request failed.");
     });
 
-    it("Page does not show Enroll, Drop, or Change section", async () => {
+    it("My courses page does not offer enrollment actions", async () => {
       signIn();
       MyCoursesServices.listMyCourses.mockResolvedValue({ data: [course] });
       await mountPage();
@@ -114,13 +114,13 @@ describe("Feature 7 — Student Course Listing", () => {
       signIn(role);
       ({ wrapper: page } = await mountWithPlugins({ components: { MenuBar }, template: "<v-app><MenuBar /></v-app>" }));
     }
-    it("Student sees My courses in the MenuBar", async () => {
+    it("Student sees the My courses link", async () => {
       await mountMenu("student");
       const link = page.findAll("a").find((item) => item.text() === "My courses");
       expect(link).toBeTruthy();
       expect(link.attributes("href")).toBe("/my-courses");
     });
-    it("Admin does not see My courses in the MenuBar", async () => {
+    it("Admin does not see the My courses link", async () => {
       await mountMenu("admin");
       expect(page.findAll("a").some((item) => item.text() === "My courses")).toBe(false);
     });
@@ -130,11 +130,11 @@ describe("Feature 7 — Student Course Listing", () => {
       expect(router.currentRoute.value.name).toBe("my-courses");
       expect(router.currentRoute.value.matched[0].components.default).toBe(MyCourses);
     });
-    it("Signed-out user is sent to Login from the My courses page", async () => {
+    it("Signed-out user is sent to Login", async () => {
       await router.push("/my-courses");
       expect(router.currentRoute.value.name).toBe("login");
     });
-    it("Admin is sent to Home from the My courses page", async () => {
+    it("Admin is sent to Home", async () => {
       signIn("admin");
       await router.push("/my-courses");
       expect(router.currentRoute.value.name).toBe("home");

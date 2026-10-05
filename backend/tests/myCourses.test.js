@@ -43,7 +43,7 @@ function get(auth = token, query = "") {
 
 describe("Feature 7 — Student Course Listing", () => {
   describe("US-7.1 — View my enrolled sections", () => {
-    it("Student sees one enrolled section", async () => {
+    it("Student views an enrolled section", async () => {
       const enrollment = await db.enrollment.create({ sectionId: 1, studentId: student.id });
       const response = await get();
       expect(response.status).toBe(200);
@@ -60,13 +60,13 @@ describe("Feature 7 — Student Course Listing", () => {
       }]);
     });
 
-    it("Student sees an empty list", async () => {
+    it("Student views an empty course list", async () => {
       const response = await get();
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
     });
 
-    it("Student enrolled in two sections sees both", async () => {
+    it("Student views more than one enrolled section", async () => {
       await db.enrollment.create({ sectionId: 1, studentId: student.id });
       await db.enrollment.create({ sectionId: 2, studentId: student.id });
       const response = await get();
@@ -91,13 +91,13 @@ describe("Feature 7 — Student Course Listing", () => {
   });
 
   describe("US-7.2 — Keep the course list private to the student", () => {
-    it("Admin receives 403", async () => {
+    it("Admin cannot view the course list", async () => {
       const response = await get(adminToken);
       expect(response.status).toBe(403);
       expect(response.body).toEqual({ message: "Student role required." });
     });
 
-    it("Signed-out request receives 401", async () => {
+    it("Unauthenticated user cannot view the course list", async () => {
       const response = await get(null);
       expect(response.status).toBe(401);
       expect(response.body).toEqual({ message: "Unauthorized." });
