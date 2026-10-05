@@ -1016,57 +1016,66 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 
 ## Definition of Done
 
-- [ ] Student users can select a semester and view its sections.
-- [ ] Students can enroll themselves in a section.
-- [ ] `studentId` comes from the authenticated user.
-- [ ] A supplied `studentId` cannot override the authenticated user's id.
-- [ ] Missing `sectionId` returns `400` with the required message.
-- [ ] Non-numeric `sectionId` returns `400` with the required message.
-- [ ] Missing section returns `404` with the required message.
-- [ ] Students cannot enroll twice in the same section.
-- [ ] Students can retrieve only their own enrollments.
-- [ ] POST enrollment returns the created enrollment including `id` and `sectionId`.
-- [ ] GET enrollments returns enrollment records including `id` and `sectionId`.
-- [ ] The Enroll page correctly displays Enroll or Drop for each section.
-- [ ] The Enroll page shows a loading state while semesters, sections, or enrollments load.
-- [ ] The Enroll page shows `No semesters available.` when no semesters exist.
-- [ ] The Enroll page shows `No sections for this semester.` when the selected semester has no sections.
-- [ ] Sections are listed in the order returned by Feature 5.
-- [ ] After enrolling, the section shows Drop; after dropping, it shows Enroll.
-- [ ] The Enroll page shows the API error message when any of its requests fail, or `Request failed.` when the API gives no message.
-- [ ] Students can drop their own enrollments.
-- [ ] Students cannot drop another student's enrollment.
-- [ ] Students can change one of their own enrollments to another section.
-- [ ] Changing an enrollment updates only `sectionId` and ignores a supplied `studentId`.
-- [ ] Changing to a missing, non-numeric, non-existent, or already-enrolled section returns the required error.
-- [ ] Students cannot change another student's enrollment.
-- [ ] The Change section dialog shows `No other sections available.` when there are none, validates the new section, shows a loading state on **Save**, shows API errors, and closes without saving on **Cancel**.
-- [ ] After a change, the original section shows Enroll and the new section shows Drop.
-- [ ] Missing or foreign enrollments return `404`.
-- [ ] Feature 6 provides a reusable student-only authorization check.
-- [ ] Admin users receive `403` on POST, GET, PUT, and DELETE enrollment routes.
-- [ ] Unauthenticated users receive `401` on enrollment routes.
-- [ ] Student users see **Enroll** in the MenuBar.
-- [ ] Admin users do not see **Enroll** in the MenuBar.
-- [ ] `/enroll` is accessible to authenticated students.
-- [ ] Signed-out users navigating to `/enroll` are sent to Login.
-- [ ] Admins navigating to `/enroll` are sent to Home.
-- [ ] The `enrollments` table contains `id`, `sectionId`, `studentId`, `createdAt`, and `updatedAt`.
-- [ ] `(studentId, sectionId)` is unique.
-- [ ] The Enrollment model and its associations are registered in `backend/app/models/index.js`.
-- [ ] Deleting a section deletes its enrollments.
-- [ ] Deleting a student deletes their enrollments.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-041** satisfied).
-- [ ] **Success Criteria (SC-001**–**SC-020)** are met.
-- [ ] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass (`npm test`).
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/data-model.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/reference/README.md` lists Feature 6 in its provenance table.
-- [ ] `features/README.md` links Feature 6 to `feature-6-enrollment-management.md`.
-- [ ] Nothing outside this specification is implemented.
+Implementation verified locally on 2026-10-05 on `feature/6-enrollment-management-implementation`:
+
+- Root `npm test`: 166 backend tests and 137 frontend tests passed.
+- All 48 acceptance scenarios map to automated tests in the specified files.
+- Frontend `npm run build` passed; Vite reported a bundle-size warning.
+- API, data-model, behavior, and provenance reference documents updated.
+- Status remains **Ready** until merge to `dev`; this implementation has not been merged or deployed.
+
+
+- [x] Student users can select a semester and view its sections.
+- [x] Students can enroll themselves in a section.
+- [x] `studentId` comes from the authenticated user.
+- [x] A supplied `studentId` cannot override the authenticated user's id.
+- [x] Missing `sectionId` returns `400` with the required message.
+- [x] Non-numeric `sectionId` returns `400` with the required message.
+- [x] Missing section returns `404` with the required message.
+- [x] Students cannot enroll twice in the same section.
+- [x] Students can retrieve only their own enrollments.
+- [x] POST enrollment returns the created enrollment including `id` and `sectionId`.
+- [x] GET enrollments returns enrollment records including `id` and `sectionId`.
+- [x] The Enroll page correctly displays Enroll or Drop for each section.
+- [x] The Enroll page shows a loading state while semesters, sections, or enrollments load.
+- [x] The Enroll page shows `No semesters available.` when no semesters exist.
+- [x] The Enroll page shows `No sections for this semester.` when the selected semester has no sections.
+- [x] Sections are listed in the order returned by Feature 5.
+- [x] After enrolling, the section shows Drop; after dropping, it shows Enroll.
+- [x] The Enroll page shows the API error message when any of its requests fail, or `Request failed.` when the API gives no message.
+- [x] Students can drop their own enrollments.
+- [x] Students cannot drop another student's enrollment.
+- [x] Students can change one of their own enrollments to another section.
+- [x] Changing an enrollment updates only `sectionId` and ignores a supplied `studentId`.
+- [x] Changing to a missing, non-numeric, non-existent, or already-enrolled section returns the required error.
+- [x] Students cannot change another student's enrollment.
+- [x] The Change section dialog shows `No other sections available.` when there are none, validates the new section, shows a loading state on **Save**, shows API errors, and closes without saving on **Cancel**.
+- [x] After a change, the original section shows Enroll and the new section shows Drop.
+- [x] Missing or foreign enrollments return `404`.
+- [x] Feature 6 provides a reusable student-only authorization check.
+- [x] Admin users receive `403` on POST, GET, PUT, and DELETE enrollment routes.
+- [x] Unauthenticated users receive `401` on enrollment routes.
+- [x] Student users see **Enroll** in the MenuBar.
+- [x] Admin users do not see **Enroll** in the MenuBar.
+- [x] `/enroll` is accessible to authenticated students.
+- [x] Signed-out users navigating to `/enroll` are sent to Login.
+- [x] Admins navigating to `/enroll` are sent to Home.
+- [x] The `enrollments` table contains `id`, `sectionId`, `studentId`, `createdAt`, and `updatedAt`.
+- [x] `(studentId, sectionId)` is unique.
+- [x] The Enrollment model and its associations are registered in `backend/app/models/index.js`.
+- [x] Deleting a section deletes its enrollments.
+- [x] Deleting a student deletes their enrollments.
+- [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-041** satisfied).
+- [x] **Success Criteria (SC-001**–**SC-020)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/data-model.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/reference/README.md` lists Feature 6 in its provenance table.
+- [x] `features/README.md` links Feature 6 to `feature-6-enrollment-management.md`.
+- [x] Nothing outside this specification is implemented.
 
 ---
 
