@@ -91,6 +91,9 @@ controller.delete = async (req, res) => {
   try {
     const semester = await db.semester.findByPk(id);
     if (!semester) return res.status(404).send(notFound(id));
+    if (await db.section.count({ where: { semesterId: id } })) {
+      return res.status(400).send({ message: "Semester has sections and cannot be deleted." });
+    }
     await semester.destroy();
     return res.status(200).send({ message: "Semester deleted successfully." });
   } catch (error) {
