@@ -117,7 +117,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | The response includes the section number, course number and name, and semester name, plus only the enrolled students' id, first name, last name, university ID, and email. Passwords are excluded. Students are sorted by last name, then first name | `section.controller.js#findStudents` | Feature 8 FR-002–FR-006 |
 | An empty roster returns `200` with `students: []`. A non-numeric section id returns `400`; an unknown section id returns `404`, with the specified messages | `section.controller.js#findStudents` | Feature 8 FR-007–FR-009 |
 | Each Sections row has a text **Students** action opening `/sections/:id/students`, named `section-students`. Students go Home; signed-out users go to Login. No menu link is added | `Sections.vue`, `router.js` | Feature 8 FR-013–FR-016, screen requirements |
-| The roster heading is `<courseNumber> <courseName> — Section <sectionNumber> (<semsterName>)`. The table shows Last name, First name, University ID, and Email in API order | `SectionStudents.vue` | Feature 8 screen requirements |
+| The roster heading is `<courseNumber> <courseName> — Section <sectionNumber> (<semesterName>)`. The table shows Last name, First name, University ID, and Email in API order | `SectionStudents.vue` | Feature 8 screen requirements |
 | The page shows loading, `No students enrolled.` for an empty roster, and the API message or `Request failed.` for errors. It offers no enrollment actions and does not change any data | `SectionStudents.vue`, `section.controller.js#findStudents` | Feature 8 FR-017–FR-021 |
 
 ## Students
