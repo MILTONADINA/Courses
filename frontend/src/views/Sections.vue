@@ -279,7 +279,7 @@ onMounted(loadSections);
           :key="field.key"
           v-model="form[field.key]"
           :label="field.label"
-          type="time"
+          placeholder="HH:MM"
           :error-messages="fieldErrors[field.key]"
           density="comfortable"
           rounded="lg"

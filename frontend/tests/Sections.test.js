@@ -45,15 +45,9 @@ const section = {
   faculty: ada,
 };
 
-const validForm = {
-  Semester: 2,
-  Course: 3,
-  Instructor: 4,
-  "Section number": "01",
-  "Days of week": "MWF",
-  "Start time": "09:00",
-  "End time": "09:50",
-};
+const validChoices = { Semester: 2, Course: 3, Instructor: 4 };
+
+const validInputs = { sectionNumber: "01", daysOfWeek: "MWF", startTime: "09:00", endTime: "09:50" };
 
 const savedValues = {
   sectionNumber: "01",
@@ -90,19 +84,22 @@ function dialogInput(name) {
   return [...document.querySelectorAll(`[data-testid="${name}"] input`)].at(-1);
 }
 
-function formField(label) {
-  const selects = page.findAllComponents({ name: "VSelect" });
-  const textFields = page.findAllComponents({ name: "VTextField" });
-  return [...selects, ...textFields].find((field) => field.props("label") === label);
-}
-
-async function setField(label, value) {
-  formField(label).vm.$emit("update:modelValue", value);
+async function fill(name, value) {
+  const input = dialogInput(name);
+  input.value = value;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
   await flushPromises();
 }
 
-async function fillForm(values) {
-  for (const [label, value] of Object.entries(values)) await setField(label, value);
+async function choose(label, value) {
+  const select = page.findAllComponents({ name: "VSelect" }).find((field) => field.props("label") === label);
+  select.vm.$emit("update:modelValue", value);
+  await flushPromises();
+}
+
+async function fillForm(inputs = validInputs) {
+  for (const [label, value] of Object.entries(validChoices)) await choose(label, value);
+  for (const [name, value] of Object.entries(inputs)) await fill(name, value);
 }
 
 async function click(selector) {
@@ -142,7 +139,7 @@ describe("Feature 5 — Section Management", () => {
 
       await click('[data-testid="add-section"]');
       expect(document.body.textContent).toContain("Add Section");
-      await fillForm(validForm);
+      await fillForm();
       await click('[data-testid="save-section"]');
 
       expect(SectionServices.createSection).toHaveBeenCalledWith(savedValues);
@@ -155,7 +152,7 @@ describe("Feature 5 — Section Management", () => {
       await mountPage();
 
       await click('[data-testid="add-section"]');
-      await fillForm({ ...validForm, "Section number": "" });
+      await fillForm({ ...validInputs, sectionNumber: "" });
       await click('[data-testid="save-section"]');
 
       expect(document.body.textContent).toContain("Section number is required.");
@@ -167,7 +164,7 @@ describe("Feature 5 — Section Management", () => {
       await mountPage();
 
       await click('[data-testid="add-section"]');
-      await fillForm({ ...validForm, "Days of week": "   " });
+      await fillForm({ ...validInputs, daysOfWeek: "   " });
       await click('[data-testid="save-section"]');
 
       expect(document.body.textContent).toContain("Days of week is required.");
@@ -179,10 +176,12 @@ describe("Feature 5 — Section Management", () => {
       await mountPage();
 
       await click('[data-testid="add-section"]');
-      await fillForm({ ...validForm, "Start time": "9am" });
+      await fillForm({ ...validInputs, startTime: "9am" });
       await click('[data-testid="save-section"]');
 
+      expect(dialogInput("startTime").value).toBe("9am");
       expect(document.body.textContent).toContain("Start time must be in HH:MM format.");
+      expect(document.body.textContent).not.toContain("Start time is required.");
       expect(SectionServices.createSection).not.toHaveBeenCalled();
     });
 
@@ -192,7 +191,7 @@ describe("Feature 5 — Section Management", () => {
       await mountPage();
 
       await click('[data-testid="add-section"]');
-      await fillForm(validForm);
+      await fillForm();
       await click('[data-testid="save-section"]');
 
       expect(document.body.textContent).toContain("Semester with id=2 not found.");
@@ -205,7 +204,7 @@ describe("Feature 5 — Section Management", () => {
       await mountPage();
 
       await click('[data-testid="add-section"]');
-      await fillForm(validForm);
+      await fillForm();
       await click('[data-testid="save-section"]');
 
       expect(document.body.textContent).toContain("Request failed.");
@@ -298,7 +297,7 @@ describe("Feature 5 — Section Management", () => {
       const { wrapper } = await mountPage();
 
       await click('[data-testid="edit-section"]');
-      await setField("Days of week", "TR");
+      await fill("daysOfWeek", "TR");
       await click('[data-testid="save-section"]');
 
       expect(SectionServices.updateSection).toHaveBeenCalledWith(1, { ...savedValues, daysOfWeek: "TR" });
@@ -311,7 +310,7 @@ describe("Feature 5 — Section Management", () => {
       await mountPage();
 
       await click('[data-testid="edit-section"]');
-      await setField("Section number", "");
+      await fill("sectionNumber", "");
       await click('[data-testid="save-section"]');
 
       expect(document.body.textContent).toContain("Section number is required.");
