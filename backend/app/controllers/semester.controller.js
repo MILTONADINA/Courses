@@ -13,12 +13,12 @@ function isCalendarDate(value) {
 
 function readSemester(body) {
   const data = body || {};
-  const semsterName = typeof data.semsterName === "string" ? data.semsterName.trim() : "";
+  const semsterName = typeof data.semsterName === "string" ? data.semsterName : "";
   return { semsterName, startDate: data.startDate, endDate: data.endDate };
 }
 
 function validateSemester(values) {
-  if (!values.semsterName) return "Semester name is required.";
+  if (!values.semsterName.trim()) return "Semester name is required.";
   if (values.startDate === undefined || values.startDate === null || values.startDate === "") {
     return "Start date is required.";
   }
@@ -31,7 +31,7 @@ function validateSemester(values) {
 }
 
 function parseId(value) {
-  if (!/^\d+$/.test(String(value))) return null;
+  if (!/^-?\d+$/.test(String(value))) return null;
   return Number(value);
 }
 
