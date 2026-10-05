@@ -183,11 +183,12 @@ describe("Feature 1 — User Authentication & Authorization", () => {
 
   describe("US-1.7 — Seed the first admin", () => {
     it("Seed creates the first admin", async () => {
-      const result = spawnSync("npm", ["run", "seed"], {
+      const result = spawnSync(process.execPath, [process.env.npm_execpath, "run", "seed"], {
         cwd: backendDir,
         env: { ...process.env, DOTENV_CONFIG_PATH: path.join(backendDir, ".env.test") },
         encoding: "utf8",
       });
+      expect(result.error).toBeUndefined();
       expect(result.status).toBe(0);
       const admin = await db.user.unscoped().findOne({ where: { userName: process.env.ADMIN_USERNAME } });
       expect(admin).toMatchObject({
@@ -204,8 +205,9 @@ describe("Feature 1 — User Authentication & Authorization", () => {
       for (const password of [undefined, ""]) {
         const environment = { ...process.env, DOTENV_CONFIG_PATH: os.devNull, ADMIN_PASSWORD: password };
         if (password === undefined) delete environment.ADMIN_PASSWORD;
-        const result = spawnSync("npm", ["run", "seed"], { cwd: backendDir, env: environment, encoding: "utf8" });
-        expect(result.status).not.toBe(0);
+        const result = spawnSync(process.execPath, [process.env.npm_execpath, "run", "seed"], { cwd: backendDir, env: environment, encoding: "utf8" });
+        expect(result.error).toBeUndefined();
+        expect(result.status).toBe(1);
         expect(await db.user.count({ where: { role: "admin" } })).toBe(0);
       }
     });
