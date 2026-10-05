@@ -412,30 +412,30 @@ Do not mark the feature complete if any requirement or acceptance scenario remai
 
 ## Definition of Done
 
-- [ ] A student can list the sections they are enrolled in.
-- [ ] Each item includes course number, course name, section number, semester name, meeting days, meeting times, and instructor name.
-- [ ] An empty list returns `200` with `[]`.
-- [ ] A student cannot see another student's enrolled sections.
-- [ ] A supplied student id does not change whose list is returned.
-- [ ] Admins receive `403` with `Student role required.`
-- [ ] Signed-out API calls return `401`.
-- [ ] Signed-out users who open `/my-courses` are sent to Login.
-- [ ] Admins who open `/my-courses` are sent to Home.
-- [ ] The My courses page shows a loading state, `No enrolled sections.` when empty, the API message on failure, and `Request failed.` when the API gives no message.
-- [ ] The page does not show **Enroll**, **Drop**, or **Change section**.
-- [ ] The MenuBar shows **My courses** only to a student.
-- [ ] No table or columns are added.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-016** satisfied).
-- [ ] **Success Criteria (SC-001**–**SC-010)** are met.
-- [ ] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass (`npm test`).
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/data-model.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/reference/README.md` lists Feature 7 in its provenance table.
-- [ ] `features/README.md` links Feature 7 to this file.
-- [ ] Nothing outside this specification is implemented.
+- [x] A student can list the sections they are enrolled in.
+- [x] Each item includes course number, course name, section number, semester name, meeting days, meeting times, and instructor name.
+- [x] An empty list returns `200` with `[]`.
+- [x] A student cannot see another student's enrolled sections.
+- [x] A supplied student id does not change whose list is returned.
+- [x] Admins receive `403` with `Student role required.`
+- [x] Signed-out API calls return `401`.
+- [x] Signed-out users who open `/my-courses` are sent to Login.
+- [x] Admins who open `/my-courses` are sent to Home.
+- [x] The My courses page shows a loading state, `No enrolled sections.` when empty, the API message on failure, and `Request failed.` when the API gives no message.
+- [x] The page does not show **Enroll**, **Drop**, or **Change section**.
+- [x] The MenuBar shows **My courses** only to a student.
+- [x] No table or columns are added.
+- [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-016** satisfied).
+- [x] **Success Criteria (SC-001**–**SC-010)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/data-model.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/reference/README.md` lists Feature 7 in its provenance table.
+- [x] `features/README.md` links Feature 7 to this file.
+- [x] Nothing outside this specification is implemented.
 
 ---
 

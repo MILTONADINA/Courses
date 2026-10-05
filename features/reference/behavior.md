@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of Features 1–6 and Feature 9 product rules.
+**Living snapshot** of Features 1–7 and Feature 9 product rules.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -96,6 +96,16 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | The page shows loading states, `No semesters available.`, or `No sections for this semester.` as appropriate. Errors display the API message or `Request failed.` | `Enroll.vue` | Feature 6 FR-031–FR-034, FR-041, screen requirements |
 | **Change section** offers only other, unenrolled sections of the selected semester. No choices shows `No other sections available.`; no selection shows `Section id is required.` without a request | `Enroll.vue` | Feature 6 FR-038–FR-039, screen requirements |
 | Dialog **Save** shows loading, closes on success, and retains the original enrollment on failure with the API error or fallback. **Cancel** closes without saving | `Enroll.vue` | Feature 6 FR-032, FR-040–FR-041, screen requirements |
+
+## My courses
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| `GET /course-t6/my-courses` is student-only and returns only the authenticated student's enrollments. A supplied student id is ignored. An empty list returns `200` with `[]` | `myCourses.routes.js`, `myCourses.controller.js` | Feature 7 FR-001–FR-008 |
+| Each item includes course number and name, section number, semester name, days, times, and the instructor's first and last name | `myCourses.controller.js` | Feature 7 FR-003 |
+| A missing session returns `401` with `Unauthorized.`. An admin returns `403` with `Student role required.` | `myCourses.routes.js` | Feature 7 FR-006, FR-007 |
+| `/my-courses` (route name `my-courses`) is student-only. Signed-out users go to Login and admins go Home. The menu shows **My courses** only to authenticated students | `router.js`, `MenuBar.vue` | Feature 7 FR-009–FR-012 |
+| The page shows a loading state, `No enrolled sections.` when the list is empty, the API message on failure, and `Request failed.` when the API gives no message. It does not show **Enroll**, **Drop**, or **Change section** | `MyCourses.vue` | Feature 7 FR-013–FR-016 |
 
 ## Students
 

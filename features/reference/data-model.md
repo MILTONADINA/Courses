@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Features 1–6 schema implemented.
+**Status:** Features 1–6 schema implemented. Feature 7 reads that schema and adds no tables or columns.
 
 ## Tables
 
@@ -90,4 +90,4 @@ The unique index on `(studentId, sectionId)` prevents duplicate enrollments, inc
 
 One user has many sessions. Each session belongs to one user through `userId`. A semester, a course, and a faculty member each have many sections. Each section belongs to one semester (`semesterId`), one course (`courseId`), and one faculty member (`facultyId`). The Semester, Course, Faculty, and Section models are registered in `backend/app/models/index.js`.
 
-A section and a student user each have many enrollments (`enrollments`). Each enrollment belongs to one section (`section`) and one student user (`student`). The Enrollment model and all four associations are registered in `backend/app/models/index.js`.
+A section and a student user each have many enrollments (`enrollments`). Each enrollment belongs to one section (`section`) and one student user (`student`). The Enrollment model and all four associations are registered in `backend/app/models/index.js`. Feature 7 uses those associations to list a student's courses. It does not add a table, a column, or an association.

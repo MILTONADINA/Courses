@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, Feature 4 faculty endpoints, Feature 5 section endpoints, Feature 6 enrollment endpoints, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
+**Status:** Feature 1 authentication, Feature 2 semester endpoints, Feature 3 course endpoints, Feature 4 faculty endpoints, Feature 5 section endpoints, Feature 6 enrollment endpoints, Feature 7 student course listing, and Feature 9 student endpoints implemented. The API is mounted at `/course-t6`.
 
 ## Endpoints
 
@@ -29,6 +29,7 @@
 | `GET` | `/course-t6/enrollments` | Student | `200` array of the authenticated student's enrollments |
 | `PUT` | `/course-t6/enrollments/:id` | Student, owner | `200` updated enrollment |
 | `DELETE` | `/course-t6/enrollments/:id` | Student, owner | `200` with `{ "message": "Enrollment deleted successfully." }` |
+| `GET` | `/course-t6/my-courses` | Student | `200` array of the authenticated student's enrolled sections |
 | `POST` | `/course-t6/students` | Admin | `201` student |
 | `GET` | `/course-t6/students` | Admin | `200` array of students |
 | `PUT` | `/course-t6/students/:id` | Admin | `200` student |
@@ -75,6 +76,10 @@ All enrollment routes use `authenticate` and `requireStudent`. An invalid or mis
 | Unexpected enrollment error | `500` | `Request failed.` |
 
 Deleting a section or student also deletes their enrollments through database foreign-key cascades.
+
+## My courses
+
+`GET /course-t6/my-courses` returns only the authenticated student's enrollments. A supplied `studentId` is ignored. There is no create, update, or delete route. Each item has `enrollmentId`, `courseNumber`, `courseName`, `sectionNumber`, `semsterName`, `daysOfWeek`, `startTime`, `endTime`, and `instructorName`. An empty list returns `200` with `[]`. An invalid or missing session returns `401` with `Unauthorized.`. An authenticated non-student returns `403` with `Student role required.`. An unexpected error returns `500` with `Request failed.`.
 
 ## Conventions
 
