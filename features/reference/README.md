@@ -35,4 +35,5 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Faculty members, admin-only faculty list/add/edit/delete, Faculty page | [Feature 4](../feature-4-faculty-management.md) |
 | Sections, section list/add/edit/delete, has-sections delete checks, Sections page | [Feature 5](../feature-5-section-management.md) |
 | Student-owned enrollments, student-only check, Enroll page, change-section dialog, enrollment cascade cleanup | [Feature 6](../feature-6-enrollment-management.md) |
+| Student course list from existing enrollments, My courses page | [Feature 7](../feature-7-student-course-listing.md) |
 | Student accounts on the existing users table, Students page | [Feature 9](../feature-9-student-management.md) |
