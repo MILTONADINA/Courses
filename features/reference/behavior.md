@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of Feature 1, Feature 2, Feature 3, and Feature 4 product rules.
+**Living snapshot** of Feature 1, Feature 2, Feature 3, Feature 4, and Feature 5 product rules.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -67,6 +67,20 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `/faculty` is admin-only: students are sent to Home and signed-out users to Login. The menu shows **Faculty** to admins only | `router.js`, `MenuBar.vue` | Feature 4 FR-022, FR-023 |
 | The Faculty page lists First name, Last name, and Department with text **Edit** and **Delete** actions, shows a loading state, `No faculty members yet.` when empty, and the API message or `Request failed.` on failure | `Faculty.vue` | Feature 4 FR-024, screen requirements |
 | The **Add Faculty** / **Edit Faculty** dialog checks every field before submit with the API's messages, sends no request when a check fails, shows API errors, and closes and refreshes the list after a successful save | `Faculty.vue` | Feature 4 screen requirements |
+
+## Sections
+
+| Rule | Enforcement | Provenance |
+|---|---|---|
+| Any signed-in user can list sections. Only admins add, edit, and delete them. Students receive `403`; a missing session returns `401` | `section.routes.js` | Feature 5 FR-001, FR-012, FR-017, FR-019, FR-023–FR-026 |
+| All seven section fields are required. Whitespace-only `sectionNumber` or `daysOfWeek` counts as missing. Saved text is not trimmed | `section.controller.js` | Feature 5 FR-002–FR-006 |
+| `semesterId`, `courseId`, and `facultyId` must be numbers and must exist. Times must be 24-hour `HH:MM` | `section.controller.js` | Feature 5 FR-007–FR-011, FR-018 |
+| The list can be filtered by `?semesterId=` and is ordered by semester `startDate`, then `courseNumber`, then `sectionNumber`. Each section includes its semester name, course number and name, and instructor name | `section.controller.js#findAll` | Feature 5 FR-013–FR-016 |
+| A non-numeric section id returns `Section id must be a number.` An unknown id, including a negative number, returns `Section with id=<id> not found.` Delete is permanent and returns `Section deleted successfully.` | `section.controller.js` | Feature 5 FR-020–FR-022 |
+| A semester, course, or faculty member that a section uses cannot be deleted; the delete returns `400` and nothing is deleted | `semester.controller.js`, `course.controller.js`, `faculty.controller.js`, `models/index.js` | Feature 5 FR-027–FR-030 |
+| `/sections` is admin-only: students are sent to Home and signed-out users to Login. The menu shows **Sections** to admins only | `router.js`, `MenuBar.vue` | Feature 5 FR-031, FR-032 |
+| The Sections page lists Semester, Course, Section, Instructor, Days, and Time with text **Edit** and **Delete** actions, shows a loading state, `No sections yet.` when empty, and the API message or `Request failed.` on failure | `Sections.vue` | Feature 5 FR-033, screen requirements |
+| The **Add Section** / **Edit Section** dialog picks the semester, course, and instructor from lists, checks every field and the time format before submit with the API's messages, sends no request when a check fails, stays open with the API error or `Request failed.` when a save fails, and closes and refreshes the list after a successful save | `Sections.vue` | Feature 5 FR-034–FR-036, screen requirements |
 
 ## Students
 
