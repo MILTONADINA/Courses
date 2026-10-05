@@ -227,12 +227,13 @@ onMounted(async () => {
         </v-card>
       </v-dialog>
 
-      <div v-if="loading">
+      <div v-if="loading" class="text-secondary">
         Loading semesters...
       </div>
 
       <div
         v-else-if="semesters.length === 0"
+        class="text-secondary"
       >
         No semesters found.
       </div>
@@ -246,11 +247,11 @@ onMounted(async () => {
         >
           <div class="d-flex align-center justify-space-between">
             <div>
-              <div class="text-h6">
+              <div class="text-h6 text-primary">
                 {{ semester.semsterName }}
               </div>
 
-              <div>
+              <div class="text-secondary">
                 {{ semester.startDate }}
                 -
                 {{ semester.endDate }}
@@ -264,6 +265,7 @@ onMounted(async () => {
               <v-btn
                 data-testid="edit-semester"
                 variant="text"
+                color="primary"
                 @click="openEditForm(semester)"
               >
                 Edit
@@ -272,6 +274,7 @@ onMounted(async () => {
               <v-btn
                 data-testid="delete-semester"
                 variant="text"
+                color="primary"
                 @click="deleteSemester(semester)"
               >
                 Delete
