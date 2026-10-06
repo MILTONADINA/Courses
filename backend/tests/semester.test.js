@@ -61,11 +61,16 @@ describe("Feature 2 — Semester Management", () => {
   describe("US-2.1 — Create a semester", () => {
     it("Admin creates a semester with valid information", async () => {
       const token = await adminToken();
-      const response = await createSemester(token);
+      for (const semsterName of [semester.semsterName, " Fall 2026 "]) {
+        const values = { ...semester, semsterName };
+        const response = await createSemester(token, values);
 
-      expect(response.status).toBe(201);
-      expect(response.body).toMatchObject(semester);
-      expect(response.body.id).toEqual(expect.any(Number));
+        expect(response.status).toBe(201);
+        expect(response.body).toMatchObject(values);
+        expect(response.body.id).toEqual(expect.any(Number));
+        const stored = await db.semester.findByPk(response.body.id);
+        expect(stored.semsterName).toBe(semsterName);
+      }
     });
 
     it("Admin creates a semester without a required field", async () => {
@@ -169,38 +174,47 @@ describe("Feature 2 — Semester Management", () => {
         startDate: "2027-01-11",
         endDate: "2027-05-07",
       };
-      const response = await request(app)
-        .put(`/course-t6/semesters/${created.body.id}`)
-        .set(authed(token))
-        .send(updated);
+      for (const semsterName of [updated.semsterName, " Spring 2027 "]) {
+        const values = { ...updated, semsterName };
+        const response = await request(app)
+          .put(`/course-t6/semesters/${created.body.id}`)
+          .set(authed(token))
+          .send(values);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toMatchObject(updated);
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject(values);
+        const stored = await db.semester.findByPk(created.body.id);
+        expect(stored.semsterName).toBe(semsterName);
+      }
     });
 
     it("Admin updates a semester without a required field", async () => {
       const token = await adminToken();
       const created = await createSemester(token);
-      const response = await request(app)
-        .put(`/course-t6/semesters/${created.body.id}`)
-        .set(authed(token))
-        .send({ ...semester, semsterName: "" });
-      const stored = await db.semester.findByPk(created.body.id);
+      for (const semsterName of ["", "   "]) {
+        const response = await request(app)
+          .put(`/course-t6/semesters/${created.body.id}`)
+          .set(authed(token))
+          .send({ ...semester, semsterName });
+        const stored = await db.semester.findByPk(created.body.id);
 
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({ message: "Semester name is required." });
-      expect(stored.semsterName).toBe("Fall 2026");
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({ message: "Semester name is required." });
+        expect(stored.semsterName).toBe("Fall 2026");
+      }
     });
 
     it("Admin updates a semester that does not exist", async () => {
       const token = await adminToken();
-      const response = await request(app)
-        .put("/course-t6/semesters/99999")
-        .set(authed(token))
-        .send(semester);
+      for (const id of [99999, -1]) {
+        const response = await request(app)
+          .put(`/course-t6/semesters/${id}`)
+          .set(authed(token))
+          .send(semester);
 
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: "Semester with id=99999 not found." });
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({ message: `Semester with id=${id} not found.` });
+      }
     });
 
     it("Admin updates a semester using a non-numeric id", async () => {
@@ -239,10 +253,12 @@ describe("Feature 2 — Semester Management", () => {
 
     it("Admin deletes a semester that does not exist", async () => {
       const token = await adminToken();
-      const response = await request(app).delete("/course-t6/semesters/99999").set(authed(token));
+      for (const id of [99999, -1]) {
+        const response = await request(app).delete(`/course-t6/semesters/${id}`).set(authed(token));
 
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: "Semester with id=99999 not found." });
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({ message: `Semester with id=${id} not found.` });
+      }
     });
 
     it("Admin deletes a semester using a non-numeric id", async () => {
