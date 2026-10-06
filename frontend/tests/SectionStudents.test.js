@@ -19,7 +19,7 @@ vi.mock("../src/services/enrollmentServices.js", () => ({
   default: { listEnrollments: vi.fn(), createEnrollment: vi.fn(), updateEnrollment: vi.fn(), deleteEnrollment: vi.fn() },
 }));
 
-const section = { id: 3, sectionNumber: "01", courseNumber: "CMSC 4113", courseName: "Software Engineering IV", semesterName: "Fall 2026" };
+const section = { id: 3, sectionNumber: "01", courseNumber: "CMSC 4113", courseName: "Software Engineering IV", semsterName: "Fall 2026" };
 const grace = { id: 8, firstName: "Grace", lastName: "Hopper", universityId: "100200", email: "grace.hopper@example.com" };
 const alan = { id: 7, firstName: "Alan", lastName: "Turing", universityId: "100100", email: "alan.turing@example.com" };
 let page;

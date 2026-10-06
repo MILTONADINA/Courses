@@ -38,7 +38,7 @@ watch(() => props.id, loadStudents, { immediate: true });
     <v-card rounded="lg" elevation="4" class="pa-6">
       <h1 class="text-h4 mb-6">
         <template v-if="section">
-          {{ section.courseNumber }} {{ section.courseName }} — Section {{ section.sectionNumber }} ({{ section.semesterName }})
+          {{ section.courseNumber }} {{ section.courseName }} — Section {{ section.sectionNumber }} ({{ section.semsterName }})
         </template>
         <template v-else>Section students</template>
       </h1>

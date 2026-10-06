@@ -57,7 +57,7 @@ describe("Feature 8 — Section Student Listing", () => {
       const response = await listStudents();
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
-        section: { id: 3, sectionNumber: "01", courseNumber: "CMSC 4113", courseName: "Software Engineering IV", semesterName: "Fall 2026" },
+        section: { id: 3, sectionNumber: "01", courseNumber: "CMSC 4113", courseName: "Software Engineering IV", semsterName: "Fall 2026" },
         students: [{ id: grace.id, firstName: "Grace", lastName: "Hopper", universityId: "100200", email: "grace.hopper@example.com" }],
       });
     });

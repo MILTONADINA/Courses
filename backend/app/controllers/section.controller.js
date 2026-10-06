@@ -140,7 +140,7 @@ controller.findStudents = async (req, res) => {
         sectionNumber: section.sectionNumber,
         courseNumber: section.course.courseNumber,
         courseName: section.course.courseName,
-        semesterName: section.semester.semsterName,
+        semsterName: section.semester.semsterName,
       },
       students: enrollments.map(({ student }) => ({
         id: student.id,
