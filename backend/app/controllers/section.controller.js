@@ -117,6 +117,36 @@ controller.findAll = async (req, res) => {
 };
 
 
+const studentFields = ["id", "firstName", "lastName", "universityId", "email"];
+const studentModel = { model: db.user, as: "student" };
+
+function sectionSummary(section) {
+  return {
+    id: section.id,
+    sectionNumber: section.sectionNumber,
+    courseNumber: section.course.courseNumber,
+    courseName: section.course.courseName,
+    semsterName: section.semester.semsterName,
+  };
+}
+
+function enrolledStudents(sectionId) {
+  return db.enrollment.findAll({
+    where: { sectionId },
+    include: [{ ...studentModel, attributes: studentFields }],
+    order: [
+      [studentModel, "lastName", "ASC"],
+      [studentModel, "firstName", "ASC"],
+    ],
+  });
+}
+
+function toStudent(enrollment) {
+  const student = {};
+  for (const field of studentFields) student[field] = enrollment.student[field];
+  return student;
+}
+
 controller.findStudents = async (req, res) => {
   if (!isNumber(req.params.id)) return res.status(400).send({ message: "Section id must be a number." });
   const id = Number(req.params.id);
@@ -124,32 +154,8 @@ controller.findStudents = async (req, res) => {
   try {
     const section = await findSection(id);
     if (!section) return res.status(404).send(notFound(id));
-
-    const enrollments = await db.enrollment.findAll({
-      where: { sectionId: id },
-      include: [{ model: db.user, as: "student", attributes: ["id", "firstName", "lastName", "universityId", "email"] }],
-      order: [
-        [{ model: db.user, as: "student" }, "lastName", "ASC"],
-        [{ model: db.user, as: "student" }, "firstName", "ASC"],
-      ],
-    });
-
-    return res.status(200).send({
-      section: {
-        id: section.id,
-        sectionNumber: section.sectionNumber,
-        courseNumber: section.course.courseNumber,
-        courseName: section.course.courseName,
-        semsterName: section.semester.semsterName,
-      },
-      students: enrollments.map(({ student }) => ({
-        id: student.id,
-        firstName: student.firstName,
-        lastName: student.lastName,
-        universityId: student.universityId,
-        email: student.email,
-      })),
-    });
+    const enrollments = await enrolledStudents(id);
+    return res.status(200).send({ section: sectionSummary(section), students: enrollments.map(toStudent) });
   } catch (error) {
     logger.error(`Section students list failed: ${error.message}`);
     return res.status(500).send({ message: "Section students could not be loaded." });
