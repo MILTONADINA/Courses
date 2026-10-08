@@ -181,6 +181,7 @@ describe("Feature 2 — Semester Management", () => {
       const { wrapper } = await mountPage();
 
       expect(wrapper.text()).toContain("Semesters are unavailable.");
+      expect(wrapper.text()).not.toContain("No semesters found.");
     });
 
     it("Semesters page shows a fallback error when the API gives no message", async () => {
@@ -189,6 +190,7 @@ describe("Feature 2 — Semester Management", () => {
       const { wrapper } = await mountPage();
 
       expect(wrapper.text()).toContain("Semesters could not be loaded.");
+      expect(wrapper.text()).not.toContain("No semesters found.");
     });
 
     it("Signed-in user sees the Semesters link", async () => {
