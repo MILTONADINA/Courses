@@ -2,7 +2,7 @@
 
 **Feature ID:** 8  
 **Branch pattern:** `feature/8-section-student-listing`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-10-01  
 **Input:** A signed-in admin can see the students enrolled in a section.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 5 — Section Management](feature-5-section-management.md), [Feature 6 — Enrollment Management](feature-6-enrollment-management.md)
