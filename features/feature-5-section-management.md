@@ -2,7 +2,7 @@
 
 **Feature ID:** 5  
 **Branch pattern:** `feature/5-section-management`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-09-30  
 **Input:** Allow admins to manage the sections offered in the Courses Management System. A section has a section number, a semester, a course, a faculty member who teaches it, the days of the week it meets, a start time, and an end time.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 2 — Semester Management](feature-2-semester-management.md), [Feature 3 — Course Management](feature-3-course-management.md), [Feature 4 — Faculty Management](feature-4-faculty-management.md)
@@ -904,39 +904,39 @@ After all tests pass, the developer updates the reference documentation listed b
 
 ## Definition of Done
 
-- [ ] Admins can add a section with a section number, semester, course, faculty member, days of the week, start time, and end time.
-- [ ] Every section field is required; text fields reject empty and whitespace-only values.
-- [ ] Non-numeric semester, course, and faculty member ids return `400` with the required messages.
-- [ ] Semester, course, and faculty member ids that do not exist return `404` with the required messages.
-- [ ] Start and end times must use the `HH:MM` format.
-- [ ] Any signed-in user can view all sections, or only the sections of one semester.
-- [ ] Every section returned includes its semester name, course number and name, and instructor name.
-- [ ] Sections are sorted by semester start date, then course number, then section number.
-- [ ] Admins can edit a section.
-- [ ] Admins can delete a section.
-- [ ] Non-existent section ids return `404` with the required message.
-- [ ] Non-numeric section ids return `400` with the required message.
-- [ ] Every section endpoint uses the Feature 1 authentication check; add, edit, and delete also use the admin-only check.
-- [ ] Students receive `403` when adding, editing, or deleting sections.
-- [ ] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }` on every section endpoint.
-- [ ] A semester, course, or faculty member that a section uses cannot be deleted.
-- [ ] The Sections page route is `/sections` with route name `sections`.
-- [ ] The Sections page shows loading and empty states.
-- [ ] The Sections page shows the API error message when a request fails, or `Request failed.` when the API gives no message.
-- [ ] The Add / Edit Section dialog blocks invalid input without sending a request, and stays open with the API error message when a save fails.
-- [ ] The Sections page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
-- [ ] The MenuBar shows the **Sections** link to admins only.
+- [x] Admins can add a section with a section number, semester, course, faculty member, days of the week, start time, and end time.
+- [x] Every section field is required; text fields reject empty and whitespace-only values.
+- [x] Non-numeric semester, course, and faculty member ids return `400` with the required messages.
+- [x] Semester, course, and faculty member ids that do not exist return `404` with the required messages.
+- [x] Start and end times must use the `HH:MM` format.
+- [x] Any signed-in user can view all sections, or only the sections of one semester.
+- [x] Every section returned includes its semester name, course number and name, and instructor name.
+- [x] Sections are sorted by semester start date, then course number, then section number.
+- [x] Admins can edit a section.
+- [x] Admins can delete a section.
+- [x] Non-existent section ids return `404` with the required message.
+- [x] Non-numeric section ids return `400` with the required message.
+- [x] Every section endpoint uses the Feature 1 authentication check; add, edit, and delete also use the admin-only check.
+- [x] Students receive `403` when adding, editing, or deleting sections.
+- [x] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }` on every section endpoint.
+- [x] A semester, course, or faculty member that a section uses cannot be deleted.
+- [x] The Sections page route is `/sections` with route name `sections`.
+- [x] The Sections page shows loading and empty states.
+- [x] The Sections page shows the API error message when a request fails, or `Request failed.` when the API gives no message.
+- [x] The Add / Edit Section dialog blocks invalid input without sending a request, and stays open with the API error message when a save fails.
+- [x] The Sections page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
+- [x] The MenuBar shows the **Sections** link to admins only.
 - [ ] Backend and frontend are implemented by hand per this spec (**FR-001**-**FR-036** satisfied); only the automated tests are built with AI.
-- [ ] **Success Criteria (SC-001**-**SC-012)** are met.
-- [ ] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass (`npm test`).
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/data-model.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/reference/README.md` lists Feature 5 in its provenance table.
-- [ ] `features/README.md` links Feature 5 to `feature-5-section-management.md`.
-- [ ] Nothing outside this specification is implemented.
+- [x] **Success Criteria (SC-001**-**SC-012)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/data-model.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/reference/README.md` lists Feature 5 in its provenance table.
+- [x] `features/README.md` links Feature 5 to `feature-5-section-management.md`.
+- [x] Nothing outside this specification is implemented.
 
 ---
 
