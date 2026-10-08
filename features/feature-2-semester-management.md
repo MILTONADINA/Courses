@@ -722,41 +722,41 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 
 ## Definition of Done
 
-- [ ] Admins can create a semester with name, start date, and end date.
-- [ ] Signed-in users can list semesters.
-- [ ] The list is ordered by start date, then by name.
-- [ ] An empty list returns `200` with `[]`.
-- [ ] Admins can update a semester, and the response contains the new values.
-- [ ] Admins can delete a semester, and the list no longer includes it.
-- [ ] Students receive `403` with `Admin role required.` on create, update, and delete.
-- [ ] Students can still list semesters.
-- [ ] Signed-out API calls return `401`.
-- [ ] Signed-out users who open `/semesters` are sent to Login.
-- [ ] Required fields, whitespace-only names, and invalid dates return the specified `400` messages.
-- [ ] A non-numeric id on update or delete returns `Semester id must be a number.`
-- [ ] An unknown id on update or delete returns `Semester with id=<id> not found.`
-- [ ] The Semesters page shows **Add semester**, **Edit**, and **Delete** only to an admin.
-- [ ] The semester dialog is titled **Add semester** or **Edit semester**, has **Save** and **Cancel**, and closes after a successful save.
-- [ ] **Save** shows a loading state while the request runs.
-- [ ] The form blocks submit when a required field is empty.
-- [ ] The list updates after a successful save or delete.
-- [ ] The page shows a loading state, `No semesters found.` when empty, the API message on failure, and the fallback message when the API gives no message.
-- [ ] The MenuBar links signed-in users to Semesters.
-- [ ] The database field is `semsterName`, matching the project slide.
-- [ ] The Semester model is registered in `backend/app/models/index.js`.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-033** satisfied).
-- [ ] **Success Criteria (SC-001**–**SC-009)** are met.
-- [ ] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass (`npm test`).
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/data-model.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/reference/README.md` lists Feature 2 in its provenance table.
-- [ ] `features/README.md` links Feature 2 to this file.
-- [ ] Nothing outside this specification is implemented.
-- [ ] Agility is synchronized with the amended semester field in Features 2, 5, 7, and 8 (owner: Landry; deferred until review).
-- [ ] The Feature 2 implementation in PR #17 is aligned with `semsterName` before that implementation is merged (owner: Landry).
+- [x] Admins can create a semester with name, start date, and end date.
+- [x] Signed-in users can list semesters.
+- [x] The list is ordered by start date, then by name.
+- [x] An empty list returns `200` with `[]`.
+- [x] Admins can update a semester, and the response contains the new values.
+- [x] Admins can delete a semester, and the list no longer includes it.
+- [x] Students receive `403` with `Admin role required.` on create, update, and delete.
+- [x] Students can still list semesters.
+- [x] Signed-out API calls return `401`.
+- [x] Signed-out users who open `/semesters` are sent to Login.
+- [x] Required fields, whitespace-only names, and invalid dates return the specified `400` messages.
+- [x] A non-numeric id on update or delete returns `Semester id must be a number.`
+- [x] An unknown id on update or delete returns `Semester with id=<id> not found.`
+- [x] The Semesters page shows **Add semester**, **Edit**, and **Delete** only to an admin.
+- [x] The semester dialog is titled **Add semester** or **Edit semester**, has **Save** and **Cancel**, and closes after a successful save.
+- [x] **Save** shows a loading state while the request runs.
+- [x] The form blocks submit when a required field is empty.
+- [x] The list updates after a successful save or delete.
+- [x] The page shows a loading state, `No semesters found.` when empty, the API message on failure, and the fallback message when the API gives no message.
+- [x] The MenuBar links signed-in users to Semesters.
+- [x] The database field is `semsterName`, matching the project slide.
+- [x] The Semester model is registered in `backend/app/models/index.js`.
+- [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-033** satisfied).
+- [x] **Success Criteria (SC-001**–**SC-009)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/data-model.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/reference/README.md` lists Feature 2 in its provenance table.
+- [x] `features/README.md` links Feature 2 to this file.
+- [x] Nothing outside this specification is implemented.
+- [x] Agility is synchronized with the amended semester field in Features 2, 5, 7, and 8 (owner: Landry).
+- [x] The Feature 2 implementation in PR #17 is aligned with `semsterName` before that implementation is merged (owner: Landry).
 
 ---
 
