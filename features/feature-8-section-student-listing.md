@@ -2,7 +2,7 @@
 
 **Feature ID:** 8  
 **Branch pattern:** `feature/8-section-student-listing`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-10-01  
 **Input:** A signed-in admin can see the students enrolled in a section.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 5 — Section Management](feature-5-section-management.md), [Feature 6 — Enrollment Management](feature-6-enrollment-management.md)
@@ -434,32 +434,32 @@ When the code and tests are done, update the reference documentation listed belo
 
 ## Definition of Done
 
-- [ ] An admin can list the students enrolled in a section.
-- [ ] The response includes the section's section number, course number and name, and semester name.
-- [ ] Each student includes `id`, `firstName`, `lastName`, `universityId`, and `email`, and never `password`.
-- [ ] The list includes only students enrolled in that section, sorted by last name, then first name.
-- [ ] A section with no enrollments returns `200` with `students: []`.
-- [ ] A non-numeric section id returns `400` with `Section id must be a number.`
-- [ ] A section id that does not exist returns `404` with `Section with id=<id> not found.`
-- [ ] Students receive `403` with `Admin role required.`
-- [ ] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }`.
-- [ ] The Sections page shows a **Students** action for each section that opens its Section students page.
-- [ ] The Section students page route is `/sections/:id/students` with route name `section-students`.
-- [ ] Students who open the Section students page are sent to Home; signed-out users are sent to Login.
-- [ ] The Section students page shows the section heading and a Last name, First name, University ID, and Email table.
-- [ ] The Section students page shows a loading state, `No students enrolled.` when empty, the API message on failure, and `Request failed.` when the API gives no message.
-- [ ] The Section students page does not add, remove, or change enrollments.
-- [ ] No table, columns, or associations are added.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**–**FR-021** satisfied).
-- [ ] **Success Criteria (SC-001**–**SC-010)** are met.
-- [ ] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass (`npm test`).
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/reference/README.md` lists Feature 8 in its provenance table.
-- [ ] `features/README.md` links Feature 8 to `feature-8-section-student-listing.md`.
-- [ ] Nothing outside this specification is implemented.
+- [x] An admin can list the students enrolled in a section.
+- [x] The response includes the section's section number, course number and name, and semester name.
+- [x] Each student includes `id`, `firstName`, `lastName`, `universityId`, and `email`, and never `password`.
+- [x] The list includes only students enrolled in that section, sorted by last name, then first name.
+- [x] A section with no enrollments returns `200` with `students: []`.
+- [x] A non-numeric section id returns `400` with `Section id must be a number.`
+- [x] A section id that does not exist returns `404` with `Section with id=<id> not found.`
+- [x] Students receive `403` with `Admin role required.`
+- [x] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }`.
+- [x] The Sections page shows a **Students** action for each section that opens its Section students page.
+- [x] The Section students page route is `/sections/:id/students` with route name `section-students`.
+- [x] Students who open the Section students page are sent to Home; signed-out users are sent to Login.
+- [x] The Section students page shows the section heading and a Last name, First name, University ID, and Email table.
+- [x] The Section students page shows a loading state, `No students enrolled.` when empty, the API message on failure, and `Request failed.` when the API gives no message.
+- [x] The Section students page does not add, remove, or change enrollments.
+- [x] No table, columns, or associations are added.
+- [x] Backend and frontend are implemented per this spec (**FR-001**–**FR-021** satisfied).
+- [x] **Success Criteria (SC-001**–**SC-010)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/reference/README.md` lists Feature 8 in its provenance table.
+- [x] `features/README.md` links Feature 8 to `feature-8-section-student-listing.md`.
+- [x] Nothing outside this specification is implemented.
 
 ---
 

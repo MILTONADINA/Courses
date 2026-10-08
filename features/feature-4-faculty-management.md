@@ -2,7 +2,7 @@
 
 **Feature ID:** 4  
 **Branch pattern:** `feature/4-faculty-management`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-09-29  
 **Input:** Allow admins to manage the faculty members who teach in the Courses Management System. A faculty member has a first name, last name, and department.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md)
@@ -677,35 +677,35 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 
 ## Definition of Done
 
-- [ ] Admins can add a faculty member with a first name, last name, and department.
-- [ ] `firstName`, `lastName`, and `dept` are required and reject empty and whitespace-only values.
-- [ ] The database field is `dept`, matching the project slide.
-- [ ] Admins can view all faculty members sorted by last name, then first name.
-- [ ] Admins can edit a faculty member.
-- [ ] Admins can delete a faculty member.
-- [ ] Non-existent faculty member ids return `404` with the required message.
-- [ ] Non-numeric faculty member ids return `400` with the required message.
-- [ ] Every faculty endpoint uses the Feature 1 authentication and admin-only authorization checks.
-- [ ] Students receive `403` on every faculty endpoint.
-- [ ] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }` on every faculty endpoint.
-- [ ] Faculty members are not user accounts and no `faculty` role was added.
-- [ ] The Faculty page route is `/faculty` with route name `faculty`.
-- [ ] The Faculty page shows loading and empty states.
-- [ ] The Faculty page shows the API error message when a request fails, or `Request failed.` when the API gives no message.
-- [ ] The Faculty page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
-- [ ] The MenuBar shows the **Faculty** link to admins only.
-- [ ] Backend and frontend are implemented per this spec (**FR-001**-**FR-024** satisfied).
-- [ ] **Success Criteria (SC-001**-**SC-010)** are met.
-- [ ] Test Coverage Map is complete.
-- [ ] Every acceptance scenario has an automated test.
-- [ ] All tests pass (`npm test`).
-- [ ] `features/reference/api.md` is updated.
-- [ ] `features/reference/data-model.md` is updated.
-- [ ] `features/reference/behavior.md` is updated.
-- [ ] `features/reference/README.md` lists Feature 4 in its provenance table.
-- [ ] `features/README.md` links Feature 4 to `feature-4-faculty-management.md`.
-- [ ] Nothing outside this specification is implemented.
-- [ ] Agility is synchronized with the amended faculty validation acceptance criteria (owner: Morgan; deferred until review).
+- [x] Admins can add a faculty member with a first name, last name, and department.
+- [x] `firstName`, `lastName`, and `dept` are required and reject empty and whitespace-only values.
+- [x] The database field is `dept`, matching the project slide.
+- [x] Admins can view all faculty members sorted by last name, then first name.
+- [x] Admins can edit a faculty member.
+- [x] Admins can delete a faculty member.
+- [x] Non-existent faculty member ids return `404` with the required message.
+- [x] Non-numeric faculty member ids return `400` with the required message.
+- [x] Every faculty endpoint uses the Feature 1 authentication and admin-only authorization checks.
+- [x] Students receive `403` on every faculty endpoint.
+- [x] Unauthenticated users receive `401` with `{ "message": "Unauthorized." }` on every faculty endpoint.
+- [x] Faculty members are not user accounts and no `faculty` role was added.
+- [x] The Faculty page route is `/faculty` with route name `faculty`.
+- [x] The Faculty page shows loading and empty states.
+- [x] The Faculty page shows the API error message when a request fails, or `Request failed.` when the API gives no message.
+- [x] The Faculty page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
+- [x] The MenuBar shows the **Faculty** link to admins only.
+- [x] Backend and frontend are implemented per this spec (**FR-001**-**FR-024** satisfied).
+- [x] **Success Criteria (SC-001**-**SC-010)** are met.
+- [x] Test Coverage Map is complete.
+- [x] Every acceptance scenario has an automated test.
+- [x] All tests pass (`npm test`).
+- [x] `features/reference/api.md` is updated.
+- [x] `features/reference/data-model.md` is updated.
+- [x] `features/reference/behavior.md` is updated.
+- [x] `features/reference/README.md` lists Feature 4 in its provenance table.
+- [x] `features/README.md` links Feature 4 to `feature-4-faculty-management.md`.
+- [x] Nothing outside this specification is implemented.
+- [x] Agility is synchronized with the amended faculty validation acceptance criteria (owner: Morgan; deferred until review).
 
 ---
 
