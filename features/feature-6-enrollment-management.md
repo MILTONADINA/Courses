@@ -2,7 +2,7 @@
 
 **Feature ID:** 6  
 **Branch pattern:** `feature/6-enrollment-management`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-09-30  
 **Input:** Allow student users to enroll themselves in sections for a selected semester, change their enrollments to another section, and drop their own enrollments.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), Feature 2 — Semester Management, Feature 5 — Section Management
@@ -1015,15 +1015,6 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 ---
 
 ## Definition of Done
-
-Implementation verified locally on 2026-10-05 on `feature/6-enrollment-management-implementation`:
-
-- Root `npm test`: 166 backend tests and 137 frontend tests passed.
-- All 48 acceptance scenarios map to automated tests in the specified files.
-- Frontend `npm run build` passed; Vite reported a bundle-size warning.
-- API, data-model, behavior, and provenance reference documents updated.
-- Status remains **Ready** until merge to `dev`; this implementation has not been merged or deployed.
-
 
 - [x] Student users can select a semester and view its sections.
 - [x] Students can enroll themselves in a section.
