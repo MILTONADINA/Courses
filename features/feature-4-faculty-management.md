@@ -2,7 +2,7 @@
 
 **Feature ID:** 4  
 **Branch pattern:** `feature/4-faculty-management`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-09-29  
 **Input:** Allow admins to manage the faculty members who teach in the Courses Management System. A faculty member has a first name, last name, and department.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md)
