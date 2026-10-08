@@ -926,7 +926,7 @@ After all tests pass, the developer updates the reference documentation listed b
 - [x] The Add / Edit Section dialog blocks invalid input without sending a request, and stays open with the API error message when a save fails.
 - [x] The Sections page is available only to admins; students are sent to the Home page and unauthenticated users to the Login page.
 - [x] The MenuBar shows the **Sections** link to admins only.
-- [ ] Backend and frontend are implemented by hand per this spec (**FR-001**-**FR-036** satisfied); only the automated tests are built with AI.
+- [x] Backend and frontend are implemented by hand per this spec (**FR-001**-**FR-036** satisfied); only the automated tests are built with AI.
 - [x] **Success Criteria (SC-001**-**SC-012)** are met.
 - [x] Test Coverage Map is complete.
 - [x] Every acceptance scenario has an automated test.

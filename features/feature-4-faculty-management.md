@@ -705,7 +705,7 @@ AI may write or update only the automated tests. It MUST NOT write or change app
 - [x] `features/reference/README.md` lists Feature 4 in its provenance table.
 - [x] `features/README.md` links Feature 4 to `feature-4-faculty-management.md`.
 - [x] Nothing outside this specification is implemented.
-- [ ] Agility is synchronized with the amended faculty validation acceptance criteria (owner: Morgan; deferred until review).
+- [x] Agility is synchronized with the amended faculty validation acceptance criteria (owner: Morgan; deferred until review).
 
 ---
 
