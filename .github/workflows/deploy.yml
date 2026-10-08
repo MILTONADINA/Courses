@@ -100,8 +100,10 @@ jobs:
           debug: false
           command: |
             cd ${{ secrets.BACKEND_DEPLOY_TARGET }}
+            export PATH=/home/ubuntu/.nvm/versions/node/v24.13.0/bin:$PATH
             npm install --omit=dev
             sudo systemctl stop course-t6-backend
             sudo cp course-t6-backend.service /lib/systemd/system/course-t6-backend.service
             sudo systemctl daemon-reload
+            sudo systemctl enable course-t6-backend
             sudo systemctl start course-t6-backend
