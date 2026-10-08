@@ -9,6 +9,7 @@ const isAdmin = user?.role === "admin";
 const semesters = ref([]);
 const error = ref("");
 const loading = ref(false);
+const loaded = ref(false);
 
 const showForm = ref(false);
 const saving = ref(false);
@@ -26,7 +27,9 @@ async function loadSemesters() {
   try {
     const response = await SemesterServices.listSemesters();
     semesters.value = response.data;
+    loaded.value = true;
   } catch (reason) {
+    loaded.value = false;
     error.value =
       reason.response?.data?.message ||
       "Semesters could not be loaded.";
@@ -232,13 +235,13 @@ onMounted(async () => {
       </div>
 
       <div
-        v-else-if="semesters.length === 0"
+        v-else-if="loaded && semesters.length === 0"
         class="text-secondary"
       >
         No semesters found.
       </div>
 
-      <div v-else>
+      <div v-else-if="loaded">
         <v-card
           v-for="semester in semesters"
           :key="semester.id"

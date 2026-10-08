@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import SectionServices from "../services/sectionServices.js";
 
 const props = defineProps({ id: { type: String, required: true } });
@@ -9,39 +9,43 @@ const students = ref([]);
 const loading = ref(false);
 const error = ref("");
 
-function apiMessage(reason) {
-  return reason.response?.data?.message || "Request failed.";
-}
+const heading = computed(() => {
+  if (!section.value) return "Section students";
+  const { courseNumber, courseName, sectionNumber, semsterName } = section.value;
+  return `${courseNumber} ${courseName} — Section ${sectionNumber} (${semsterName})`;
+});
 
-async function loadStudents(id) {
+const showEmpty = computed(() => !loading.value && section.value && students.value.length === 0);
+const showTable = computed(() => !loading.value && students.value.length > 0);
+
+function reset() {
   section.value = null;
   students.value = [];
   error.value = "";
+}
+
+async function load(id) {
+  reset();
   loading.value = true;
   try {
-    const response = await SectionServices.listSectionStudents(id);
+    const { data } = await SectionServices.listSectionStudents(id);
     if (id !== props.id) return;
-    section.value = response.data.section;
-    students.value = response.data.students;
+    section.value = data.section;
+    students.value = data.students;
   } catch (reason) {
-    if (id === props.id) error.value = apiMessage(reason);
+    if (id === props.id) error.value = reason.response?.data?.message || "Request failed.";
   } finally {
     if (id === props.id) loading.value = false;
   }
 }
 
-watch(() => props.id, loadStudents, { immediate: true });
+watch(() => props.id, load, { immediate: true });
 </script>
 
 <template>
   <v-container class="py-10" style="max-width: 1100px">
     <v-card rounded="lg" elevation="4" class="pa-6">
-      <h1 class="text-h4 mb-6">
-        <template v-if="section">
-          {{ section.courseNumber }} {{ section.courseName }} — Section {{ section.sectionNumber }} ({{ section.semsterName }})
-        </template>
-        <template v-else>Section students</template>
-      </h1>
+      <h1 class="text-h4 mb-6">{{ heading }}</h1>
 
       <v-alert v-if="error" type="error" density="compact" class="mb-4">{{ error }}</v-alert>
 
@@ -50,9 +54,9 @@ watch(() => props.id, loadStudents, { immediate: true });
         Loading students...
       </div>
 
-      <div v-else-if="section && students.length === 0">No students enrolled.</div>
+      <p v-if="showEmpty">No students enrolled.</p>
 
-      <v-table v-else-if="students.length > 0">
+      <v-table v-if="showTable">
         <thead>
           <tr>
             <th>Last name</th>
