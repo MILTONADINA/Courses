@@ -2,7 +2,7 @@
 
 **Feature ID:** 5  
 **Branch pattern:** `feature/5-section-management`  
-**Status:** Ready  
+**Status:** Shipped  
 **Created:** 2026-09-30  
 **Input:** Allow admins to manage the sections offered in the Courses Management System. A section has a section number, a semester, a course, a faculty member who teaches it, the days of the week it meets, a start time, and an end time.  
 **Depends on:** [Feature 1 — User Authentication & Authorization](feature-1-user-authentication-authorization.md), [Feature 2 — Semester Management](feature-2-semester-management.md), [Feature 3 — Course Management](feature-3-course-management.md), [Feature 4 — Faculty Management](feature-4-faculty-management.md)
